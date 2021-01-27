@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>fonts/fontello.ttf</file>
+    </qresource>
+    <qresource prefix="/auth">
+        <file>qml/authorization.qml</file>
+    </qresource>
+    <qresource prefix="/mainwindow">
+        <file>qml/appview.qml</file>
     </qresource>
 </RCC>

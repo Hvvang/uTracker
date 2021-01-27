@@ -2,10 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_AS">
 <context>
-    <name>main</name>
+    <name>authorization</name>
     <message>
-        <location filename="../src/main.qml" line="8"/>
-        <source>Hello World</source>
+        <source>Continue with email</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
