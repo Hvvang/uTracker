@@ -30,10 +30,17 @@
 *.exe
 *.out
 *.app
+utracker
 
 # IDE cache dir
 .idea
 
+# CMake
+CMakeLists.txt.user
+
 # Build dirs
 cmake-build-debug
 build
+
+# System cache
+.DS_Store
