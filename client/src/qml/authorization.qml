@@ -9,24 +9,24 @@ Window {
     width: 640
     height: 480
 
-    minimumHeight: flowView.height
-    minimumWidth: flowView.width
+    minimumHeight: authPanel.height
+    minimumWidth: authPanel.width
 
     title: "uTracker Authorization"
 
     property bool error: false
 
     Item {
-        id: flowView
-        height: 246
+        id: authPanel
+        height: 260
         width: 200
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         focus: true
+        visible: false
 
         Label {
             id: logoLbl
-            x: 101
             text: qsTr("UTRACKER")
             font.bold: true
             font.pointSize: 16
@@ -78,7 +78,8 @@ Window {
 
             KeyNavigation.tab: emailEntry
 
-            Material.background: "white"
+            Material.background: "black"
+            Material.foreground: "white"
             Material.elevation: 4
 
             onClicked: {
@@ -128,29 +129,15 @@ Window {
             Material.background: "white"
             Material.elevation: 4
             onTextChanged: {
+                if (!emailEntry.acceptableInput)
+                    error = true
+                else {
+                    error = false
+                }
                 errorlbl.visible = false
-                error = false
             }
 
         }
-
-        //        TextField {
-        //            id: passEntry
-        //            width: 200
-        //            font.pointSize: 14
-        //            anchors.horizontalCenterOffset: 0
-        //            anchors.topMargin: 4
-        //            leftPadding: 5
-        //            anchors.top: emailEntry.bottom
-        //            anchors.horizontalCenter: parent.horizontalCenter
-        //            placeholderText: qsTr("Enter your Password")
-
-        //            echoMode: "Password"
-        //            Material.accent: "black"
-        //            Material.background: "white"
-        //            Material.elevation: 4
-        //        }
-
 
         Button {
             id: authBtn
@@ -169,8 +156,11 @@ Window {
 
             onClicked: {
                 console.log("Continue with email clicked");
-                if (emailEntry.acceptableInput)
+                if (emailEntry.acceptableInput) {
                     print("Input acceptable\nemail: %1".arg(emailEntry.text))
+                    authPanel.visible = false
+                    registrationPanel.visible = true
+                }
                 else {
                     error = true
                     print("Input not acceptable")
@@ -188,8 +178,201 @@ Window {
             Material.foreground: "red"
         }
         Keys.onPressed: {
-            if (event.key === Qt.Key_Enter - 1 && (flowView.focus || emailEntry.focus || authBtn.focus))
+            if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter)
+                    && (authPanel.focus || emailEntry.focus || authBtn.focus))
                 authBtn.clicked();
         }
     }
+
+    Item {
+        id: registrationPanel
+        height: 250
+        width: 250
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: true
+
+        Label {
+            id: signUplbl
+            text: qsTr("Create account")
+            font.bold: true
+            font.pointSize: 16
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Material.foreground: "black"
+            Material.elevation: 4
+        }
+
+        TextField {
+            property bool emailError: true
+
+            id: email
+            width: 200
+            font.pointSize: 14
+            leftPadding: 5
+            placeholderText: "Enter your Email address..."
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: signUplbl.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            validator: RegExpValidator { regExp:/\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/ }
+
+            KeyNavigation.tab: passEntry
+
+            Material.accent: emailError ? "red" : "black"
+            Material.foreground: emailError ? "red" : "black"
+            Material.background: "white"
+            Material.elevation: 4
+
+            onTextChanged: {
+                emailError = !email.acceptableInput
+            }
+        }
+
+        TextField {
+            property bool passwordError: true
+
+            id: passEntry
+            width: 200
+            font.pointSize: 14
+            anchors.horizontalCenterOffset: 0
+            leftPadding: 5
+            anchors.top: email.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            placeholderText: qsTr("Enter your Password")
+
+            KeyNavigation.tab: firstNameEntry
+
+            echoMode: "Password"
+            Material.accent: passwordError ? "red" : "black"
+            Material.foreground: passwordError ? "red" : "black"
+            Material.background: "white"
+            Material.elevation: 4
+
+            onTextChanged: {
+                passwordError = (text.length < 1)
+            }
+        }
+        TextField {
+            property bool firstnameError: true
+
+            id: firstNameEntry
+            width: 200
+            font.pointSize: 14
+            leftPadding: 5
+            placeholderText: "Enter your Name..."
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: passEntry.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            KeyNavigation.tab: lastNameEntry
+
+            Material.accent: firstnameError ? "red" : "black"
+            Material.foreground: firstnameError ? "red" : "black"
+            Material.background: "white"
+            Material.elevation: 4
+
+            onTextChanged: {
+                firstnameError = (text.length < 1)
+            }
+        }
+        TextField {
+            property bool lastnameError: true
+
+            id: lastNameEntry
+            width: 200
+            font.pointSize: 14
+            leftPadding: 5
+            placeholderText: "Enter your Last Name..."
+            verticalAlignment: Text.AlignVCenter
+            anchors.top: firstNameEntry.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            KeyNavigation.tab: authBtn
+
+            Material.accent: lastnameError ? "red" : "black"
+            Material.foreground: lastnameError ? "red" : "black"
+            Material.background: "white"
+            Material.elevation: 4
+
+            onTextChanged: {
+                lastnameError = (text.length < 1)
+            }
+        }
+
+        Button {
+            id: signUpBtn
+            width: 200
+            height: 40
+            text: qsTr("Sign up")
+            font.pointSize: 13
+            anchors.top: lastNameEntry.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            Material.foreground: "white"
+            Material.background: Material.Blue
+            Material.elevation: 4
+
+            onClicked: {
+                print("Sign Up clicked!")
+                var error = email.emailError || passEntry.passwordError || firstNameEntry.firstnameError || lastNameEntry.lastnameError
+                if (!error) {
+                    print("Register!")
+                }
+                else {
+                    print("error");
+                }
+            }
+        }
+
+        Rectangle {
+            id: loginRoutePanel
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: 10
+            anchors.top: signUpBtn.bottom
+
+            Label {
+                id: label
+                text: qsTr("Already have an account?")
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.top: parent.top
+            }
+
+            Rectangle {
+
+                property bool hover: false
+                anchors.leftMargin: 5
+
+                id: loginBtn
+                anchors.left: label.right
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.top: parent.top
+
+                Button {
+                    anchors.fill: parent
+                    text: qsTr("Log in here");
+                    font.weight: Font.DemiBold
+                    font.capitalization: Font.MixedCase
+                    padding: 0
+
+                    background: Rectangle{}
+                    Material.accent: "transparent"
+                    Material.foreground: loginBtn.hover ? Material.Blue : "black"
+                    Material.background: "transparent"
+
+                    onHoveredChanged: loginBtn.hover = !loginBtn.hover;
+                    onClicked: {
+                        registrationPanel.visible = false
+                        authPanel.visible = true
+                    }
+                }
+            }
+        }
+    }
 }
+
+
