@@ -9,12 +9,12 @@ Window {
     width: 640
     height: 480
 
-    minimumHeight: authPanel.height
-    minimumWidth: authPanel.width
+    minimumHeight: authPanel.visible ? authPanel.height : registrationPanel.height
+    minimumWidth: authPanel.visible ? authPanel.width : registrationPanel.width
 
     title: "uTracker Authorization"
 
-    property bool error: false
+    property bool error: true
 
     Item {
         id: authPanel
@@ -186,7 +186,7 @@ Window {
 
     Item {
         id: registrationPanel
-        height: 250
+        height: 266
         width: 250
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -251,7 +251,7 @@ Window {
             Material.elevation: 4
 
             onTextChanged: {
-                passwordError = (text.length < 1)
+                passwordError = (text.length < 6)
             }
         }
         TextField {
@@ -307,7 +307,7 @@ Window {
             height: 40
             text: qsTr("Sign up")
             font.pointSize: 13
-            anchors.top: lastNameEntry.bottom
+            anchors.top: error.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             Material.foreground: "white"
             Material.background: Material.Blue
@@ -372,7 +372,22 @@ Window {
                 }
             }
         }
+
+        Label {
+            id: error
+            width: 200
+            anchors.top: lastNameEntry.bottom
+            Material.foreground: "red"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
     }
 }
 
 
+
+/*##^##
+Designer {
+    D{i:20;anchors_x:38;anchors_y:225}D{i:22;anchors_x:24;anchors_y:1}D{i:21;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:-60}
+D{i:19;anchors_y:-16}
+}
+##^##*/
