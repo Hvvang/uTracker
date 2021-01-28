@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.17)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(SOURCES server.cpp)
+set(SOURCES server.cpp  client.cpp)
 
-set(HEADERS server.hpp)
+set(HEADERS server.hpp client.hpp)
 
 add_library(liba ${SOURCES} ${HEADERS})
 
