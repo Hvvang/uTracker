@@ -14,12 +14,10 @@ Window {
 
     title: "uTracker Authorization"
 
-    property bool error: true
-
     Item {
         id: authPanel
-        height: 260
-        width: 200
+        height: 330
+        width: 250
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         focus: true
@@ -57,6 +55,7 @@ Window {
 
             onClicked: {
                 console.log("Continue with Google clicked");
+                GoogleAuth.click()
             }
             Keys.onPressed: {
                 if (event.key === Qt.Key_Enter - 1)
@@ -104,12 +103,15 @@ Window {
         Label {
             color: "#7b7b7b"
             text: qsTr("Email")
+            anchors.left: parent.left
+            anchors.leftMargin: 20
             anchors.bottomMargin: 0
             font.pointSize: 12
             anchors.bottom: emailEntry.top
         }
 
         TextField {
+            property bool error: true
             id: emailEntry
             width: 200
             font.pointSize: 14
@@ -122,21 +124,46 @@ Window {
 
             validator: RegExpValidator { regExp:/\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/ }
 
-            KeyNavigation.tab: authBtn
+            KeyNavigation.tab: passwordEntry
 
-            Material.accent: error ? "red" : "black"
-            Material.foreground: error ? "red" : "black"
+            Material.accent: emailEntry.error ? "red" : "black"
+            Material.foreground: emailEntry.error ? "red" : "black"
             Material.background: "white"
             Material.elevation: 4
             onTextChanged: {
                 if (!emailEntry.acceptableInput)
-                    error = true
+                    emailEntry.error = true
                 else {
-                    error = false
+                    emailEntry.error = false
                 }
                 errorlbl.visible = false
             }
 
+        }
+
+        TextField {
+            property bool error: true
+
+            id: passwordEntry
+            width: 200
+            font.pointSize: 14
+            anchors.horizontalCenterOffset: 0
+            leftPadding: 5
+            anchors.top: emailEntry.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            placeholderText: qsTr("Enter your Password")
+
+            KeyNavigation.tab: authBtn
+
+            echoMode: "Password"
+            Material.accent: passwordEntry.error ? "red" : "black"
+            Material.foreground: passwordEntry.error ? "red" : "black"
+            Material.background: "white"
+            Material.elevation: 4
+
+            onTextChanged: {
+                passwordEntry.error = (text.length < 6)
+            }
         }
 
         Button {
@@ -156,26 +183,58 @@ Window {
 
             onClicked: {
                 console.log("Continue with email clicked");
-                if (emailEntry.acceptableInput) {
+                if (emailEntry.error || passwordEntry.error) {
+                    print("Input not acceptable")
+                    if (emailEntry.error) {
+                        errorlbl.text = "Incorrect email address"
+                        emailEntry.forceActiveFocus()
+                    } else {
+                        errorlbl.text = "Incorrect password"
+                        passwordEntry.forceActiveFocus()
+                    }
+                    errorlbl.visible = true
+                }
+                else {
                     print("Input acceptable\nemail: %1".arg(emailEntry.text))
                     authPanel.visible = false
                     registrationPanel.visible = true
-                }
-                else {
-                    error = true
-                    print("Input not acceptable")
-                    emailEntry.forceActiveFocus()
-                    errorlbl.text = "Incorrect email address"
-                    errorlbl.visible = true
                 }
             }
         }
 
         Label {
             id: errorlbl
-            anchors.top: emailEntry.bottom
+            anchors.top: passwordEntry.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             Material.foreground: "red"
+        }
+
+        Rectangle {
+            id: switcherPanel
+            width: 200
+            color: "#ffffff"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: authBtn.bottom
+            anchors.bottom: parent.bottom
+
+            Button {
+                property bool hover: false
+                id: newAccBtn
+                text: qsTr("Create new account")
+                font.capitalization: Font.MixedCase
+                anchors.fill: parent
+
+                background: Rectangle{}
+                Material.accent: "transparent"
+                Material.foreground: hover ? Material.Blue : "black"
+                Material.background: "transparent"
+
+                onHoveredChanged: hover = !hover;
+                onClicked: {
+                    registrationPanel.visible = true
+                    authPanel.visible = false
+                }
+            }
         }
         Keys.onPressed: {
             if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter)
@@ -188,6 +247,7 @@ Window {
         id: registrationPanel
         height: 266
         width: 250
+
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         visible: true
@@ -344,13 +404,13 @@ Window {
             Rectangle {
 
                 property bool hover: false
+                anchors.bottom: parent.bottom
+                anchors.top: parent.top
                 anchors.leftMargin: 5
 
                 id: loginBtn
                 anchors.left: label.right
                 anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.top: parent.top
 
                 Button {
                     anchors.fill: parent
@@ -387,7 +447,10 @@ Window {
 
 /*##^##
 Designer {
-    D{i:20;anchors_x:38;anchors_y:225}D{i:22;anchors_x:24;anchors_y:1}D{i:21;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:-60}
-D{i:19;anchors_y:-16}
+    D{i:12;anchors_x:72;anchors_y:80}D{i:18;anchors_y:"-16"}D{i:19;anchors_x:38;anchors_y:"-16"}
+D{i:20;anchors_height:200;anchors_width:200;anchors_x:38;anchors_y:225}D{i:21;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:"-16"}
+D{i:22;anchors_height:200;anchors_width:200;anchors_x:38;anchors_y:225}D{i:24;anchors_height:200;anchors_width:200;anchors_x:38;anchors_y:225}
+D{i:26;anchors_x:24;anchors_y:1}D{i:25;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:"-60"}
+D{i:23;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:"-16"}
 }
 ##^##*/
