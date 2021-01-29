@@ -1,13 +1,12 @@
-#include "server.h"
+#include "client.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
-    Server server;
-    server.startServer();
+    Client s;
+    s.doConnect();
 
     return a.exec();
 }

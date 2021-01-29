@@ -1,35 +1,35 @@
-#cmake_minimum_required(VERSION 3.18.2)
-cmake_minimum_required(VERSION 3.17)
-
-project(utracker_server LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.17.3)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-#add_compile_options(
-#    -std=c++17
-#    -Wall
-#    -Wextra
-#    -Werror
-#    -Wpedantic
-#)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network DBus REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Network DBus REQUIRED)
+set(NAME server)
+set(SOURCE_EXE main.cpp)
+
+add_compile_options(
+    -std=c++17
+    -Wall
+    -Wextra
+    -Werror
+    -Wpedantic
+)
+
+find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
+
+include_directories(./src)
 
 add_subdirectory(src)
 
-include_directories(src)
+add_executable(${NAME} main.cpp)
 
-add_executable(utracker_server main.cpp)
-
-target_link_libraries(utracker_server PRIVATE
-        Qt${QT_VERSION_MAJOR}::Core
-        Qt${QT_VERSION_MAJOR}::Network
-        Qt${QT_VERSION_MAJOR}::DBus
-        liba
+target_link_libraries(
+    ${NAME}
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Network
+    server_src
 )

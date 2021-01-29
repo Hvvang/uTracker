@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.17)
-
-project(utracker VERSION 1.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.17.3)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(NAME uTracker)
+set(CMAKE_PREFIX_PATH "/usr/local/Cellar/qt/5.15.1/")
 
+project(${NAME} LANGUAGES CXX)
+
+add_subdirectory(server)
 add_subdirectory(client)
-
-set_target_properties(utracker PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../..)

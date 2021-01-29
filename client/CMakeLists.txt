@@ -1,30 +1,35 @@
-cmake_minimum_required(VERSION 3.5)
-
-project(utracker LANGUAGES CXX)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+cmake_minimum_required(VERSION 3.17.3)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Core Quick LinguistTools REQUIRED)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-set(TS_FILES translations/en_AS.ts)
+set(NAME client)
+set(SOURCE_EXE main.cpp)
 
-add_executable(utracker
-  client.cpp
-  src/qml.qrc
-  ${TS_FILES}
+add_compile_options(
+    -std=c++17
+    -Wall
+    -Wextra
+    -Werror
+    -Wpedantic
 )
 
+find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
 
-target_compile_definitions(utracker
-  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(utracker
-  PRIVATE Qt5::Core Qt5::Quick)
+include_directories(./src)
 
-qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+add_subdirectory(src)
+
+add_executable(${NAME} main.cpp)
+
+target_link_libraries(
+    ${NAME}
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Network
+    client_src
+)
