@@ -1,5 +1,6 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.4
+import Material 0.3
+import Material.ListItems 0.1 as ListItem
 
 Rectangle {
     id: root
@@ -12,34 +13,34 @@ Rectangle {
         ExtraColor
     }
 
-    property string typeButton: "StandartType"
-    property string colorButton: "MainColor"
-    property string content: "value"
+    property string buttonType: "StandartType"
+    property string buttonColor: "MainColor"
+    property string buttonContent: "value"
     property int buttonWidth: 125
-    property int buttonHeight: 30
+    property int buttonHeight: 40
 
     signal clicked
 
     width: buttonWidth
     height: buttonHeight
-    border.width: typeButton == "StandartType" ? 2 : 2
-    border.color: colorButton == "MainColor" ? "#f6a2bf" : "#ffb4b0"
-    radius: typeButton == "StandartType" ? height/2 : 5
+    border.width: buttonType == "StandartType" ? 2 : 2
+    border.color: buttonColor == "MainColor" ? "#f6a2bf" : "#ffb4b0"
+    radius: buttonType == "StandartType" ? height/2 : 5
 
     Rectangle {
         anchors.fill: parent
         anchors.margins: parent.border.width
         id: button
         radius: parent.radius
-        color: colorButton == "MainColor" ? (!mouseArea.containsMouse ? "#fad2e0" : "#ffdad8") : (!mouseArea.containsMouse ? "#ffdad8" : "#fad2e0")
+        color: buttonColor == "MainColor" ? (!mouseArea.containsMouse ? "#fad2e0" : "#ffdad8") : (!mouseArea.containsMouse ? "#ffdad8" : "#fad2e0")
         Text {
             id: text
 //            clip: true
             elide: Text.ElideRight
             anchors.fill: parent
-            text: qsTr(root.content)
-            font.pixelSize: 14
-            color: colorButton == "MainColor" ? "#7a163c" : "#7a163c"
+            text: qsTr(root.buttonContent)
+            font.pixelSize: 16 * Units.dp
+            color: buttonColor == "MainColor" ? "#7a163c" : "#7a163c"
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             MouseArea {
