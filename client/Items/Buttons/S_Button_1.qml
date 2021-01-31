@@ -47,8 +47,7 @@ Rectangle {
                 id: mouseArea
                 anchors.fill: parent
                 onClicked: {
-                    console.log("Clicked");
-//                    parent.parent.color: "#eea3a0";
+                    root.clicked();
                 }
 
                 enabled: active

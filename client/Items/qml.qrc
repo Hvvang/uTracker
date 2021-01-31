@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>Buttons/S_Button_1.qml</file>
         <file>Buttons/S_Input_1.qml</file>
+        <file>Windows/SignUp.qml</file>
     </qresource>
 </RCC>
