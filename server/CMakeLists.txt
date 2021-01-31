@@ -10,13 +10,13 @@ set(CMAKE_AUTOUIC ON)
 set(NAME server)
 set(SOURCE_EXE main.cpp)
 
-add_compile_options(
-    -std=c++17
-    -Wall
-    -Wextra
-    -Werror
-    -Wpedantic
-)
+#add_compile_options(
+#    -std=c++17
+#    -Wall
+#    -Wextra
+#    -Werror
+#    -Wpedantic
+#)
 
 find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
 
@@ -33,3 +33,5 @@ target_link_libraries(
     Qt5::Network
     server_src
 )
+
+#set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../..)

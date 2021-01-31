@@ -8,3 +8,4 @@ project(${NAME} LANGUAGES CXX)
 
 add_subdirectory(server)
 add_subdirectory(client)
+

@@ -33,3 +33,5 @@ target_link_libraries(
     Qt5::Network
     client_src
 )
+
+#set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)

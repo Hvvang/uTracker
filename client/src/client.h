@@ -5,12 +5,15 @@
 #include <QAbstractSocket>
 #include <QDebug>
 
+#include "requests.h"
+
+
 class Client: public QObject {
     Q_OBJECT
 public:
     explicit Client(QObject *parent = nullptr);
 
-    void doConnect();
+    void doConnect(char *ip, int port);
 
 signals:
 
@@ -21,5 +24,6 @@ public slots:
     void readyRead();
 
 private:
-    QTcpSocket *socket;
+    QTcpSocket *m_socket;
+    Request *m_request;
 };

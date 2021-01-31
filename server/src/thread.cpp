@@ -10,6 +10,7 @@ void Thread::run() {
     qDebug() << " Thread started";
 
     socket = new QTcpSocket();
+    m_response = new Responses(socket);
 
     // set the ID
     if (!socket->setSocketDescriptor(this->socketDescriptor)) {
@@ -33,14 +34,32 @@ void Thread::run() {
     exec();
 }
 
+void Thread::parseJSON(QJsonDocument itemDoc) {
+    //parse
+    QJsonObject itemObject = itemDoc.object();
+    if (itemObject["signup"].toBool()) {
+        qDebug() << "login :" << itemObject["login"].toString() << "password :" << itemObject["password"].toString() << "\n";
+        QJsonArray itemArray = itemObject["array"].toArray();
+        for(auto item : itemArray)
+            qDebug() << item.toObject()["num"].toInt() << "\n";
+        m_response->toSignUp();
+    }
+}
+
+
 void Thread::readyRead() {
     // get the information
     QByteArray Data = socket->readAll();
 
     // will write on server side window
-    qDebug() << socketDescriptor << " Data in: " << Data;
-    qDebug() << socketDescriptor << " Data: " << Data.toStdString().c_str();
-    socket->write(Data);
+//    qDebug() << socketDescriptor << " Data in: " << Data;
+    // qDebug() << socketDescriptor << " Data:\n" << Data.toStdString().c_str();
+    QJsonDocument itemDoc = QJsonDocument::fromJson(Data);
+    if (itemDoc.isNull())
+        qDebug() << "ne json";
+    else
+        parseJSON(itemDoc);
+    //socket->write(Data);
 }
 
 void Thread::disconnected() {

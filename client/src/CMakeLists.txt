@@ -5,13 +5,13 @@ set(NAME client_src)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-add_compile_options(
-    -std=c++17
-    -Wall
-    -Wextra
-    -Werror
-    -Wpedantic
-)
+#add_compile_options(
+#    -std=c++17
+#    -Wall
+#    -Wextra
+#    -Werror
+#    -Wpedantic
+#)
 
 file(GLOB SRC *.cpp)
 file(GLOB HDR *.h)
