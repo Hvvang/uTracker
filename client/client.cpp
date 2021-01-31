@@ -4,6 +4,7 @@
 #include <QQmlContext>
 
 #include "googleauth.h"
+#include "authwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,9 +17,10 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     QQmlApplicationEngine engine;
+    QQmlEngine auth_engine;
 
-    GoogleAuth googleAuth;
-    engine.rootContext()->setContextProperty("GoogleAuth", &googleAuth);
+    AuthWindow auth(nullptr, &auth_engine);
+    engine.rootContext()->setContextProperty("Auth", &auth);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

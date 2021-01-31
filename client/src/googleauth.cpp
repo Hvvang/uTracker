@@ -59,26 +59,17 @@ GoogleAuth::GoogleAuth(QObject *parent) : QObject(parent) {
 
     connect(this->google, &QOAuth2AuthorizationCodeFlow::granted, [=](){
         const QString token = this->google->token();
-        qDebug() << "Callback is " << replyHandler->callbackText();
-        qDebug() << "Refresh token is " << this->google->refreshToken();
-        qDebug() << "Accesses Token is " << token;
-        qDebug() << this->google->clientIdentifierSharedKey();
-        emit gotToken(token);
 
+        emit gotToken(google->token(), google->refreshToken(), nullptr);
 
-        auto reply = this->google->post(getRefreshUrl());
+//        auto reply = this->google->post(getRefreshUrl());
 
-        connect(reply, &QNetworkReply::finished, [reply]() {
-            qDebug() << "REQUEST FINISHED. Error? " << (reply->error() != QNetworkReply::NoError);
-            qDebug() << reply->readAll();
-        });
-        // TODO: send gotted shrared key to server for getting tokens on server side of application
-
-//        auto reply = this->google->get(QUrl(QString("https://www.googleapis.com/oauth2/v3/userinfo?alt=json&access_token=%1").arg(token)));
 //        connect(reply, &QNetworkReply::finished, [reply]() {
 //            qDebug() << "REQUEST FINISHED. Error? " << (reply->error() != QNetworkReply::NoError);
 //            qDebug() << reply->readAll();
 //        });
+        // TODO: send gotted shrared key to server for getting tokens on server side of application
+
     });
 }
 
@@ -91,11 +82,21 @@ void GoogleAuth::click() {
     this->google->grant();
 }
 
-QUrl GoogleAuth::getRefreshUrl() {
-    return QUrl(QString("%1?alt=json&grant_type=refresh_token&refresh_token=%2&client_id=%3&client_secret=%4")
+void GoogleAuth::refreshToken(const QString &token) {
+    QUrl url(QString("%1?alt=json&grant_type=refresh_token&refresh_token=%2&client_id=%3&client_secret=%4")
               .arg("https://www.googleapis.com/oauth2/v4/token/")
-              .arg(google->refreshToken())
+              .arg(token)
               .arg(CLIENT_ID)
               .arg(CLIENT_SECRET));
+
+    auto reply = this->google->post(url);
+
+    connect(reply, &QNetworkReply::finished, [=]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            emit gotToken(google->token(), google->refreshToken(), nullptr);
+        }
+        qDebug() << "REQUEST FINISHED. Error? " << (reply->error() != QNetworkReply::NoError);
+        qDebug() << reply->readAll();
+    });
 }
 

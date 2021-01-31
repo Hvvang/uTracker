@@ -19,10 +19,10 @@ public:
     virtual ~GoogleAuth();
     Q_INVOKABLE void click();
 
-    QUrl getRefreshUrl();
+    void refreshToken(const QString &);
 
 signals:
-    void gotToken(const QString& token);
+    void gotToken(const QString &, const QString &, const QString &);
 
 private:
     QOAuth2AuthorizationCodeFlow * google;

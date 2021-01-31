@@ -4,17 +4,17 @@ import Qt.labs.settings 1.0
 
 Window {
   id: main
-//  visible: true
-//  width: 640
-//  height: 480
-
+  width: 640
+  height: 480
   property bool isAuthorized: false
 
-  Settings {
-    property alias isAuthorized: main.isAuthorized
-  }
+  onIsAuthorizedChanged: print("isAuthorized equal: ", main.isAuthorized);
 
-  Loader {
-    source: isAuthorized ? "mainwindow/qml/appview.qml" : "auth/qml/authorization.qml"
-  }
+//  Settings {
+//    property alias isAuthorized: main.isAuthorized
+//  }
+
+//  Loader {
+//    source: isAuthorized ? "workflowpanel/Panel.qml" : "auth/Authorization.qml"
+//  }
 }

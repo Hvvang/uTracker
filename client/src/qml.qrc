@@ -4,9 +4,6 @@
         <file>fonts/fontello.ttf</file>
     </qresource>
     <qresource prefix="/auth">
-        <file>qml/authorization.qml</file>
-    </qresource>
-    <qresource prefix="/mainwindow">
-        <file>qml/appview.qml</file>
+        <file alias="Authorization.qml">qml/authorization.qml</file>
     </qresource>
 </RCC>

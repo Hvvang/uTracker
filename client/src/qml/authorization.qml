@@ -3,16 +3,27 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 
-Window {
+Item {
     id: root
     visible: true
-    width: 640
-    height: 480
+    anchors.fill: parent
 
-    minimumHeight: authPanel.visible ? authPanel.height : registrationPanel.height
-    minimumWidth: authPanel.visible ? authPanel.width : registrationPanel.width
+//    title: "uTracker Authorization"
 
-    title: "uTracker Authorization"
+    property string errorMessage: "qwerty"
+    property bool error: false
+    property var errorLabel: errorlbl
+
+    onErrorChanged: {
+        if (error)
+            errorLabel.text = errorMessage;
+    }
+
+    StackView {
+        id: stack
+        initialItem: authPanel
+        anchors.fill: parent
+    }
 
     Item {
         id: authPanel
@@ -21,7 +32,7 @@ Window {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         focus: true
-        visible: false
+        visible: true
 
         Label {
             id: logoLbl
@@ -100,16 +111,6 @@ Window {
             anchors.topMargin: 20
         }
 
-        Label {
-            color: "#7b7b7b"
-            text: qsTr("Email")
-            anchors.left: parent.left
-            anchors.leftMargin: 20
-            anchors.bottomMargin: 0
-            font.pointSize: 12
-            anchors.bottom: emailEntry.top
-        }
-
         TextField {
             property bool error: true
             id: emailEntry
@@ -131,11 +132,7 @@ Window {
             Material.background: "white"
             Material.elevation: 4
             onTextChanged: {
-                if (!emailEntry.acceptableInput)
-                    emailEntry.error = true
-                else {
-                    emailEntry.error = false
-                }
+                emailEntry.error = !emailEntry.acceptableInput
                 errorlbl.visible = false
             }
 
@@ -163,6 +160,7 @@ Window {
 
             onTextChanged: {
                 passwordEntry.error = (text.length < 6)
+                errorlbl.visible = false
             }
         }
 
@@ -175,7 +173,7 @@ Window {
             anchors.top: errorlbl.bottom
             anchors.horizontalCenter: parent.horizontalCenter
 
-            KeyNavigation.tab: googleOAuthBtn
+            KeyNavigation.tab: newAccBtn
 
             Material.background: Material.Blue
             Material.foreground: "white"
@@ -196,8 +194,7 @@ Window {
                 }
                 else {
                     print("Input acceptable\nemail: %1".arg(emailEntry.text))
-                    authPanel.visible = false
-                    registrationPanel.visible = true
+                    Auth.signIn(emailEntry.text, passwordEntry.text)
                 }
             }
         }
@@ -224,6 +221,8 @@ Window {
                 font.capitalization: Font.MixedCase
                 anchors.fill: parent
 
+                KeyNavigation.tab: googleOAuthBtn
+
                 background: Rectangle{}
                 Material.accent: "transparent"
                 Material.foreground: hover ? Material.Blue : "black"
@@ -231,8 +230,9 @@ Window {
 
                 onHoveredChanged: hover = !hover;
                 onClicked: {
-                    registrationPanel.visible = true
-                    authPanel.visible = false
+                    errorLabel = error
+                    root.error = false
+                    stack.push(registrationPanel)
                 }
             }
         }
@@ -250,7 +250,7 @@ Window {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        visible: true
+        visible: false
 
         Label {
             id: signUplbl
@@ -349,7 +349,7 @@ Window {
             anchors.top: firstNameEntry.bottom
             anchors.horizontalCenter: parent.horizontalCenter
 
-            KeyNavigation.tab: authBtn
+            KeyNavigation.tab: signUpBtn
 
             Material.accent: lastnameError ? "red" : "black"
             Material.foreground: lastnameError ? "red" : "black"
@@ -372,6 +372,8 @@ Window {
             Material.foreground: "white"
             Material.background: Material.Blue
             Material.elevation: 4
+
+            KeyNavigation.tab: loginRouteButton
 
             onClicked: {
                 print("Sign Up clicked!")
@@ -413,11 +415,14 @@ Window {
                 anchors.right: parent.right
 
                 Button {
+                    id: loginRouteButton
                     anchors.fill: parent
                     text: qsTr("Log in here");
                     font.weight: Font.DemiBold
                     font.capitalization: Font.MixedCase
                     padding: 0
+
+                    KeyNavigation.tab: email
 
                     background: Rectangle{}
                     Material.accent: "transparent"
@@ -426,8 +431,9 @@ Window {
 
                     onHoveredChanged: loginBtn.hover = !loginBtn.hover;
                     onClicked: {
-                        registrationPanel.visible = false
-                        authPanel.visible = true
+                        errorLabel = error
+                        root.error = false
+                        stack.pop()
                     }
                 }
             }
@@ -442,15 +448,3 @@ Window {
         }
     }
 }
-
-
-
-/*##^##
-Designer {
-    D{i:12;anchors_x:72;anchors_y:80}D{i:18;anchors_y:"-16"}D{i:19;anchors_x:38;anchors_y:"-16"}
-D{i:20;anchors_height:200;anchors_width:200;anchors_x:38;anchors_y:225}D{i:21;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:"-16"}
-D{i:22;anchors_height:200;anchors_width:200;anchors_x:38;anchors_y:225}D{i:24;anchors_height:200;anchors_width:200;anchors_x:38;anchors_y:225}
-D{i:26;anchors_x:24;anchors_y:1}D{i:25;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:"-60"}
-D{i:23;anchors_height:200;anchors_width:200;anchors_x:261;anchors_y:"-16"}
-}
-##^##*/

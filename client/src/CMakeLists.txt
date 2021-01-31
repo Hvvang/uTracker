@@ -1,9 +1,11 @@
 
 set(SOURCES 
 	googleauth.cpp
+        authwindow.cpp
 )
 set(HEADERS 
 	googleauth.h
+        authwindow.h
 )
 
 add_library(auth ${SOURCES} ${HEADERS})

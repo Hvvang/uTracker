@@ -13,7 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Core Quick NetworkAuth LinguistTools REQUIRED)
 
-set(TS_FILES translations/en_AS.ts)
+set(TS_FILES
+    translations/en_AS.ts)
 
 include_directories(src)
 
