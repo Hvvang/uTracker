@@ -19,33 +19,39 @@ Rectangle {
     property int buttonWidth: 125
     property int buttonHeight: 30
 
-    signal clicked
+//    signal clicked
 
     width: buttonWidth
     height: buttonHeight
     border.width: typeButton == "StandartType" ? 2 : 2
     border.color: colorButton == "MainColor" ? "#f6a2bf" : "#ffb4b0"
-    radius: typeButton == "StandartType" ? height/2 : 5
+    radius: typeButton == "StandartType" ? height / 2 : 5
 
     Rectangle {
         id:content
         anchors.fill: parent
         anchors.margins: parent.border.width
         radius: parent.radius
-        color: colorButton == "MainColor" ? (!mouseArea.containsMouse ? "#fad2e0" : "#ffdad8") : (!mouseArea.containsMouse ? "#ffdad8" : "#fad2e0")
+//        color:
+//        color: colorButton == "MainColor" ? (!mouseArea.containsMouse ? "#fad2e0" : "#ffdad8") : (!mouseArea.containsMouse ? "#ffdad8" : "#fad2e0")
         Item {
             width: parent.width - parent.radius
             height: parent.height - parent.radius
-            anchors.left: parent.Left
+            anchors.fill: parent
             TextInput {
-                anchors.fill: content
+                text: "Hello"
+                anchors.fill: parent
 
                 verticalAlignment: TextInput.AlignVCenter
                 wrapMode: TextInput.NoWrap
             }
         }
 
-
+//        MouseArea{
+//            id: mouseArea
+//            anchors.fill: parent
+//            hoverEnabled: true
+//        }
     //        onClick: {}
     }
 
