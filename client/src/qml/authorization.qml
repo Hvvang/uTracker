@@ -379,7 +379,9 @@ Item {
                 print("Sign Up clicked!")
                 var error = email.emailError || passEntry.passwordError || firstNameEntry.firstnameError || lastNameEntry.lastnameError
                 if (!error) {
-                    print("Register!")
+
+                    print("Register button pressed!")
+                    Auth.signUp(email.text, passEntry.text, firstNameEntry.text, lastNameEntry.text)
                 }
                 else {
                     print("error");

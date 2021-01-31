@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QQmlEngine auth_engine;
 
     AuthWindow auth(nullptr, &auth_engine);
-    engine.rootContext()->setContextProperty("Auth", &auth);
+
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -14,6 +14,8 @@ AuthWindow::AuthWindow(QObject *parent, QQmlEngine *engine)
     connect(&m_googleAuth, &GoogleAuth::gotToken, this, &AuthWindow::saveTokens);
 
     engine->rootContext()->setContextProperty("GoogleAuth", &m_googleAuth);
+    engine->rootContext()->setContextProperty("Auth", this);
+
     m_view->setSource(QUrl("qrc:/auth/Authorization.qml"));
     m_view->setHeight(480);
     m_view->setWidth(640);
@@ -40,6 +42,9 @@ void AuthWindow::autoSignIn() {
 }
 
 void AuthWindow::response(const QString &response) {
+
+    qDebug() << "Response is:\n" << response;
+
     auto json = QJsonDocument().fromJson(response.toUtf8()).object();
     if (!json.value("error").isNull()) {
         if (json.value("type").toInt() == AUTO_OAUTH) {
