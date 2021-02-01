@@ -22,7 +22,7 @@ void Connection::doConnect(qintptr handle) {
     qDebug() << "connection is made...";
 }
 
-QString Connection::getTask() const {
+QByteArray Connection::getTask() const {
     return m_task;
 }
 

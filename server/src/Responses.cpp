@@ -1,7 +1,7 @@
 #include "Responses.h"
 
 
-Responses::Responses(QTcpSocket *socket) : m_socket(socket) {}
+Responses::Responses(Connection *socket) : m_socket(socket) {}
 
 Responses::~Responses() {}
 

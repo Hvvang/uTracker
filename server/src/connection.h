@@ -3,6 +3,7 @@
 #include <QTcpSocket>
 #include <QObject>
 #include <QDebug>
+#include <QByteArray>
 
 class Connection : public QObject {
     Q_OBJECT
@@ -11,7 +12,7 @@ public:
     ~Connection() override;
 
     void doConnect(qintptr handle);
-    QString getTask() const;
+    QByteArray getTask() const;
 
 signals:
 
@@ -20,7 +21,7 @@ public slots:
     void readyRead();
 
 private:
-    QString m_task;
+    QByteArray m_task;g
     QTcpSocket *m_socket;
     QObject *m_parent;
 };

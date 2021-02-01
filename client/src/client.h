@@ -25,4 +25,5 @@ public slots:
 
 private:
     QTcpSocket *m_socket;
+    Request *m_request;
 };
