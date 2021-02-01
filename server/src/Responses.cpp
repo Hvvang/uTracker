@@ -1,9 +1,9 @@
 #include "Responses.h"
 
 
-Responses::Responses(Connection *socket) : m_socket(socket) {}
-
-Responses::~Responses() {}
+Responses::Responses(Connection *ptr) {
+    m_connection = ptr;
+}
 
 void Responses::toSignUp() {
     QJsonObject jsonObject {
@@ -19,7 +19,7 @@ void Responses::toSignUp() {
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
     QByteArray json = jsonDoc->toJson();
 
-    m_socket->write(json);
+    m_connection->sendResponse(json);
 }
 
 void Responses::toSignIn() {
@@ -36,7 +36,8 @@ void Responses::toSignIn() {
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
     QByteArray json = jsonDoc->toJson();
 
-    m_socket->write(json);
+
+    m_connection->sendResponse(json);
 }
 
 void Responses::toSignInWithGoogle() {
@@ -53,7 +54,7 @@ void Responses::toSignInWithGoogle() {
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
     QByteArray json = jsonDoc->toJson();
 
-    m_socket->write(json);
+    m_connection->sendResponse(json);
 }
 
 void Responses::toAutoSignIn() {
@@ -70,5 +71,5 @@ void Responses::toAutoSignIn() {
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
     QByteArray json = jsonDoc->toJson();
 
-    m_socket->write(json);
+    m_connection->sendResponse(json);
 }

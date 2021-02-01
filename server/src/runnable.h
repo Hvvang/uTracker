@@ -2,15 +2,16 @@
 
 #include <QRunnable>
 #include <QTcpSocket>
-#include <QMutex>
 
 #include "Responses.h"
+#include "connection.h"
 
 class Runnable : public QRunnable {
 public:
     explicit Runnable(Connection *socket);
-    void parseJSON(QJsonDocument itemDoc);
+    ~Runnable() override;
 
+    void parseJSON(QJsonDocument itemDoc);
     void setMutex(QMutex *mutex);
 
 protected:

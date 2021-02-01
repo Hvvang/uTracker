@@ -12,8 +12,7 @@
 
 class Responses {
 public:
-    Responses(Connection *socket);
-    ~Responses();
+    Responses(Connection *ptr);
 
     void toSignUp(); // method for responsing to Signing Up
     void toSignIn(); // method for responsing to Signing In
@@ -33,5 +32,5 @@ public:
 
 //    void sendStatistics();
 private:
-    Connection *m_socket;
+    Connection *m_connection;
 };

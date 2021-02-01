@@ -25,10 +25,9 @@ void Client::connected() {
     qDebug() << "connected...";
 
     m_request->signUp();
-    m_request->signIn();
-    m_request->autoSignIn();
-    m_request->autoSignInWithGoogle();
-
+//    m_request->signIn();
+//    m_request->autoSignIn();
+//    m_request->autoSignInWithGoogle();
 }
 
 void Client::disconnected() {
@@ -41,6 +40,5 @@ void Client::bytesWritten(qint64 bytes) {
 
 void Client::readyRead() {
     qDebug() << "RESPONSE FROM SERVER:\n";
-
     qDebug() << m_socket->readAll();
 }

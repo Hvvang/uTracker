@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QByteArray>
+#include <QMutex>
 
 class Connection : public QObject {
     Q_OBJECT
@@ -12,12 +13,13 @@ public:
     ~Connection() override;
 
     void doConnect(qintptr handle);
-    void write(QByteArray array);
     QByteArray getTask() const;
 
 signals:
+    void sendResponse(const QByteArray &data);
 
 public slots:
+    void writeToSocket(const QByteArray &data);
     void disconnected();
     void readyRead();
 

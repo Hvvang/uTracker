@@ -3,40 +3,36 @@
 
 Connection::Connection(QObject *parent) : QObject(parent) {
     m_parent = parent;
+    m_socket = new QTcpSocket(this);
 }
 
 Connection::~Connection() {
     m_socket->abort();
     delete m_socket;
     qobject_cast<Server *>(m_parent)->deleteConnection(this);
-    qDebug() << "connection is deleted...";
 }
 
 void Connection::doConnect(qintptr handle) {
-    m_socket = new QTcpSocket(this);
+    m_socket->setSocketDescriptor(handle);
 
     connect(m_socket, &QTcpSocket::disconnected,this, &Connection::disconnected);
     connect(m_socket, &QTcpSocket::readyRead,this, &Connection::readyRead);
-
-    m_socket->setSocketDescriptor(handle);
-    qDebug() << "connection is made...";
+    connect(this, &Connection::sendResponse, this, &Connection::writeToSocket);
 }
 
 QByteArray Connection::getTask() const {
     return m_task;
 }
 
-void Connection::write(QByteArray array) {
-    m_socket->write(array);
+void Connection::writeToSocket(const QByteArray &data) {
+    m_socket->write(data);
 }
 
 void Connection::disconnected() {
-    qDebug() << "disconnected...";
     this->deleteLater();
 }
 
 void Connection::readyRead() {
-    qDebug() << "reading...";
     m_task = m_socket->readAll();
     qobject_cast<Server *>(m_parent)->setNewTask(this);
 }

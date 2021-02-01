@@ -14,10 +14,10 @@ Server::~Server() {
 }
 
 void Server::startServer() {
-    if (this->listen(QHostAddress::Any, 8989))
-        qDebug() << "Server started";
-    else
+    if (!this->listen(QHostAddress::Any, 8989)) {
         qDebug() << "Server did not start!";
+        exit(EXIT_FAILURE);
+    }
 }
 
 void Server::incomingConnection(qintptr handle) {
@@ -39,5 +39,4 @@ void Server::setNewTask(Connection *ptr) {
     task->setAutoDelete(true);
     task->setMutex(m_mutex);
     m_pool->start(task);
-    qDebug() << "pool started";
 }

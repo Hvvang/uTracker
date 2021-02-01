@@ -2,7 +2,7 @@
 
 Runnable::Runnable(Connection *socket) {
     m_ptr = socket;
-    m_response = new Responses(socket);
+    m_response = new Responses(m_ptr);
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
@@ -22,22 +22,30 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
         qDebug() << "password :" << itemObject["password"].toString() << "\n";
         qDebug() << "name :" << itemObject["name"].toString() << "\n";
         qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
+        // DASHA TUT
         m_response->toSignUp();
     }
     else if (itemObject["type"].toString() == "SIGN_IN") {
         qDebug() << "login :" << itemObject["login"].toString() << "\n";
         qDebug() << "email :" << itemObject["email"].toString() << "\n";
         qDebug() << "password :" << itemObject["password"].toString() << "\n";
+        //DASHA TUT
         m_response->toSignIn();
     }
     else if (itemObject["type"].toString() == "AUTO_OAUTH") {
         qDebug() << "token :" << itemObject["token"].toString() << "\n";
+        //DASHA TUT
         m_response->toSignInWithGoogle();
     }
     else if (itemObject["type"].toString() == "AUTO_AUTH") {
         qDebug() << "token :" << itemObject["token"].toString() << "\n";
+        //DASHA TUT
         m_response->toAutoSignIn();
     }
+}
+
+Runnable::~Runnable() {
+    delete m_response;
 }
 
 void Runnable::setMutex(QMutex *mutex) {
