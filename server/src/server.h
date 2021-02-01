@@ -23,6 +23,7 @@ protected:
 signals:
 
 public slots:
+    void deleteConnection(Connection *ptr);
     void setNewTask(Connection *ptr);
 
 private:

@@ -8,6 +8,7 @@ Connection::Connection(QObject *parent) : QObject(parent) {
 Connection::~Connection() {
     m_socket->abort();
     delete m_socket;
+    qobject_cast<Server *>(m_parent)->deleteConnection(this);
     qDebug() << "connection is deleted...";
 }
 

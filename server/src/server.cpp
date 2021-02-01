@@ -23,7 +23,12 @@ void Server::incomingConnection(qintptr handle) {
     newConnection->doConnect(handle);
 
     m_connections.push_back(newConnection);
-    m_connections.size();
+
+    qDebug() << m_connections.size();
+}
+
+void Server::deleteConnection(Connection *ptr) {
+    m_connections.erase(m_connections.begin() + m_connections.indexOf(ptr));
 }
 
 void Server::setNewTask(Connection *ptr) {
