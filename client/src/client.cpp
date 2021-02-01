@@ -2,13 +2,14 @@
 
 Client::Client(QObject *parent) : QObject(parent) {
     m_socket = new QTcpSocket(this);
+    m_request = new Request(m_socket);
 }
 
 void Client::doConnect(char *ip, int port) {
-    connect(m_socket, &QTcpSocket::connected,this, &Client::connected);
-    connect(m_socket, &QTcpSocket::disconnected,this, &Client::disconnected);
-    connect(m_socket, &QTcpSocket::bytesWritten,this, &Client::bytesWritten);
-    connect(m_socket, &QTcpSocket::readyRead,this, &Client::readyRead);
+    connect(m_socket, &QTcpSocket::connected, this, &Client::connected);
+    connect(m_socket, &QTcpSocket::disconnected, this, &Client::disconnected);
+    connect(m_socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
+    connect(m_socket, &QTcpSocket::readyRead, this, &Client::readyRead);
 
     qDebug() << "connecting...";
 
@@ -22,7 +23,12 @@ void Client::doConnect(char *ip, int port) {
 
 void Client::connected() {
     qDebug() << "connected...";
-    m_socket->write("HELLA");
+
+    m_request->signUp();
+    m_request->signIn();
+    m_request->autoSignIn();
+    m_request->autoSignInWithGoogle();
+
 }
 
 void Client::disconnected() {
@@ -34,5 +40,7 @@ void Client::bytesWritten(qint64 bytes) {
 }
 
 void Client::readyRead() {
-    qDebug() << "reading...";
+    qDebug() << "RESPONSE FROM SERVER:\n";
+
+    qDebug() << m_socket->readAll();
 }

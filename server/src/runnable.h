@@ -4,11 +4,12 @@
 #include <QTcpSocket>
 #include <QMutex>
 
-#include "connection.h"
+#include "Responses.h"
 
 class Runnable : public QRunnable {
 public:
     explicit Runnable(Connection *socket);
+    void parseJSON(QJsonDocument itemDoc);
 
     void setMutex(QMutex *mutex);
 
@@ -18,4 +19,5 @@ protected:
 private:
     QMutex *m_mutex;
     Connection *m_ptr;
+    Responses *m_response;
 };
