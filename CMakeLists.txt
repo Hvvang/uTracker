@@ -7,4 +7,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(client)
 
-set_target_properties(utracker PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../..)
+set_target_properties(utracker PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../)
