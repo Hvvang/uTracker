@@ -13,7 +13,9 @@ public:
     Request(QTcpSocket *socket);
 
     void signUp();
-//    void signIn();
+    void signIn();
+    void autoSignInWithGoogle();
+    void autoSignIn();
 //    void logOut();
 //
 //    void getProfile();

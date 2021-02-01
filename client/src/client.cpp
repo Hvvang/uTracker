@@ -36,7 +36,7 @@ void Client::bytesWritten(qint64 bytes) {
 }
 
 void Client::readyRead() {
-    qDebug() << "reading...";
+    qDebug() << "RESPONSE FROM SERVER:\n";
 
     qDebug() << m_socket->readAll();
 }
