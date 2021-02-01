@@ -5,13 +5,12 @@
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
-    Client s;
     if (argc != 3) {
         qDebug() << "usage ./utracker [ip] [post]";
-        return 0;
+        return 1;
     }
-    QString port = argv[2];
-    s.doConnect(argv[1], port.toInt());
+    Client s;
+    s.doConnect(argv[1], QString(argv[2]).toInt());
 
     return a.exec();
 }

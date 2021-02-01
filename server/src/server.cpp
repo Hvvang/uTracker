@@ -1,28 +1,35 @@
 #include "server.h"
-#include "thread.h"
+#include "runnable.h"
 
 Server::Server(QObject *parent) : QTcpServer(parent) {
+    m_pool = new QThreadPool(this);
+    m_pool->setMaxThreadCount(MAX_THREAD_COUNT);
+}
 
+Server::~Server() {
+    delete m_pool;
+    m_connections.clear();
 }
 
 void Server::startServer() {
-    int port = 8989;
-
-    if (!this->listen(QHostAddress::Any,port))
-        qDebug() << "Could not start server";
+    if (this->listen(QHostAddress::Any, 8989))
+        qDebug() << "Server started";
     else
-        qDebug() << "Listening to port " << port << "...";
+        qDebug() << "Server did not start!";
 }
 
-void Server::incomingConnection(qintptr socketDescriptor) {
-    // We have a new connection
-    qDebug() << socketDescriptor << " Connecting...";
+void Server::incomingConnection(qintptr handle) {
+    Connection *newConnection = new Connection(this);
+    newConnection->doConnect(handle);
 
-    Thread *thread = new Thread(socketDescriptor, this);
+    m_connections.push_back(newConnection);
+    m_connections.size();
+}
 
-    // connect signal/slot
-    // once a thread is not needed, it will be deleted later
-    connect(thread, &Thread::finished, thread, &Thread::deleteLater);
+void Server::setNewTask(Connection *ptr) {
+    Runnable *task = new Runnable(ptr);
 
-    thread->start();
+    task->setAutoDelete(true);
+    m_pool->start(task);
+    qDebug() << "pool started";
 }
