@@ -22,8 +22,12 @@ void Connection::doConnect(qintptr handle) {
     qDebug() << "connection is made...";
 }
 
-QString Connection::getTask() const {
+QByteArray Connection::getTask() const {
     return m_task;
+}
+
+void Connection::write(QByteArray array) {
+    m_socket->write(array);
 }
 
 void Connection::disconnected() {

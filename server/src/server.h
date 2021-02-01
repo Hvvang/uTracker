@@ -3,9 +3,8 @@
 #include <QTcpServer>
 #include <QThreadPool>
 #include <QVector>
-#include <QDebug>
 
-#include "connection.h"
+#include "runnable.h"
 
 #define MAX_THREAD_COUNT 5
 
@@ -27,6 +26,7 @@ public slots:
     void setNewTask(Connection *ptr);
 
 private:
+    QMutex *m_mutex;
     QThreadPool *m_pool;
     QVector<Connection *> m_connections;
 };

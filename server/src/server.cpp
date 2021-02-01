@@ -1,13 +1,15 @@
 #include "server.h"
-#include "runnable.h"
 
 Server::Server(QObject *parent) : QTcpServer(parent) {
+    m_mutex = new QMutex();
     m_pool = new QThreadPool(this);
     m_pool->setMaxThreadCount(MAX_THREAD_COUNT);
 }
 
 Server::~Server() {
+    m_mutex->unlock();
     delete m_pool;
+    delete m_mutex;
     m_connections.clear();
 }
 
@@ -35,6 +37,7 @@ void Server::setNewTask(Connection *ptr) {
     Runnable *task = new Runnable(ptr);
 
     task->setAutoDelete(true);
+    task->setMutex(m_mutex);
     m_pool->start(task);
     qDebug() << "pool started";
 }
