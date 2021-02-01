@@ -2,9 +2,7 @@
 
 Client::Client(QObject *parent) : QObject(parent) {
     m_socket = new QTcpSocket(this);
-    m_request = new Request(m_socket);
 }
-//delete m_socket, m_request;
 
 void Client::doConnect(char *ip, int port) {
     connect(m_socket, &QTcpSocket::connected,this, &Client::connected);
@@ -24,7 +22,7 @@ void Client::doConnect(char *ip, int port) {
 
 void Client::connected() {
     qDebug() << "connected...";
-    m_request->signUp();
+    m_socket->write("HELLA");
 }
 
 void Client::disconnected() {
