@@ -4,7 +4,7 @@ import QtQuick.Controls 1.3 as Controls
 import Material 0.3
 import Material.ListItems 0.1 as ListItem
 
-import "Buttons"
+import "Components"
 import "Windows"
 
 ApplicationWindow {

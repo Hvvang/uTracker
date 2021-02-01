@@ -23,32 +23,8 @@ Page {
         }
     ]
 
-    rightSidebar: PageSidebar {
+    rightSidebar: InfoSidebar {
         id: sidebarInfo
-        title: "Table Info"
-
-        width: dp(320)
-
-        actionBar.maxActionCount: 1
-
-        actions: [
-            Action {
-                id: addPers
-                iconName: "navigation/chevron_right"
-                text: "Add colab"
-                hoverAnimation: true
-                onTriggered: {
-                }
-            },
-            Action {
-                id: delPers
-                iconName: "navigation/chevron_right"
-                text: "Remove colab"
-                hoverAnimation: true
-                onTriggered: {
-                }
-            }
-        ]
     }
 
     Snackbar {
