@@ -4,5 +4,7 @@
         <file>Buttons/S_Button_1.qml</file>
         <file>Buttons/S_Input_1.qml</file>
         <file>Windows/SignUp.qml</file>
+        <file>Windows/SignIn.qml</file>
+        <file>Windows/MainAccountWindow.qml</file>
     </qresource>
 </RCC>

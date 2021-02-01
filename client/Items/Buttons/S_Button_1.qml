@@ -18,6 +18,7 @@ Rectangle {
     property string buttonContent: "value"
     property int buttonWidth: 125
     property int buttonHeight: 40
+    property bool buttonEnabled: true
 
     signal clicked
 
@@ -50,10 +51,18 @@ Rectangle {
                     root.clicked();
                 }
 
-                enabled: active
-                hoverEnabled: true
+                enabled: buttonEnabled
+                hoverEnabled: buttonEnabled
             }
         }
+        Rectangle {
+            visible: !buttonEnabled
+            anchors.fill: parent
+            radius: parent.radius
+            z: 1
+            color: "#20000000"
+        }
+
     //        onClick: {}
     }
 
