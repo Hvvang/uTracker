@@ -22,7 +22,8 @@ ApplicationWindow {
     width: 1920
     height: 1080
     clientSideDecorations: false
-    initialPage: SignIn {}
+//    initialPage: SignIn {}
+    initialPage: MainAccountWindow {}
 
     Snackbar {
         id: snackbar

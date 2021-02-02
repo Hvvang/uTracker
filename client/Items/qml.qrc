@@ -8,5 +8,8 @@
         <file>Components/UserForms.qml</file>
         <file>Components/S_Button_1.qml</file>
         <file>Components/S_Input_1.qml</file>
+        <file>Windows/DeskItem.qml</file>
+        <file>Windows/CardItem.qml</file>
+        <file>Windows/CardListItem.qml</file>
     </qresource>
 </RCC>
