@@ -1,117 +1,111 @@
 #include "client.h"
 #include "requests.h"
 
-Request::Request(QTcpSocket *socket) : m_socket(socket) {};
+AbstractRequest::AbstractRequest(QTcpSocket *socket) : m_socket(socket) {}
 
-//EXAMPLE
-//creating json
-//QString login = "ND";
-//QString pass = "12345678";
-//QJsonArray npcArray;
-//QVector<int> vitya = {1, 2, 3, 4, 5};
-//for (auto item : vitya) {
-//QJsonObject npcObject {
-//        {"num", item}
-//};
-//npcArray.append(npcObject);
-//}
-//QJsonObject jsonObject {
-//        {"type", "signup"},
-//        {"login", login},
-//        {"password", pass},
-//        {"array", npcArray}
-//};
-//QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-//QByteArray json = jsonDoc->toJson();
-//qDebug() << "WANNA SIGNUP !";
-//m_socket->write(json);
-
-void Request::signUp(){
-    //creating json
-    QString login = "ND";
-    QString pass = "12345678";
-    QString email = "lala@gmail.com";
-    QString name = "Nazar";
-    QString surname = "Dykyy";
-
-    QJsonObject jsonObject {
-            {"type", "SIGN_UP"},
-            {"email", email},
-            {"password", pass}, // SHA-256 hash,
-            {"login", login},
-            {"name", name},
-            {"surname", surname}
-    };
-
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-
-    qDebug() << "WANNA signUp() !";
-    m_socket->write(json);
+void AbstractRequest::send() {
+    m_socket->write(m_json);
 }
 
-void Request::signIn(){
-    //creating json
-    QString login = "ND";
-    QString pass = "12345678";
-    QString email = "lala@gmail.com";
-
-    QJsonObject jsonObject {
-            {"type", "SIGN_IN"},
-            {"email", email},
-            {"password", pass}, // SHA-256 hash,
-            {"login", login},
-    };
-
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-
-    qDebug() << "WANNA signIn() !";
-    m_socket->write(json);
+signUp::signUp(QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
+    m_json = createJSON(data);
 }
 
-void Request::autoSignInWithGoogle() {
-    //creating json
-    QString token = "12345678";
-
+QByteArray signUp::createJSON(QByteArray data) {
+    QDataStream r_stream(&data, QIODevice::ReadOnly);
+    QString test;
     QJsonObject jsonObject {
-            {"type", "AUTO_OAUTH"},
-            {"token", token} // SHA-256 hash,
-
+        {"type", "SIGN_UP"}
     };
-
+    r_stream >> test;
+    jsonObject["email"] = test;
+    r_stream >> test;
+    jsonObject["password"] = test;// SHA-256 hash,
+    r_stream >> test;
+    jsonObject["login"] = test;
+    r_stream >> test;
+    jsonObject["name"] = test;
+    r_stream >> test;
+    jsonObject["surname"] = test;
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-
-    qDebug() << "WANNA autoSignInWithGoogle() !";
-    m_socket->write(json);
+    return jsonDoc->toJson();
 }
 
-void Request::autoSignIn() {
-    //creating json
-    QString token = "12345678";
-
-    QJsonObject jsonObject {
-            {"type", "AUTO_AUTH"},
-            {"token", token} // SHA-256 hash,
-
-    };
-
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-
-    qDebug() << "WANNA autoSignIn() !";
-    m_socket->write(json);
+signIn::signIn (QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
+    m_json = createJSON(data);
 }
 
-//    void Request::logOut(){}
-//
-//    void Request::getProfile(){}
-//    void Request::updateProfile(){}
-//
-//    void Request::updateWorkflow(){}
-//    void Request::inviteToWorkflow(){}
-//    void Request::getAllWorkflows(){}
-//    void Request::getSingleWorkflowData(){}
-//
-//    void Request::getStatistics(){}
+
+QByteArray signIn::createJSON(QByteArray data) {
+    QDataStream r_stream(&data, QIODevice::ReadOnly);
+    QString test;
+    QJsonObject jsonObject {
+        {"type", "SIGN_IN"}
+    };
+    r_stream >> test;
+    jsonObject["email"] = test;
+    r_stream >> test;
+    jsonObject["password"] = test;// SHA-256 hash,
+    r_stream >> test;
+    jsonObject["login"] = test;
+
+    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    return jsonDoc->toJson();
+}
+
+autoSignInWithGoogle::autoSignInWithGoogle (QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
+    m_json = createJSON(data);
+}
+
+QByteArray autoSignInWithGoogle::createJSON(QByteArray data) {
+    QDataStream r_stream(&data, QIODevice::ReadOnly);
+    QString test;
+    QJsonObject jsonObject {
+        {"type", "AUTO_OAUTH"}
+    };
+    r_stream >> test;
+    jsonObject["token"] = test;
+
+    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    return jsonDoc->toJson();
+}
+
+autoSignIn::autoSignIn (QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
+    m_json = createJSON(data);
+}
+
+QByteArray autoSignIn::createJSON(QByteArray data) {
+    QDataStream r_stream(&data, QIODevice::ReadOnly);
+    QString test;
+    QJsonObject jsonObject {
+        {"type", "AUTO_AUTH"}
+    };
+    r_stream >> test;
+    jsonObject["token"] = test;
+
+    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    return jsonDoc->toJson();
+}
+
+// //EXAMPLE
+// //creating json
+// //QString login = "ND";
+// //QString pass = "12345678";
+// //QJsonArray npcArray;
+// //QVector<int> vitya = {1, 2, 3, 4, 5};
+// //for (auto item : vitya) {
+// //QJsonObject npcObject {
+// //        {"num", item}
+// //};
+// //npcArray.append(npcObject);
+// //}
+// //QJsonObject jsonObject {
+// //        {"type", "signup"},
+// //        {"login", login},
+// //        {"password", pass},
+// //        {"array", npcArray}
+// //};
+// //QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+// //QByteArray json = jsonDoc->toJson();
+// //qDebug() << "WANNA SIGNUP !";
+// //m_socket->write(json);

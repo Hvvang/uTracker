@@ -3,7 +3,7 @@
 #include <QRunnable>
 #include <QTcpSocket>
 
-#include "Responses.h"
+#include "responses.h"
 #include "connection.h"
 
 class Runnable : public QRunnable {
