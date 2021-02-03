@@ -10,15 +10,15 @@ set(CMAKE_AUTOUIC ON)
 set(NAME server)
 set(SOURCE_EXE main.cpp)
 
-#add_compile_options(
-#    -std=c++17
-#    -Wall
-#    -Wextra
-#    -Werror
-#    -Wpedantic
-#)
+add_compile_options(
+    -std=c++17
+    -Wall
+    -Wextra
+    -Werror
+    -Wpedantic
+)
 
-find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Network Sql REQUIRED)
 
 include_directories(./src)
 
@@ -31,7 +31,6 @@ target_link_libraries(
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
+    Qt5::Sql
     server_src
 )
-
-#set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../..)

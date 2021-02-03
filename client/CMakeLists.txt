@@ -18,7 +18,7 @@ add_compile_options(
     -Wpedantic
 )
 
-find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Network Sql REQUIRED)
 
 include_directories(./src)
 
@@ -31,7 +31,6 @@ target_link_libraries(
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
+    Qt5::Sql
     client_src
 )
-
-#set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
