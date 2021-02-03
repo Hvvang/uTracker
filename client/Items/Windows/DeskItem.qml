@@ -35,16 +35,23 @@ Item {
         height: parent.height - dp(20)
         backgroundColor: "pink"
         Row {
-            width: deskItem.width - dp(20)
-            height: deskItem.height - dp(20)
+            width: parent.width - dp(20)
+            height: parent.height - dp(20)
             spacing: dp(20)
             anchors {
                 top: parent.top
                 left: parent.left
                 margins: dp(10)
             }
-            CardListItem{}
-            CardListItem{}
+            CardListItem{
+                cardListHeight: parent.height
+            }
+            CardListItem{
+                cardListHeight: parent.height
+            }
+            CardListItem{
+                cardListHeight: parent.height
+            }
         }
     }
 }

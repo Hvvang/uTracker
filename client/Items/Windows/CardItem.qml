@@ -13,11 +13,11 @@ Item {
     property int cardHeight: dp(100)
 
     width: cardWidth
-    height:cardHeight
+    height: cardHeight
     Card {
         anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
+        width: parent.width - dp(20)
+        height: parent.height - dp(5)
         backgroundColor: "pink"
         Text {
             id: infoText
