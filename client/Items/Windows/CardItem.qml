@@ -19,5 +19,12 @@ Item {
         width: parent.width
         height: parent.height
         backgroundColor: "pink"
+        Text {
+            id: infoText
+            anchors.fill: parent
+            text: cardContent
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 }

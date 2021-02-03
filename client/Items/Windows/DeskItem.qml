@@ -43,11 +43,8 @@ Item {
                 left: parent.left
                 margins: dp(10)
             }
-            CardItem{}
-            CardItem{}
-            CardItem{}
             CardListItem{}
-
+            CardListItem{}
         }
     }
 }

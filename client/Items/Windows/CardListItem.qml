@@ -12,6 +12,34 @@ Item {
 
     width: cardWidth
     height:cardHeight
+
+    function showModelItems(model, layoutItem, delegateItem) {
+        for (var item = 0; item < model.count; item++) {
+            var component;
+            var sprite;
+            component = Qt.createComponent(delegateItem);
+            console.log(model.get(item).text)
+            if (component.status === Component.Ready){
+                sprite = component.createObject(layoutItem, {cardContent: model.get(item).text});
+            }
+        }
+
+    }
+
+    ListModel {
+        id: cardModel
+        ListElement {
+            text: "Task1"
+        }
+        ListElement {
+            text: "Task2"
+        }
+        ListElement {
+            text: "Task3"
+        }
+
+    }
+
     Card {
         width: parent.width
         height: layout.height
@@ -30,39 +58,28 @@ Item {
                     left: parent.left;
                     right: parent.right;
                 }
-                //                 model: 3
-                CardItem {
-                anchors.horizontalCenter: parent.horizontalCenter
+                Component.onCompleted:  {
+//                    console.log(cardModel.count)
+                    showModelItems(cardModel, layout, "CardItem.qml");
                 }
-                //                 delegate: CardItem {
 
-                //                 }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
-                CardItem {
-
-                }
+//                MouseArea {
+//                    id: coords
+//                    anchors.fill: parent
+//                    onReleased: {
+//                        if (layout.draggedItemIndex !== -1) {
+//                            var draggedIndex = layout.draggedItemIndex
+//                            layout.draggedItemIndex = -1
+//                            dndModel.move(draggedIndex,dndGrid.indexAt(mouseX, mouseY),1)
+//                        }
+//                    }
+//                    onPressed: {
+//                        dndGrid.draggedItemIndex = dndGrid.indexAt(mouseX, mouseY)
+//                    }
+//                }
             }
         }
     }
 
 }
+
