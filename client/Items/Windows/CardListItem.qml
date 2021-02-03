@@ -39,13 +39,49 @@ Item {
         ListElement {
             text: "Task3"
         }
+        ListElement {
+            text: "Task4"
+        }
+        ListElement {
+            text: "Task5"
+        }
+        ListElement {
+            text: "Task1"
+        }
+        ListElement {
+            text: "Task2"
+        }
+        ListElement {
+            text: "Task3"
+        }
+        ListElement {
+            text: "Task4"
+        }
+        ListElement {
+            text: "Task5"
+        }
+        ListElement {
+            text: "Task1"
+        }
+        ListElement {
+            text: "Task2"
+        }
+        ListElement {
+            text: "Task3"
+        }
+        ListElement {
+            text: "Task4"
+        }
+        ListElement {
+            text: "Task5"
+        }
 
     }
 
     Card {
-        id: card
+        id: cardBack
         width: parent.width
-        height: (layout.height + dp(77)) < parent.height ? (layout.height + dp(77)) : parent.height
+        height: (layout.contentHeight + dp(77)) < parent.height ? (layout.contentHeight + dp(77)) : parent.height
 //        anchors.fill: pa  rent
         backgroundColor: "pink"
 
@@ -78,52 +114,86 @@ Item {
                 }
             }
             Item {
-                height: card.height - dp(77)
+                height: cardBack.height - dp(77)
                 width: parent.width
-                Flickable {
-                    anchors.fill: parent
-                    contentWidth: parent.width
-                    contentHeight: layout.height
-                    ScrollBar.vertical: ScrollBar { }
-                    ColumnLayout {
-        //                implicitHeight: dp(100)
-                        id: layout
-                        clip: true
 
-                        anchors { // the column should have a real size so make it fill the parent horizontally
-                            left: parent.left;
-                            right: parent.right;
+                ListView {
+                    id:layout
+                    width: parent.width
+                    height: parent.height
+                    model:cardModel
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
+                    ScrollBar.vertical: ScrollBar{
+                        property real globalPos: control.position * layout.contentHeight
+                        id: control
+                        hoverEnabled: true
+                        active: layout.height < layout.contentHeight && (hovered || pressed)
+                        size: 0.3
+                        contentItem: Rectangle {
+                                implicitWidth: 3
+                                implicitHeight: 100
+                                radius: width / 2
+                                color: !(layout.height < layout.contentHeight) ? "#007a163c" :
+                                                         (control.pressed || control.hovered ? "#807a163c" : "#407a163c")
                         }
-        //                Component.onCompleted:  {
-        ////                    console.log(cardModel.count)
-        //                    showModelItems(cardModel, layout, "CardItem.qml");
-        //                }
-                        Repeater {
-                            model:11
-                            delegate: CardItem {
-                                Layout.maximumHeight: dp(100)
-                                cardContent: model.text + parent.index
-                                cardWidth: layout.width
-                            }
-                        }
-
-        //                MouseArea {
-        //                    id: coords
-        //                    anchors.fill: parent
-        //                    onReleased: {
-        //                        if (layout.draggedItemIndex !== -1) {
-        //                            var draggedIndex = layout.draggedItemIndex
-        //                            layout.draggedItemIndex = -1
-        //                            dndModel.move(draggedIndex,dndGrid.indexAt(mouseX, mouseY),1)
-        //                        }
-        //                    }
-        //                    onPressed: {
-        //                        dndGrid.draggedItemIndex = dndGrid.indexAt(mouseX, mouseY)
-        //                    }
-        //                }
                     }
 
+                    anchors {
+                        left: parent.left;
+                        right: parent.right;
+                    }
+                    delegate: CardItem {
+                        id:card
+                        cardContent: model.text
+                        cardWidth: layout.width
+
+                        states: [
+                            State {
+                                name: "inDrag"
+                                when: index == layout.draggedItemIndex
+                                PropertyChanges { target: border; opacity: 1 }
+                                PropertyChanges { target: card; parent: dndContainer }
+                                PropertyChanges { target: card; anchors.centerIn: undefined }
+                                PropertyChanges { target: card; x: coords.mouseX - card.width / 2 }
+                                PropertyChanges { target: card; y: coords.mouseY - card.height / 2 }
+                            }
+                        ]
+                        Rectangle {
+                            id: border
+                            anchors.fill: parent
+                            radius: 5
+                            color: "transparent"
+                            border.color: "#ffffff"
+                            border.width: 6
+                            opacity: 0
+                        }
+                    }
+                    property int draggedItemIndex: -1
+                            interactive: false
+                    Item {
+                        id: dndContainer
+                        anchors.fill: parent
+                    }
+
+                    MouseArea {
+                        id: coords
+                        anchors.fill: parent
+
+                        onReleased: {
+                            if (layout.draggedItemIndex !== -1) {
+                                var draggedIndex = layout.draggedItemIndex
+                                layout.draggedItemIndex = -1
+                                cardModel.move(draggedIndex,layout.indexAt(mouseX, mouseY + control.globalPos),1)
+                            }
+                        }
+                        onPressed: {
+                            layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+                        }
+
+                    }
                 }
+
             }
         }
 
