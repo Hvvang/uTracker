@@ -3,88 +3,49 @@
 
 AbstractRequest::AbstractRequest(QTcpSocket *socket) : m_socket(socket) {}
 
-void AbstractRequest::send() {
-    m_socket->write(m_json);
-}
+void AbstractRequest::createJSON(QMap<QString, QVariant> map) {
 
-signUp::signUp(QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
-    m_json = createJSON(data);
-}
-
-QByteArray signUp::createJSON(QByteArray data) {
-    QDataStream r_stream(&data, QIODevice::ReadOnly);
-    QString test;
-    QJsonObject jsonObject {
-        {"type", "SIGN_UP"}
-    };
-    r_stream >> test;
-    jsonObject["email"] = test;
-    r_stream >> test;
-    jsonObject["password"] = test;// SHA-256 hash,
-    r_stream >> test;
-    jsonObject["login"] = test;
-    r_stream >> test;
-    jsonObject["name"] = test;
-    r_stream >> test;
-    jsonObject["surname"] = test;
+    QJsonObject jsonObject =  QJsonObject::fromVariantMap(map);
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    return jsonDoc->toJson();
+    QByteArray json = jsonDoc->toJson();
+    qDebug() << json;
+    m_socket->write(json);
 }
 
-signIn::signIn (QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
-    m_json = createJSON(data);
+void AbstractRequest::signUp(QString login, QString pass, QString name, QString surname, QString email) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = "SIGN_UP";
+    mapa["login"] = login;
+    mapa["password"] = pass;
+    mapa["email"] = email;
+    mapa["name"] = name;
+    mapa["surname"] = surname;
+    createJSON(mapa);
 }
-
-
-QByteArray signIn::createJSON(QByteArray data) {
-    QDataStream r_stream(&data, QIODevice::ReadOnly);
-    QString test;
-    QJsonObject jsonObject {
-        {"type", "SIGN_IN"}
-    };
-    r_stream >> test;
-    jsonObject["email"] = test;
-    r_stream >> test;
-    jsonObject["password"] = test;// SHA-256 hash,
-    r_stream >> test;
-    jsonObject["login"] = test;
-
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    return jsonDoc->toJson();
+void AbstractRequest::signIn(QString email, QString  login, QString pass) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = "SIGN_IN";
+    mapa["login"] = login;
+    mapa["password"] = pass;
+    mapa["email"] = email;
+    createJSON(mapa);
 }
-
-autoSignInWithGoogle::autoSignInWithGoogle (QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
-    m_json = createJSON(data);
+void AbstractRequest::autoSignInWithGoogle(QString token) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = "AUTO_OAUTH";
+    mapa["token"] = token;
+    createJSON(mapa);
 }
-
-QByteArray autoSignInWithGoogle::createJSON(QByteArray data) {
-    QDataStream r_stream(&data, QIODevice::ReadOnly);
-    QString test;
-    QJsonObject jsonObject {
-        {"type", "AUTO_OAUTH"}
-    };
-    r_stream >> test;
-    jsonObject["token"] = test;
-
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    return jsonDoc->toJson();
+void AbstractRequest::autoSignIn(QString token) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = "AUTO_AUTH";
+    mapa["token"] = token;
+    createJSON(mapa);
 }
-
-autoSignIn::autoSignIn (QTcpSocket *socket, QByteArray data) : AbstractRequest(socket) {
-    m_json = createJSON(data);
-}
-
-QByteArray autoSignIn::createJSON(QByteArray data) {
-    QDataStream r_stream(&data, QIODevice::ReadOnly);
-    QString test;
-    QJsonObject jsonObject {
-        {"type", "AUTO_AUTH"}
-    };
-    r_stream >> test;
-    jsonObject["token"] = test;
-
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    return jsonDoc->toJson();
+void AbstractRequest::logOut() {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = "LOG_OUT";
+    createJSON(mapa);
 }
 
 // //EXAMPLE

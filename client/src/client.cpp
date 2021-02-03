@@ -30,18 +30,9 @@ void Client::connected() {
     QString name = "Nazar";
     QString surname = "Dykyy";
 
-    QByteArray buffer;
-    QDataStream stream(&buffer, QIODevice::WriteOnly);
-
-    stream << login << pass << email << name << surname;
-    signUp *req = new signUp(m_socket, buffer);
-    signIn *requ = new signIn(m_socket, buffer);
-    autoSignInWithGoogle *reque = new autoSignInWithGoogle(m_socket, buffer);
-    autoSignIn *reques = new autoSignIn(m_socket, buffer);
-    reques->send();
-    reque->send();
-    requ->send();
-    req->send();
+    AbstractRequest *request = new AbstractRequest(m_socket);
+    //request->signUp(email, login, pass, name, surname);
+    request->signIn(email, login, pass);
 }
 
 void Client::disconnected() {

@@ -1,10 +1,10 @@
 #include "database.h"
-DataBase::DataBase() {
-    db.setDatabaseName("myDb.db");
-    db.open();
+DataBase::DataBase() : m_db(QSqlDatabase::addDatabase("QSQLITE")) {
+    m_db.setDatabaseName("myDb.db");
+    m_db.open();
 }
 DataBase::~DataBase() {
-    db.close();
+    m_db.close();
 }
 void DataBase::create_tables() {
     QSqlQuery query;

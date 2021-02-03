@@ -16,53 +16,26 @@ class AbstractRequest {
 public:
     AbstractRequest(QTcpSocket *socket);
 
-    virtual QByteArray createJSON(QByteArray data) = 0;
+    void createJSON(QMap<QString, QVariant> map);
+    void signUp(QString login, QString pass, QString name, QString surname, QString email);
+    void signIn(QString email, QString  login, QString pass);
+    void autoSignInWithGoogle(QString token);
+    void autoSignIn(QString token);
+    void logOut();
 
-    void send();
+//    void getProfile(QMap<QString, QVariant> map);
+//    void updateProfile(QMap<QString, QVariant> map);
+//    void createWorkflow(QMap<QString, QVariant> map);
+//    void updateWorkflow(QMap<QString, QVariant> map);
+//    void inviteToWorkflow(QMap<QString, QVariant> map);
+//    void getAllWorkflows(QMap<QString, QVariant> map);
+//    void getSingleWorkflowData(QMap<QString, QVariant> map);
+//    void getStatistics(QMap<QString, QVariant> map);
 
 protected:
     QTcpSocket *m_socket;
-    QByteArray m_json;
 };
 
+class JsonFormat {
 
-class signUp : public AbstractRequest {
-public:
-    signUp(QTcpSocket *socket, QByteArray data);
-    QByteArray createJSON(QByteArray data);
 };
-
-class signIn : public AbstractRequest {
-    public:
-    signIn(QTcpSocket *socket, QByteArray data);
-    QByteArray createJSON(QByteArray data);
-};
-
-class autoSignInWithGoogle : public AbstractRequest {
-    public:
-    autoSignInWithGoogle(QTcpSocket *socket, QByteArray data);
-    QByteArray createJSON(QByteArray data);
-};
-
-class autoSignIn : public AbstractRequest {
-    public:
-    autoSignIn(QTcpSocket *socket, QByteArray data);
-    QByteArray createJSON(QByteArray data);
-};
-
-// class logOut : public AbstractRequest {
-//  public:
-//     signUp(QTcpSocket *socket, QByteArray data);
-//     QByteArray createJSON(QByteArray data);
-// };
-// /////////////////////////////////////////
-// class getProfile : public AbstractRequest {};
-// class updateProfile : public AbstractRequest {};
-// //////////////////////////////////////////
-// class createWorkflow: public AbstractRequest {};
-// class updateWorkflow: public AbstractRequest {};
-// class inviteToWorkflow: public AbstractRequest {};
-// class getAllWorkflows: public AbstractRequest {};
-// class getSingleWorkflowData: public AbstractRequest {};
-// /////////////////////////////////////////////////
-// class getStatistics : public AbstractRequest {};

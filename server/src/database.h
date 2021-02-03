@@ -1,13 +1,11 @@
-#ifndef DATABASE_H
-#define DATABASE_H
+#pragma once
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QVariant>
 #include <qDebug>
-class DataBase {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
+class DataBase {
 public:
     explicit DataBase();
     ~DataBase();
@@ -19,6 +17,6 @@ public:
     void set_usersCredential(const QString &login, const QString &email, const QString &password);
     void set_string(const QString &table, const QString &column, const QString &string);
     void update_string(const QString &table, const QString &column, const QString &string, const QString &columnchanged, const QString &newstring);
+private:
+    QSqlDatabase m_db;
 };
-
-#endif  // DATABASE_H
