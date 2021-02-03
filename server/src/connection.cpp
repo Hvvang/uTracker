@@ -16,7 +16,7 @@ void Connection::doConnect(qintptr handle) {
     m_socket->setSocketDescriptor(handle);
 
     connect(m_socket, &QTcpSocket::disconnected,this, &Connection::disconnected);
-    connect(m_socket, &QTcpSocket::readyRead,this, &Connection::readyRead);
+    connect(m_socket, &QTcpSocket::readyRead, this, &Connection::readyRead);
     connect(this, &Connection::sendResponse, this, &Connection::writeToSocket);
 }
 
@@ -33,6 +33,9 @@ void Connection::disconnected() {
 }
 
 void Connection::readyRead() {
-    m_task = m_socket->readAll();
-    qobject_cast<Server *>(m_parent)->setNewTask(this);
+    while (!m_socket->atEnd()) {
+        QByteArray size = m_socket->readLine();
+        m_task = m_socket->read(size.toInt());
+        qobject_cast<Server *>(m_parent)->setNewTask(this);
+    }
 }

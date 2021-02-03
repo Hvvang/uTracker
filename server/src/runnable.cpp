@@ -18,22 +18,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     else
         qDebug() << "mutex unlocked";
 
-    //parse
     QJsonObject itemObject = itemDoc.object();
-
-//    typedef int (* FunctionList) (int a);
-//
-//    auto signUp = [](QJsonObject itemObject) {return a;};
-//    auto singIn = [](QJsonObject itemObject) {return a * 2;};
-//    auto auto_oauth = [](QJsonObject itemObject) {return a / 2;};
-//    auto auto_auth = [](QJsonObject itemObject) {return a / 2;};
-//
-//    FunctionList functions[] = {signUp, signIn, auto_oauth, auto_auth};
-//    QString names[] = {"func1", "func2", "func3", nullptr};
-
-//    for (int i = 0; names[i] != nullptr; ++i)
-//        if (itemObject["type"].toString() == names[i])
-//            qDebug() << functions[i](8) << Qt::endl;
 
     if (itemObject["type"].toString() == "SIGN_UP")
         emit m_signUp->responseInited(itemObject);
@@ -60,12 +45,10 @@ void Runnable::setMutex(QMutex *mutex) {
 }
 
 void Runnable::run() {
-    QJsonDocument itemDoc = QJsonDocument::fromJson(m_ptr->getTask());
-    if (!itemDoc.isNull())
-        parseJSON(itemDoc);
-}
+    qDebug() << m_ptr->getTask();
+    return;
 
-//      qDebug() << "login :" << itemObject["login"].toString() << "password :" << itemObject["password"].toString() << "\n";
-//      QJsonArray itemArray = itemObject["array"].toArray();
-//      for(auto item : itemArray)
-//            qDebug() << item.toObject()["num"].toInt() << "\n";
+//    QJsonDocument itemDoc = QJsonDocument::fromJson(m_ptr->getTask());
+//    if (!itemDoc.isNull())
+//        parseJSON(itemDoc);
+}

@@ -9,7 +9,10 @@ void AbstractRequest::createJSON(QMap<QString, QVariant> map) {
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
     QByteArray json = jsonDoc->toJson();
     qDebug() << json;
-    m_socket->write(json);
+
+    QByteArray buffer;
+    m_socket->write(buffer.setNum(json.size()));
+    m_socket->write("\n" + json);
 }
 
 void AbstractRequest::signUp(QString login, QString pass, QString name, QString surname, QString email) {

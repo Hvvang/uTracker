@@ -6,8 +6,13 @@
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
+    if (argc != 2) {
+        qDebug() << "usage ./uTracker_server [port]";
+        return 1;
+    }
+
     Server server;
-    server.startServer();
+    server.startServer(QString(argv[1]).toInt());
 
     return a.exec();
 }

@@ -12,18 +12,18 @@ class Client: public QObject {
     Q_OBJECT
 public:
     explicit Client(QObject *parent = nullptr);
+    ~Client();
 
     void doConnect(char *ip, int port);
+    void testRequestLoop();
 
 signals:
 
 public slots:
-    void connected();
     void disconnected();
-    void bytesWritten(qint64 bytes);
     void readyRead();
 
 private:
     QTcpSocket *m_socket;
-//    Request *m_request;
+    AbstractRequest *m_request;
 };

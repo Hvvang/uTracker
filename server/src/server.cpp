@@ -13,8 +13,8 @@ Server::~Server() {
     m_connections.clear();
 }
 
-void Server::startServer() {
-    if (!this->listen(QHostAddress::Any, 8989)) {
+void Server::startServer(quint16 port) {
+    if (!this->listen(QHostAddress::Any, port)) {
         qDebug() << "Server did not start!";
         exit(EXIT_FAILURE);
     }
@@ -25,8 +25,6 @@ void Server::incomingConnection(qintptr handle) {
     newConnection->doConnect(handle);
 
     m_connections.push_back(newConnection);
-
-    qDebug() << m_connections.size();
 }
 
 void Server::deleteConnection(Connection *ptr) {
