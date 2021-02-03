@@ -28,6 +28,9 @@ void Client::testRequestLoop() {
 
     m_request->signUp(email, login, pass, name, surname);
     m_request->signIn(email, login, pass);
+    m_request->autoSignIn("token");
+    m_request->autoSignInWithGoogle("token");
+    m_request->logOut();
 }
 
 void Client::disconnected() {

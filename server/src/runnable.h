@@ -13,17 +13,19 @@ public:
 
     void parseJSON(QJsonDocument itemDoc);
     void setMutex(QMutex *mutex);
+    void setTask(QByteArray task);
 
 protected:
     void run() override;
 
 private:
+    QByteArray m_task;
     QMutex *m_mutex;
     Connection *m_ptr;
 
-    ToSignUp *m_signUp;
-    ToSignIn *m_signIn;
-    ToAutoSignIn *m_autoSignIn;
-    ToSignInWithGoogle *m_googleSignIn;
-    ToLogOut *m_logOut;
+    AbstractRequestHandler *m_signUp;
+    AbstractRequestHandler *m_signIn;
+    AbstractRequestHandler *m_autoSignIn;
+    AbstractRequestHandler *m_googleSignIn;
+    AbstractRequestHandler *m_logOut;
 };

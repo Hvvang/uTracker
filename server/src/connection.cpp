@@ -25,7 +25,9 @@ QByteArray Connection::getTask() const {
 }
 
 void Connection::writeToSocket(const QByteArray &data) {
-    m_socket->write(data);
+    QByteArray buffer;
+    m_socket->write(buffer.setNum(data.size()));
+    m_socket->write("\n" + data);
 }
 
 void Connection::disconnected() {

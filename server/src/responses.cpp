@@ -9,7 +9,6 @@ ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
 void ToSignUp::responseSend(QJsonObject itemObject) {
     parseJSON(itemObject);
-    Q_UNUSED(itemObject);
     QJsonObject jsonObject {
             {"type", "SIGN_UP"},
             {"message", "ebu sho pisat"}

@@ -2,6 +2,7 @@
 
 Runnable::Runnable(Connection *socket) {
     m_ptr = socket;
+
     m_signIn = new ToSignIn(socket);
     m_signUp = new ToSignUp(socket);
     m_autoSignIn = new ToAutoSignIn(socket);
@@ -20,16 +21,13 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
 
     QJsonObject itemObject = itemDoc.object();
 
-    if (itemObject["type"].toString() == "SIGN_UP")
-        emit m_signUp->responseInited(itemObject);
-    else if (itemObject["type"].toString() == "SIGN_IN")
-        emit m_signIn->responseInited(itemObject);
-    else if (itemObject["type"].toString() == "AUTO_OAUTH")
-        emit m_googleSignIn->responseInited(itemObject);
-    else if (itemObject["type"].toString() == "AUTO_AUTH")
-        emit m_autoSignIn->responseInited(itemObject);
-    else if (itemObject["type"].toString() == "LOG_OUT")
-        emit m_logOut->responseInited(itemObject);
+    QVector<AbstractRequestHandler *> funcList;
+    funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut});
+    QStringList list;
+    list << "SIGN_UP" << "SIGN_IN" << "AUTO_AUTH" << "AUTO_OAUTH" << "LOG_OUT";
+    for (auto i : list)
+        if (i == itemObject["type"].toString())
+            emit funcList[list.indexOf(i)]->responseInited(itemObject);
 }
 
 Runnable::~Runnable() {
@@ -44,11 +42,12 @@ void Runnable::setMutex(QMutex *mutex) {
     m_mutex = mutex;
 }
 
-void Runnable::run() {
-    qDebug() << m_ptr->getTask();
-    return;
+void Runnable::setTask(QByteArray task) {
+    m_task = task;
+}
 
-//    QJsonDocument itemDoc = QJsonDocument::fromJson(m_ptr->getTask());
-//    if (!itemDoc.isNull())
-//        parseJSON(itemDoc);
+void Runnable::run() {
+    QJsonDocument itemDoc = QJsonDocument::fromJson(m_task);
+    if (!itemDoc.isNull())
+        parseJSON(itemDoc);
 }

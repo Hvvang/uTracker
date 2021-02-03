@@ -36,5 +36,6 @@ void Server::setNewTask(Connection *ptr) {
 
     task->setAutoDelete(true);
     task->setMutex(m_mutex);
+    task->setTask(ptr->getTask());
     m_pool->start(task);
 }
