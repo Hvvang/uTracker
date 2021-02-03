@@ -14,7 +14,7 @@ public:
     explicit Server(QObject *parent = nullptr);
     ~Server() override;
 
-    void startServer();
+    void startServer(quint16 port = 0);
 
 protected:
     void incomingConnection(qintptr handle) override;

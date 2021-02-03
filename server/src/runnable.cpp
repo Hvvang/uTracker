@@ -53,12 +53,10 @@ void Runnable::setMutex(QMutex *mutex) {
 }
 
 void Runnable::run() {
-    QJsonDocument itemDoc = QJsonDocument::fromJson(m_ptr->getTask());
-    if (!itemDoc.isNull())
-        parseJSON(itemDoc);
-}
+    qDebug() << m_ptr->getTask();
+    return;
 
-//      qDebug() << "login :" << itemObject["login"].toString() << "password :" << itemObject["password"].toString() << "\n";
-//      QJsonArray itemArray = itemObject["array"].toArray();
-//      for(auto item : itemArray)
-//            qDebug() << item.toObject()["num"].toInt() << "\n";
+//    QJsonDocument itemDoc = QJsonDocument::fromJson(m_ptr->getTask());
+//    if (!itemDoc.isNull())
+//        parseJSON(itemDoc);
+}
