@@ -46,5 +46,8 @@ void Client::disconnected() {
 }
 
 void Client::readyRead() {
-    qDebug() << m_socket->readAll();
+    while (!m_socket->atEnd()) {
+        QByteArray size = m_socket->readLine();
+        qDebug() << m_socket->read(size.toInt());
+    }
 }
