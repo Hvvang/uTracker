@@ -18,7 +18,8 @@ Item {
         anchors.centerIn: parent
         width: parent.width - dp(20)
         height: parent.height - dp(5)
-        backgroundColor: "pink"
+//        backgroundColor: Palette.colors["pink"]["100"]
+        backgroundColor: "#fde8f5"
         Text {
             id: infoText
             anchors.fill: parent

@@ -11,7 +11,7 @@ Page {
     height: 1080
 
     title: "uTracker"
-    backgroundColor: "pink"
+    backgroundColor: "#dab6c2"
     actionBar.decorationColor:"#7a163c"
     actions: [
         Action {
@@ -24,6 +24,7 @@ Page {
             }
         }
     ]
+
 
     rightSidebar: InfoSidebar {
         id: sidebarInfo

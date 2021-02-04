@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtGraphicalEffects 1.15
 import QtQuick.Controls.Material 2.3
 import Material 0.3
 import Material.ListItems 0.1 as ListItem
@@ -13,6 +14,16 @@ Page {
         console.log("requested")
         snackbar.open("Account created successfully");
         signUpPage.pop()
+    }
+    LinearGradient {
+            anchors.fill: parent
+            start: Qt.point(0, 0)
+            end: Qt.point(parent.width, 0)
+            gradient: Gradient {
+
+                GradientStop { position: 0.4; color: "white" }
+                GradientStop { position: 1.0; color: "#dab6c2" }
+            }
     }
 
     Column {

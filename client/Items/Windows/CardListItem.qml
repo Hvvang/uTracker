@@ -11,6 +11,8 @@ Item {
 
     property int cardListWidth: dp(300)
     property int cardListHeight: dp(1080)
+    property string cardListTitle: "Value"
+    readonly property alias cardListHeader: header
 
     width: cardListWidth
     height:cardListHeight
@@ -45,54 +47,57 @@ Item {
         ListElement {
             text: "Task5"
         }
-        ListElement {
-            text: "Task1"
-        }
-        ListElement {
-            text: "Task2"
-        }
-        ListElement {
-            text: "Task3"
-        }
-        ListElement {
-            text: "Task4"
-        }
-        ListElement {
-            text: "Task5"
-        }
-        ListElement {
-            text: "Task1"
-        }
-        ListElement {
-            text: "Task2"
-        }
-        ListElement {
-            text: "Task3"
-        }
-        ListElement {
-            text: "Task4"
-        }
-        ListElement {
-            text: "Task5"
-        }
+//        ListElement {
+//            text: "Task6"
+//        }
+//        ListElement {
+//            text: "Task7"
+//        }
+//        ListElement {
+//            text: "Task8"
+//        }
+//        ListElement {
+//            text: "Task9"
+//        }
+//        ListElement {
+//            text: "Task10"
+//        }
+//        ListElement {
+//            text: "Task11"
+//        }
+//        ListElement {
+//            text: "Task12"
+//        }
+//        ListElement {
+//            text: "Task13"
+//        }
+//        ListElement {
+//            text: "Task14"
+//        }
+//        ListElement {
+//            text: "Task15"
+//        }
 
     }
 
     Card {
         id: cardBack
         width: parent.width
-        height: (layout.contentHeight + dp(77)) < parent.height ? (layout.contentHeight + dp(77)) : parent.height
+        height: (layout.contentHeight + dp(104)) < parent.height ? (layout.contentHeight + dp(104)) : parent.height
 //        anchors.fill: pa  rent
-        backgroundColor: "pink"
+//        backgroundColor: Palette.colors["pink"]["50"]
+        backgroundColor: "#fcd8e4"
+
 
         Column {
             spacing: dp(7)
             id: listGroup
             anchors.fill: parent
             View {
+                id: header
                 width: parent.width
                 height: dp(70)
-                elevation: 1
+                elevation: 2
                 z:1
 //                            radius: 5
                 Rectangle {
@@ -108,13 +113,13 @@ Item {
                         anchors.leftMargin: dp(15)
                         color: "#7a163c"
                         font.pixelSize: dp(24)
-                        text: "List something"
+                        text: cardListTitle
                         font.bold: true
                     }
                 }
             }
             Item {
-                height: cardBack.height - dp(77)
+                height: cardBack.height - dp(104)
                 width: parent.width
 
                 ListView {
@@ -194,6 +199,18 @@ Item {
                     }
                 }
 
+            }
+            View {
+                width: parent.width
+                height: dp(20)
+                elevation: 2
+                z:1
+//                            radius: 5
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#80f6a2bf"
+                }
+                elevationInverted: true
             }
         }
 

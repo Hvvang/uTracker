@@ -36,7 +36,8 @@ PageSidebar {
         data:
             Rectangle {
                 anchors.fill: parent
-                color: "#80fad2e0"
+//                color: "#80fad2e0"
+                color: "#ebc7d3"
 
                 Column {
                     anchors.fill: parent

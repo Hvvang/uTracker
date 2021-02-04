@@ -1,4 +1,5 @@
 import QtQuick 2.9
+import QtGraphicalEffects 1.15
 import QtQuick.Window 2.11
 import QtQuick.Controls 1.3 as Controls
 import Material 0.3
@@ -20,6 +21,23 @@ Page {
         console.log("SignUp")
         pageStack.push(Qt.resolvedUrl("SignUp.qml"))
     }
+//    Rectangle {
+//        z: -1
+//        anchors.fill: parent
+
+
+//    }
+    LinearGradient {
+            anchors.fill: parent
+            start: Qt.point(0, 0)
+            end: Qt.point(parent.width, 0)
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#dab6c2" }
+                GradientStop { position: 0.5; color: "white" }
+                GradientStop { position: 1.0; color: "#dab6c2" }
+            }
+    }
+
     anchors.fill: parent
     Column {
         spacing: dp(20)
