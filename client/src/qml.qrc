@@ -6,4 +6,21 @@
     <qresource prefix="/auth">
         <file alias="Authorization.qml">qml/authorization.qml</file>
     </qresource>
+    <qresource prefix="/mainwindow">
+        <file alias="MainControlPanel.qml">qml/maincontrolpanel.qml</file>
+        <file alias="MenuButton.qml">qml/menubutton.qml</file>
+        <file alias="ControlButton.qml">qml/contolbutton.qml</file>
+        <file alias="HeaderPanel.qml">qml/headerpanel.qml</file>
+        <file alias="WorkFlows.qml">qml/workflowsview.qml</file>
+        <file alias="FlowPane.qml">qml/workflowpane.qml</file>
+        <file alias="Kanban.qml">qml/kanbanview.qml</file>
+        <file alias="DailyPlane.qml">qml/dailyplaneview.qml</file>
+        <file alias="Calendar.qml">qml/calendarview.qml</file>
+        <file alias="Statistic.qml">qml/statisticview.qml</file>
+        <file alias="Contacts.qml">qml/contactsview.qml</file>
+        <file alias="MainWindow.qml">qml/mainwindowview.qml</file>
+    </qresource>
+    <qresource prefix="/components">
+        <file alias="MenuButton.qml">qml/menubutton.qml</file>
+    </qresource>
 </RCC>

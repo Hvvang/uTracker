@@ -7,14 +7,15 @@ Window {
   width: 640
   height: 480
   property bool isAuthorized: false
-
-  onIsAuthorizedChanged: print("isAuthorized equal: ", main.isAuthorized);
+  visible: true
+//  onIsAuthorizedChanged: print("isAuthorized equal: ", main.isAuthorized);
 
 //  Settings {
 //    property alias isAuthorized: main.isAuthorized
 //  }
 
-//  Loader {
-//    source: isAuthorized ? "workflowpanel/Panel.qml" : "auth/Authorization.qml"
-//  }
+  Loader {
+      anchors.fill: parent
+    source: "mainwindow/MainWindow.qml"
+  }
 }

@@ -17,9 +17,9 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     QQmlApplicationEngine engine;
-    QQmlEngine auth_engine;
+//    QQmlEngine auth_engine;
 
-    AuthWindow auth(nullptr, &auth_engine);
+//    AuthWindow auth(nullptr, &auth_engine);
 
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
