@@ -5,6 +5,39 @@ import Material 0.3
 import Material.ListItems 0.1 as ListItem
 
 Page {
+
+    function createNewDesk() {
+        console.log("Request to create new desk");
+    }
+
+    property var userSection: [
+        {
+            title: "Profile",
+            id: -1
+        }
+    ]
+    property var desksSection: [
+        {
+            title: "Desk 1",
+            id: 1
+        },
+        {
+            title: "Desk 2",
+            id: 2
+        },
+        {
+            title: "Desk 3",
+            id: 3
+        },
+        {
+            title: "Desk 4",
+            id: 4
+        }
+    ]
+    property var sections: [userSection, desksSection]
+    property var sectionsTitles: ["User information", "Desks"]
+    property var selectedComponent: undefined
+
     id: rootAccount
     visible: true
     width: 1920
@@ -35,6 +68,7 @@ Page {
 
         enabled: true
 
+        overlayColor: "#307a163c"
         onEnabledChanged: smallLoader.active = enabled
 
         Flickable {
@@ -47,24 +81,37 @@ Page {
                 anchors.fill: parent
 
                 Repeater {
-                    model: 3
+                    model: sections
 
                     delegate: Column {
                         width: parent.width
 
                         ListItem.Subheader {
-                            text: "Text"
+                            text: sectionsTitles[index]
+                            textColor:"#7a163c"
+                            showDivider: true
+                            elevation: 1
                         }
 
                         Repeater {
-                            model: 3
+                            model: sections[index]
                             delegate: ListItem.Standard {
-                                text: "3"
-                                selected: [0]
-                                onClicked: selectedComponent = [0]
+                                text: modelData.title
+                                selected: modelData.id === selectedComponent.id
+                                onClicked: {
+                                    selectedComponent = modelData
+                                    console.log(modelData.title)
+                                    navDrawer.close()
+                                }
                             }
                         }
                     }
+                }
+                Button {
+                    text: "New desk +"
+                    height: dp(40)
+                    width: parent.width
+                    onClicked: createNewDesk();
                 }
             }
         }

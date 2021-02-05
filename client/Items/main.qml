@@ -17,6 +17,7 @@ ApplicationWindow {
         primaryColor: "#fad2e0"
         accentColor: "#ffdad8"
         tabHighlightColor: "white"
+
     }
     visible: true
     width: 1920

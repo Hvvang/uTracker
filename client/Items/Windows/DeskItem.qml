@@ -142,13 +142,11 @@ Item {
                         if (deskListView.draggedItemIndex !== -1) {
                             var draggedIndex = deskListView.draggedItemIndex
                             deskListView.draggedItemIndex = -1
-                            deskModel.move(draggedIndex,deskListView.indexAt(mouseX, mouseY + control.globalPos),1)
+                            deskModel.move(draggedIndex,deskListView.indexAt(mouseX + control.globalPos, mouseY),1)
                         }
                     }
                     onPressed: {
-                        deskListView.draggedItemIndex = deskListView.indexAt(mouseX, mouseY + control.globalPos)
-    //                    deskListView.draggedMousePos.x = coords.mouseX - cardList.x
-    //                    deskListView.draggedMousePos.y = coords.mouseY - cardList.y
+                        deskListView.draggedItemIndex = deskListView.indexAt(mouseX + control.globalPos, mouseY)
                     }
 
                 }

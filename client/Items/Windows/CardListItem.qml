@@ -1,4 +1,4 @@
-import QtQuick 2.9
+import QtQuick 2.15
 import QtQuick.Window 2.11
 import QtQuick.Controls 1.3 as Controls
 import QtQuick.Controls 2.15
@@ -47,36 +47,36 @@ Item {
         ListElement {
             text: "Task5"
         }
-//        ListElement {
-//            text: "Task6"
-//        }
-//        ListElement {
-//            text: "Task7"
-//        }
-//        ListElement {
-//            text: "Task8"
-//        }
-//        ListElement {
-//            text: "Task9"
-//        }
-//        ListElement {
-//            text: "Task10"
-//        }
-//        ListElement {
-//            text: "Task11"
-//        }
-//        ListElement {
-//            text: "Task12"
-//        }
-//        ListElement {
-//            text: "Task13"
-//        }
-//        ListElement {
-//            text: "Task14"
-//        }
-//        ListElement {
-//            text: "Task15"
-//        }
+        ListElement {
+            text: "Task6"
+        }
+        ListElement {
+            text: "Task7"
+        }
+        ListElement {
+            text: "Task8"
+        }
+        ListElement {
+            text: "Task9"
+        }
+        ListElement {
+            text: "Task10"
+        }
+        ListElement {
+            text: "Task11"
+        }
+        ListElement {
+            text: "Task12"
+        }
+        ListElement {
+            text: "Task13"
+        }
+        ListElement {
+            text: "Task14"
+        }
+        ListElement {
+            text: "Task15"
+        }
 
     }
 
@@ -152,7 +152,7 @@ Item {
                         id:card
                         cardContent: model.text
                         cardWidth: layout.width
-
+                        cardId: index
                         states: [
                             State {
                                 name: "inDrag"
@@ -160,7 +160,7 @@ Item {
                                 PropertyChanges { target: border; opacity: 1 }
                                 PropertyChanges { target: card; parent: dndContainer }
                                 PropertyChanges { target: card; anchors.centerIn: undefined }
-                                PropertyChanges { target: card; x: coords.mouseX - card.width / 2 }
+//                                PropertyChanges { target: card; x: coords.mouseX - card.width / 2 }
                                 PropertyChanges { target: card; y: coords.mouseY - card.height / 2 }
                             }
                         ]
@@ -175,25 +175,64 @@ Item {
                         }
                     }
                     property int draggedItemIndex: -1
-                            interactive: false
+                    interactive: false
                     Item {
                         id: dndContainer
                         anchors.fill: parent
                     }
 
+
+
                     MouseArea {
                         id: coords
-                        anchors.fill: parent
+                        height: parent.height
+                        width: layout.width - dp(80)
+//                        pressAndHoldInterval: 200
+                        property int pressedX: 0
+                        property int pressedY: 0
+                        property bool isHeld: false
 
                         onReleased: {
                             if (layout.draggedItemIndex !== -1) {
                                 var draggedIndex = layout.draggedItemIndex
                                 layout.draggedItemIndex = -1
-                                cardModel.move(draggedIndex,layout.indexAt(mouseX, mouseY + control.globalPos),1)
+                                cardModel.move(draggedIndex,layout.indexAt(mouseX, mouseY + control.globalPos), 1)
+                                isHeld = false
                             }
                         }
+//                        onClicked: {
+//                            if (!isHeld) {
+//                                var cardIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+//                                var cardItem = cardModel.get(index)
+//                                console.log("Request to server: Id of card: " + cardItem.cardId)
+
+//                                // Waiting for response
+
+//                                var component;
+//                                var sprite;
+//                                component = Qt.createComponent("CardView.qml");
+//                                if (component.status === Component.Ready){
+//                                    sprite = component.createObject(cardItem, {text: "info:" + cardId});
+//                                }
+//                            }
+//                        }
+
                         onPressed: {
-                            layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+                            pressedX = mouseX
+                            pressedY = mouseY
+                        }
+                        onPositionChanged: {
+                            if (pressed && Math.abs(mouseY - pressedY) > dp(20) && !isHeld) {
+                                isHeld = true
+                                layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+                            }
+                            console.log("dragged: " + layout.draggedItemIndex)
+                            console.log("layout: " + layout.indexAt(mouseX, mouseY + control.globalPos))
+//                            if (pressed && isHeld && layout.draggedItemIndex !== -1 && layout.draggedItemIndex !== layout.indexAt(mouseX, mouseY + control.globalPos)) {
+//                                var draggedIndex = layout.draggedItemIndex
+//                                layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+//                                cardModel.move(draggedIndex, layout.indexAt(mouseX, mouseY + control.globalPos), 1)
+//                            }
                         }
 
                     }
