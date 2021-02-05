@@ -53,39 +53,36 @@ Item {
                 Layout.fillHeight: true
 
                 Repeater {
+//                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     id: rep
 
                     model: 3 // route.size
+//                    width: width + routeText.width + sign.width
+                    Row {
 
-                    Item {
-                        id: element
-                        width: routeText.width + sign.width;
-                        height: routeWrapper.height
 
-                        Text {
-                            id: routeText
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Route %1").arg(model.index);
-                            color: model.index < rep.count - 1 && !mouseArea.containsMouse ? "#8a8a8a" : "black"
-                            font.family: "fontello"
-                            MouseArea {
-                                id: mouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: print("go to Route with lvl index %1".arg(index))
-                            }
+
+                    Text {
+                        id: routeText
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        text: qsTr("Route %1").arg(model.index);
+                        color: model.index < rep.count - 1 && !mouseArea.containsMouse ? "#8a8a8a" : "black"
+                        font.family: "fontello"
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: print("go to Route with lvl index %1".arg(index))
                         }
-                        Text {
-                            id: sign
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("%1").arg(model.index < rep.count - 1 ? " \ue800 " : "");
-                            anchors.left: routeText.right
-                            color: "#8a8a8a"
-                            font.family: "fontello"
-                        }
-
                     }
-
+                    Text {
+                        id: sign
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        text: qsTr("%1").arg(model.index < rep.count - 1 ? " \ue800 " : "");
+                        color: "#8a8a8a"
+                        font.family: "fontello"
+                    }
+                }
                 }
 
             }
@@ -137,7 +134,6 @@ Item {
         radius: 10
     }
     DropShadow {
-//            horizontalOffset: 3
         verticalOffset: 1
         radius: 7.0
         anchors.bottomMargin: -2
@@ -150,3 +146,8 @@ Item {
         source: footerline
     }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

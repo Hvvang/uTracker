@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 
 Item {
     id: root
-    width: Screen.width * 0.12
+    width: Screen.width * 0.10
     height: parent.height - header.height
     anchors.top: header.bottom
 
@@ -26,7 +26,7 @@ Item {
             Layout.fillWidth: true
             Layout.rightMargin: root.width * 0.07
             Layout.leftMargin: root.width * 0.07
-            Layout.preferredHeight: Screen.height * 0.05
+            Layout.preferredHeight: 58
 
             text: qsTr("\ue803    New Work Flow")
             font.capitalization: Font.MixedCase

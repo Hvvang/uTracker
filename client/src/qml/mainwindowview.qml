@@ -1,8 +1,9 @@
 import QtQuick 2.8
 import QtQuick.Window 2.12
-import QtQuick.Controls 2.5
+//import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.13
 
 Item {
     id: root
@@ -13,26 +14,38 @@ Item {
         id: header
     }
 
-    MainControlPanel {
-        id: menu
-    }
-
     Item {
-        id: workPanel
         anchors.top: header.bottom
+        anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.left: menu.right
 
-        anchors.margins: 10
-
-        Loader {
-            id: workPanelLoader
-            objectName: "panelLoader"
+        SplitView {
             anchors.fill: parent
-            source: "/mainwindow/WorkFlows.qml"
+            orientation: Qt.Horizontal
+
+            Material.background: "transparent"
+
+            MainControlPanel {
+                id: menu
+
+                SplitView.minimumWidth: 200
+                SplitView.maximumWidth: 400
+            }
+
+            Loader {
+                id: workPanelLoader
+                objectName: "panelLoader"
+
+                anchors.margins: 10
+
+                SplitView.minimumWidth: 50
+                SplitView.fillWidth: true
+                source: "/mainwindow/WorkFlows.qml"
+
+            }
 
         }
-
     }
+
 }
