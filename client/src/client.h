@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include "requests.h"
+#include "responsehandler.h"
 
 
 class Client: public QObject {
@@ -16,6 +17,7 @@ public:
 
     void doConnect(char *ip, int port);
     void testRequestLoop();
+    void parseJSON(QJsonDocument itemDoc);
 
 signals:
 
@@ -26,4 +28,18 @@ public slots:
 private:
     QTcpSocket *m_socket;
     AbstractRequest *m_request;
+
+    AbstractResponseHandler *m_signUp;
+    AbstractResponseHandler *m_signIn;
+    AbstractResponseHandler *m_autoSignIn;
+    AbstractResponseHandler *m_googleSignIn;
+    AbstractResponseHandler *m_logOut;
+    AbstractResponseHandler *m_createdWorkflow;
+    AbstractResponseHandler *m_updateWorkflow;
+    AbstractResponseHandler *m_inviteToWorkflow;
+    AbstractResponseHandler *m_allWorkflow;
+    AbstractResponseHandler *m_singleWorkflow;
+    AbstractResponseHandler *m_sendStat;
+    AbstractResponseHandler *m_sendProfile;
+    AbstractResponseHandler *m_updateProfile;
 };

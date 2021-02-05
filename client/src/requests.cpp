@@ -17,7 +17,7 @@ void AbstractRequest::createJSON(QMap<QString, QVariant> map) {
 
 void AbstractRequest::signUp(QString login, QString pass, QString name, QString surname, QString email) {
     QMap<QString, QVariant> mapa;
-    mapa["type"] = "SIGN_UP";
+    mapa["type"] = static_cast<int>(RequestType::SIGN_UP);
     mapa["login"] = login;
     mapa["password"] = pass;
     mapa["email"] = email;
@@ -27,7 +27,7 @@ void AbstractRequest::signUp(QString login, QString pass, QString name, QString 
 }
 void AbstractRequest::signIn(QString email, QString  login, QString pass) {
     QMap<QString, QVariant> mapa;
-    mapa["type"] = "SIGN_IN";
+    mapa["type"] = static_cast<int>(RequestType::SIGN_IN);
     mapa["login"] = login;
     mapa["password"] = pass;
     mapa["email"] = email;
@@ -35,21 +35,76 @@ void AbstractRequest::signIn(QString email, QString  login, QString pass) {
 }
 void AbstractRequest::autoSignInWithGoogle(QString token) {
     QMap<QString, QVariant> mapa;
-    mapa["type"] = "AUTO_OAUTH";
+    mapa["type"] = static_cast<int>(RequestType::AUTO_OAUTH);
     mapa["token"] = token;
     createJSON(mapa);
 }
 void AbstractRequest::autoSignIn(QString token) {
     QMap<QString, QVariant> mapa;
-    mapa["type"] = "AUTO_AUTH";
+    mapa["type"] = static_cast<int>(RequestType::AUTO_AUTH);
     mapa["token"] = token;
     createJSON(mapa);
 }
-void AbstractRequest::logOut() {
+void AbstractRequest::logOut(int id) {
     QMap<QString, QVariant> mapa;
-    mapa["type"] = "LOG_OUT";
+    mapa["type"] = static_cast<int>(RequestType::LOG_OUT);
+    mapa["userId"] = id;
     createJSON(mapa);
 }
+
+void AbstractRequest::createWorkflow(QString title, QString description) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
+    mapa["title"] = title;
+    mapa["description"] = description;
+    createJSON(mapa);
+}
+
+void AbstractRequest::updateWorkflow(QString title, QString description) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
+    mapa["title"] = title;
+    mapa["description"] = description;
+    createJSON(mapa);
+}
+void AbstractRequest::inviteToWorkflow(int userId, int workflowId) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::INVITE_TO_WORKFLOW);
+    mapa["userId"] = userId;
+    mapa["workflowId"] = workflowId;
+    createJSON(mapa);
+}
+void AbstractRequest::getAllWorkflows() {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
+    createJSON(mapa);
+}
+void AbstractRequest::getSingleWorkflowData(int workflowId) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
+    mapa["workflowId"] = workflowId;
+    createJSON(mapa);
+}
+
+void AbstractRequest::getStatistics() {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::GET_STATISTICS);
+    createJSON(mapa);
+}
+
+void AbstractRequest::getProfile(int userId) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::GET_PROFILE);
+    mapa["userId"] = userId;
+    createJSON(mapa);
+}
+void AbstractRequest::updateProfile(int userId) {
+    QMap<QString, QVariant> mapa;
+    mapa["type"] = static_cast<int>(RequestType::UPDATE_PROFILE);
+    mapa["userId"] = userId;
+    createJSON(mapa);
+}
+
 
 // //EXAMPLE
 // //creating json

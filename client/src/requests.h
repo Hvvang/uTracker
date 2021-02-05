@@ -11,6 +11,22 @@
 
 #include <iostream>
 
+enum class RequestType {
+    SIGN_UP,
+    SIGN_IN,
+    AUTO_AUTH,
+    AUTO_OAUTH,
+    LOG_OUT,
+    CREATE_WORKFLOW,
+    UPDATE_WORKFLOW,
+    INVITE_TO_WORKFLOW,
+    GET_ALL_WORKFLOWS,
+    GET_SINGLE_WORKFLOW_DATA,
+    GET_STATISTICS,
+    GET_PROFILE,
+    UPDATE_PROFILE
+};
+
 class AbstractRequest {
 
 public:
@@ -21,17 +37,18 @@ public:
     void signIn(QString email, QString  login, QString pass);
     void autoSignInWithGoogle(QString token);
     void autoSignIn(QString token);
-    void logOut();
+    void logOut(int id);
 
-//    void getProfile(QMap<QString, QVariant> map);
-//    void updateProfile(QMap<QString, QVariant> map);
-//    void createWorkflow(QMap<QString, QVariant> map);
-//    void updateWorkflow(QMap<QString, QVariant> map);
-//    void inviteToWorkflow(QMap<QString, QVariant> map);
-//    void getAllWorkflows(QMap<QString, QVariant> map);
-//    void getSingleWorkflowData(QMap<QString, QVariant> map);
-//    void getStatistics(QMap<QString, QVariant> map);
+    void createWorkflow(QString title, QString description);
+    void updateWorkflow(QString title, QString description);
+    void inviteToWorkflow(int userId, int workflowId);
+    void getAllWorkflows();
+    void getSingleWorkflowData(int workflowId);
 
+    void getStatistics();
+
+    void getProfile(int id);
+    void updateProfile(int id);
 protected:
     QTcpSocket *m_socket;
 };

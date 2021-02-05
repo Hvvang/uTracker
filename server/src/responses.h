@@ -12,6 +12,21 @@
 
 #include "connection.h"
 
+enum class RequestType {
+    SIGN_UP,
+    SIGN_IN,
+    AUTO_AUTH,
+    AUTO_OAUTH,
+    LOG_OUT,
+    CREATE_WORKFLOW,
+    UPDATE_WORKFLOW,
+    INVITE_TO_WORKFLOW,
+    GET_ALL_WORKFLOWS,
+    GET_SINGLE_WORKFLOW_DATA,
+    GET_STATISTICS,
+    GET_PROFILE,
+    UPDATE_PROFILE
+};
 
 class AbstractRequestHandler : public QObject{
     Q_OBJECT
@@ -82,13 +97,83 @@ public slots:
     void responseSend(QJsonObject itemObject);
 };
 
-//class SendProfile : public AbstractRequestHandler {};
-//class ToUpdateProfile : public AbstractRequestHandler {};
-//
-//class ToCreatedWorkflow : public AbstractRequestHandler {};
-//class ToUpdateWorkflow : public AbstractRequestHandler {};
-//class ToInvitedToWorkflow : public AbstractRequestHandler {};
-//class SendAllWorkflows : public AbstractRequestHandler {};
-//class SendSingleWorkflowData : public AbstractRequestHandler {};
-//
-//class sendStatistics : public AbstractRequestHandler {};
+class ToCreatedWorkflow : public AbstractRequestHandler {
+Q_OBJECT
+public:
+    ToCreatedWorkflow(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class ToUpdateWorkflow : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToUpdateWorkflow(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class ToInvitedToWorkflow : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToInvitedToWorkflow(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class SendAllWorkflows : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    SendAllWorkflows(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class SendSingleWorkflowData : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    SendSingleWorkflowData(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class SendStatistics : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    SendStatistics(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class SendProfile : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    SendProfile(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
+class ToUpdateProfile : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToUpdateProfile(Connection *socket);
+    void parseJSON(QJsonObject itemObject);
+
+public slots:
+    void responseSend(QJsonObject itemObject);
+};
+
