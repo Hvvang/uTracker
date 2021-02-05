@@ -89,7 +89,7 @@ void Client::parseJSON(QJsonDocument itemDoc) {
 }
 
 void Client::disconnected() {
-    this->deleteLater();
+    // do something when disconnection happens
 }
 
 void Client::readyRead() {

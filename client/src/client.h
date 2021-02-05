@@ -13,7 +13,7 @@ class Client: public QObject {
     Q_OBJECT
 public:
     explicit Client(QObject *parent = nullptr);
-    ~Client();
+    ~Client() override;
 
     void doConnect(char *ip, int port);
     void testRequestLoop();
