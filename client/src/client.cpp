@@ -34,7 +34,7 @@ void Client::testRequestLoop() {
 }
 
 void Client::disconnected() {
-    this->deleteLater();
+    // do something when disconnection happens
 }
 
 void Client::readyRead() {
