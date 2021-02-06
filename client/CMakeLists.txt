@@ -1,36 +1,35 @@
-cmake_minimum_required(VERSION 3.17.3)
+cmake_minimum_required(VERSION 3.5)
+
+project(utracker LANGUAGES CXX)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+find_package(Qt5 COMPONENTS Core Quick NetworkAuth LinguistTools REQUIRED)
 
-set(NAME client)
-set(SOURCE_EXE main.cpp)
+set(TS_FILES
+    translations/en_AS.ts)
 
-add_compile_options(
-    -std=c++17
-    -Wall
-    -Wextra
-    -Werror
-    -Wpedantic
-)
-
-find_package(Qt5 COMPONENTS Core Widgets Network Sql REQUIRED)
-
-include_directories(./src)
+include_directories(src)
 
 add_subdirectory(src)
 
-add_executable(${NAME} main.cpp)
-
-target_link_libraries(
-    ${NAME}
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Network
-    Qt5::Sql
-    client_src
+add_executable(utracker
+  client.cpp
+  src/qml.qrc
+  ${TS_FILES}
 )
+
+
+target_compile_definitions(utracker
+  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+target_link_libraries(utracker
+  PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth auth)
+
+qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
