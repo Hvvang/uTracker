@@ -60,11 +60,12 @@ void AbstractRequest::createWorkflow(QString title, QString description) {
     createJSON(mapa);
 }
 
-void AbstractRequest::updateWorkflow(QString title, QString description) {
+void AbstractRequest::updateWorkflow(QString title, QString description,int workflowId) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
     mapa["title"] = title;
     mapa["description"] = description;
+    mapa["workflowId"] = workflowId;
     createJSON(mapa);
 }
 void AbstractRequest::inviteToWorkflow(int userId, int workflowId) {
@@ -98,10 +99,12 @@ void AbstractRequest::getProfile(int userId) {
     mapa["userId"] = userId;
     createJSON(mapa);
 }
-void AbstractRequest::updateProfile(int userId) {
+void AbstractRequest::updateProfile(int userId, QString name, QString surname) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::UPDATE_PROFILE);
     mapa["userId"] = userId;
+    mapa["name"] = name;
+    mapa["surname"] = surname;
     createJSON(mapa);
 }
 

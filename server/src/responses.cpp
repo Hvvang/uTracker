@@ -168,6 +168,7 @@ void ToUpdateWorkflow::responseSend(QJsonObject itemObject) {
 }
 
 void ToUpdateWorkflow::parseJSON(QJsonObject itemObject) {
+    qDebug() << "workflowId :" << itemObject["workflowId"].toInt() << "\n";
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
     //DASHA TUT
@@ -246,6 +247,7 @@ void SendStatistics::responseSend(QJsonObject itemObject) {
             {"type", static_cast<int>(RequestType::GET_STATISTICS)}
     };
     if(true)
+
         jsonObject["message"] = "Statistics sended succesfully";
     else
         jsonObject["error"] = 1;
@@ -299,5 +301,7 @@ void ToUpdateProfile::responseSend(QJsonObject itemObject) {
 
 void ToUpdateProfile::parseJSON(QJsonObject itemObject) {
     qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
+    qDebug() << "name :" << itemObject["name"].toString() << "\n";
+    qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
     //DASHA TUT
 }

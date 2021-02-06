@@ -40,15 +40,15 @@ public:
     void logOut(int id);
 
     void createWorkflow(QString title, QString description);
-    void updateWorkflow(QString title, QString description);
+    void updateWorkflow(QString title, QString description, int workflowId);
     void inviteToWorkflow(int userId, int workflowId);
     void getAllWorkflows();
     void getSingleWorkflowData(int workflowId);
 
     void getStatistics();
 
-    void getProfile(int id);
-    void updateProfile(int id);
+    void getProfile(int userId);
+    void updateProfile(int userId, QString name, QString surname);
 protected:
     QTcpSocket *m_socket;
 };
