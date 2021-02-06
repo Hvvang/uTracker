@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     m_logFile.reset(new QFile("./client_log.txt"));  // run from Clion
     m_logFile.data()->open(QFile::Append | QFile::Text);
 // Устанавливаем обработчик. To restore the message handler, call qInstallMessageHandler(0).
-    qInstallMessageHandler(messageHandler);
+//    qInstallMessageHandler(messageHandler);
     qInfo(logInfo()) << "macOS version" << QSysInfo::macVersion();
 
     if (argc != 3) {

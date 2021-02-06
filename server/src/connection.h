@@ -13,7 +13,7 @@ public:
     explicit Connection(QObject *parent = nullptr);
     ~Connection() override;
 
-    void doConnect(qintptr socket_id);
+    bool setSocket(qintptr socket_id);
     QByteArray getTask() const;
 
 signals:

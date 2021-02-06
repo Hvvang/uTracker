@@ -16,7 +16,6 @@ public:
     ~Server() override;
 
     bool startServer();
-
 //protected:
     void incomingConnection(qintptr handle) override;  // ??
 
