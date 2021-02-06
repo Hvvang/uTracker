@@ -11,13 +11,14 @@
 class Server : public QTcpServer {
     Q_OBJECT
 public:
-    explicit Server(QObject *parent = nullptr);
+//    explicit Server(QObject *parent = nullptr);
+    explicit Server(quint16 _port, QObject *parent = nullptr);
     ~Server() override;
 
-    void startServer(quint16 port = 0);
+    bool startServer();
 
-protected:
-    void incomingConnection(qintptr handle) override;
+//protected:
+    void incomingConnection(qintptr handle) override;  // ??
 
 signals:
 
@@ -26,6 +27,7 @@ public slots:
     void setNewTask(Connection *ptr);
 
 private:
+    quint16 m_port;
     QMutex *m_mutex;
     QThreadPool *m_pool;
     QVector<Connection *> m_connections;

@@ -1,7 +1,9 @@
 #include "client.h"
 #include "requests.h"
 
-AbstractRequest::AbstractRequest(QTcpSocket *socket) : m_socket(socket) {}
+AbstractRequest::AbstractRequest(std::shared_ptr<QSslSocket> socket) {
+    m_socket = socket;
+}
 
 void AbstractRequest::createJSON(QMap<QString, QVariant> map) {
 

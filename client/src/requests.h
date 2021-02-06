@@ -14,7 +14,7 @@
 class AbstractRequest {
 
 public:
-    AbstractRequest(QTcpSocket *socket);
+    AbstractRequest(std::shared_ptr<QSslSocket> socket);
 
     void createJSON(QMap<QString, QVariant> map);
     void signUp(QString login, QString pass, QString name, QString surname, QString email);
@@ -33,7 +33,7 @@ public:
 //    void getStatistics(QMap<QString, QVariant> map);
 
 protected:
-    QTcpSocket *m_socket;
+    std::shared_ptr<QSslSocket> m_socket;
 };
 
 class JsonFormat {
