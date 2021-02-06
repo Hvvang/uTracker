@@ -1,5 +1,7 @@
 #include "client.h"
 
+class AES;
+
 Client::Client(QObject *parent) : QObject(parent) {
     m_socket = new QTcpSocket(this);
     m_request = new AbstractRequest(m_socket);

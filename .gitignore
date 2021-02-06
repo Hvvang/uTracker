@@ -30,7 +30,8 @@
 *.exe
 *.out
 *.app
-utracker
+uTracker_server
+uTracker
 
 # IDE cache dir
 .idea
