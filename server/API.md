@@ -15,6 +15,7 @@ enum class RequestType {
     UPDATE_PROFILE
 };
 ```
+***
 # API
 
 **Request for `Log Out` from client to server**
