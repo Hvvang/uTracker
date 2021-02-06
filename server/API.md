@@ -47,7 +47,8 @@ enum class RequestType {
 {
     "type": CREATE_WORKFLOW,
     "title": str,
-    "description": str
+    "description": str,
+    "userId" : num //
 }
 ```
 
