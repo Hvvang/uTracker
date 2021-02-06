@@ -9,10 +9,30 @@ import QtQuick.Layouts 1.3
 
 Dialog {
     id: cardView
-    width: dp(500)
-    title: "Use Google's location service?"
-    text: "Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running."
+    width: dp(600)
+    height: dp(900)
+    title: "ListN -> TaskN"
+    text: "Task"
     hasActions: true
-    positiveButtonText: "agree"
-    negativeButtonText: "disagree"
+    dialogContent: ListView {
+        id: layout
+        model: 25
+        width: parent.width
+        height: contentHeight
+        spacing: dp(5)
+        interactive: false
+
+        delegate: RowLayout {
+            width: parent.width - dp(10)
+            CheckBox {
+//                checked:
+            }
+            TextField{
+                Layout.fillWidth: true
+            }
+        }
+    }
+
+    positiveButtonText: "OK"
+    negativeButtonText: "Cancel"
 }

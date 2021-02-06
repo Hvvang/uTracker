@@ -147,6 +147,7 @@ Item {
                     }
                     onPressed: {
                         deskListView.draggedItemIndex = deskListView.indexAt(mouseX + control.globalPos, mouseY)
+                        console.log("Pressed")
                     }
 
                 }

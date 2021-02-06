@@ -45,15 +45,28 @@ Item {
                     Action {
                         id: addPers
                         iconName: "navigation/chevron_right"
-                        text: "Add colab"
+                        text: "More..."
                         hoverAnimation: true
                         onTriggered: {
+//                            var cardIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+//                            var cardItem = cardModel.get(index)
+                            console.log("Request to server: Id of card: " + cardId)
+
+                            // Waiting for response
+
+                            var component;
+                            var sprite;
+                            component = Qt.createComponent("CardView.qml");
+                            if (component.status === Component.Ready){
+                                sprite = component.createObject(card, {text: "info:" + cardId});
+                            }
+                            sprite.show()
                         }
                     },
                     Action {
                         id: delPers
                         iconName: "navigation/chevron_right"
-                        text: "Remove colab"
+                        text: "Remove card"
                         hoverAnimation: true
                         onTriggered: {
                         }
