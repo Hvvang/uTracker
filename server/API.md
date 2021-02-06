@@ -15,6 +15,7 @@ enum class RequestType {
     UPDATE_PROFILE
 };
 ```
+***
 # API
 
 **Request for `Log Out` from client to server**
@@ -47,7 +48,8 @@ enum class RequestType {
 {
     "type": CREATE_WORKFLOW,
     "title": str,
-    "description": str
+    "description": str,
+    "userId" : num //
 }
 ```
 
@@ -112,7 +114,8 @@ c
     "allWorkflows" : {
                          "workflowId": num,
                          "title": str,
-                         "description": str
+                         "description": str,
+                         "userId" : num //
                      }
 }
 ```
@@ -140,7 +143,8 @@ c
     "type": GET_SINGLE_WORKFLOW_DATA,
     "message": str,
     "title": str,
-    "description": str
+    "description": str,
+    "userId" : num //
 }
 ```
 
