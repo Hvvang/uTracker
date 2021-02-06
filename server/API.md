@@ -113,7 +113,8 @@ c
     "allWorkflows" : {
                          "workflowId": num,
                          "title": str,
-                         "description": str
+                         "description": str,
+                         "userId" : num //
                      }
 }
 ```
@@ -141,7 +142,8 @@ c
     "type": GET_SINGLE_WORKFLOW_DATA,
     "message": str,
     "title": str,
-    "description": str
+    "description": str,
+    "userId" : num //
 }
 ```
 
