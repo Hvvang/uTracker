@@ -24,13 +24,19 @@ void ToSignUp::responseSend(QJsonObject itemObject) {
     m_connection->sendResponse(json);
 }
 
-void ToSignUp::parseJSON(QJsonObject itemObject){
+void ToSignUp::parseJSON(QJsonObject itemObject) {
     qDebug() << "login :" << itemObject["login"].toString() << "\n";
     qDebug() << "email :" << itemObject["email"].toString() << "\n";
     qDebug() << "password :" << itemObject["password"].toString() << "\n";
     qDebug() << "name :" << itemObject["name"].toString() << "\n";
     qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
     // DASHA TUT
+    DataBase::getInstance()->set_usersCredential(itemObject["login"].toString(),
+                                                    itemObject["email"].toString(),
+                                                    itemObject["password"].toString(),
+                                                    itemObject["name"].toString(),
+                                                    itemObject["surname"].toString()
+                                                    );
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignIn::ToSignIn(Connection *socket) : AbstractRequestHandler(socket){}
@@ -57,6 +63,8 @@ void ToSignIn::parseJSON(QJsonObject itemObject) {
     qDebug() << "email :" << itemObject["email"].toString() << "\n";
     qDebug() << "password :" << itemObject["password"].toString() << "\n";
     //DASHA TUT
+    DataBase::getInstance()->set_usersCredential(itemObject["login"].toString(), itemObject["email"].toString(),
+                                                    itemObject["password"].toString());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignInWithGoogle::ToSignInWithGoogle(Connection *socket) : AbstractRequestHandler(socket){}
@@ -149,6 +157,7 @@ void ToCreatedWorkflow::parseJSON(QJsonObject itemObject) {
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
     //DASHA TUT
+    
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
