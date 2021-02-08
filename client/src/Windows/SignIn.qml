@@ -4,15 +4,10 @@ import QtQuick.Window 2.11
 import QtQuick.Controls 1.3 as Controls
 import Material 0.3
 import Material.ListItems 0.1 as ListItem
-//import Authorization 1.0
 
 import "../Components"
 
 Page {
-//    Authorization {
-//        id:author
-//    }
-
     function checkValid () {
         var valid = true;
         if (!valid) {
