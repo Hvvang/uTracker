@@ -1,5 +1,6 @@
 #include "client.h"
 
+
 class AES;
 
 Client::Client(QObject *parent) : QObject(parent) {
@@ -48,8 +49,8 @@ void Client::doConnect(char *ip, int port) {
 }
 
 void Client::testRequestLoop() {
-    m_request->signUp("NazarDykyy@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn", "Nazar", "Dykyy");
-    m_request->signIn("NazarDykyy@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn");
+    m_request->signUp("NazarDykyy@gmail.com", mx_hash("ndykyy"), "21453#gs8kFSdfD1F244iuSn", "Nazar", "Dykyy");
+    m_request->signIn("NazarDykyy@gmail.com", mx_hash("ndykyy"), "21453#gs8kFSdfD1F244iuSn");
     m_request->autoSignIn("token");
     m_request->autoSignInWithGoogle("token");
     m_request->logOut(1);

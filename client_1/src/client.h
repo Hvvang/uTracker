@@ -7,6 +7,7 @@
 
 #include "requests.h"
 #include "responsehandler.h"
+#include "hash.h"
 
 
 class Client: public QObject {
