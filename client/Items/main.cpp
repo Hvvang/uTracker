@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
     UserManager manager(nullptr);
+//    qmlRegisterType<Authorization>("Authorization", 1, 0, "Authorization");
 
     return app.exec();
 }

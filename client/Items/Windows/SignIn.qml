@@ -14,7 +14,7 @@ Page {
 //    }
 
     function checkValid () {
-        var valid = true;
+        var valid = mAuthor.signInHandler("hello", "123456789");
         if (!valid) {
             snackbar.open("Wrong login or password");
         } else {

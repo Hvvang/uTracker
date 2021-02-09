@@ -1,7 +1,9 @@
 #include "usermanager.h"
+#include <QQmlContext>
+#include <QQuickItem>
 
 
-UserManager::UserManager(QObject *parent) : QObject(parent), m_user(this)
+UserManager::UserManager(QObject *parent) : QObject(parent), m_user(this), m_author(this)
 {
 //view.engine();
     QPM_INIT(engine)
@@ -14,8 +16,10 @@ UserManager::UserManager(QObject *parent) : QObject(parent), m_user(this)
 
 void UserManager::initModules() const
 {
-//    qmlRegisterType<Authorization>("Authorization", 1, 0, "m_author");
+//    qmlRegisterType<Authorization>("Authorization", 1, 0, "Authorization");
 //    engine.rootContext()setContextProperty("author", &m_author);
-    auto root = engine.rootContext();
+//    auto root = engine.rootContext();
 //    root->setContextProperty()
+//    engine.rootContext()->setContextProperty("mAuthor", QVariant::fromValue(&m_author));
+    engine.rootContext()->setContextProperty("mAuthor", &m_author);
 }

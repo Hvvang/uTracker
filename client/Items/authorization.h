@@ -8,10 +8,10 @@ class Authorization : public QObject
     Q_OBJECT
 public:
     explicit Authorization(QObject *parent = nullptr);
-    ~Authorization();
+    ~Authorization() = default;
 
     Q_INVOKABLE bool signUpHandler(QString login, QString mail, QString password){};
-    Q_INVOKABLE bool signInHandler(QString ident, QString password){};
+    Q_INVOKABLE bool signInHandler(QString ident, QString password);
 
 private:
     void doServerRequest();
