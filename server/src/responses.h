@@ -28,6 +28,18 @@ enum class RequestType {
     UPDATE_PROFILE
 };
 
+class SendResp : public QObject{
+    Q_OBJECT
+public:
+    SendResp(Connection *connection);
+
+public slots:
+    void getAnswer(const QMap<QString, QVariant> &mapa);
+protected:
+    Connection *m_connection;
+    QByteArray m_json;
+};
+
 class AbstractRequestHandler : public QObject{
     Q_OBJECT
 public:

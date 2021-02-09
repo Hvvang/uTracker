@@ -1,4 +1,5 @@
 #include "runnable.h"
+#include "database.h"
 
 Runnable::Runnable(Connection *socket) {
     m_ptr = socket;
@@ -16,6 +17,8 @@ Runnable::Runnable(Connection *socket) {
     m_sendStatistics = new SendStatistics(socket);
     m_sendProfile = new SendProfile(socket);
     m_updateProfile = new ToUpdateProfile(socket);
+    m_sendresp = new SendResp(socket);
+    Q_UNUSED(m_sendresp);
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
@@ -59,6 +62,8 @@ Runnable::~Runnable() {
     delete m_googleSignIn;
     delete m_logOut;
     delete m_createWorkFlow;
+    
+    delete m_sendresp;
 }
 
 void Runnable::setMutex(QMutex *mutex) {

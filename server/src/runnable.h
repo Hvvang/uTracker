@@ -36,4 +36,6 @@ private:
     AbstractRequestHandler *m_sendStatistics;
     AbstractRequestHandler *m_sendProfile;
     AbstractRequestHandler *m_updateProfile;
+
+    SendResp *m_sendresp;
 };

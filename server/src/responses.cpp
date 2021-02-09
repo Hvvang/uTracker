@@ -1,5 +1,19 @@
 #include <sys/socket.h>
 #include "responses.h"
+#include "database.h"
+
+SendResp::SendResp(Connection *connection) : m_connection(connection) {
+    connect(DataBase::getInstance(), &DataBase::signal_get_answer, this, &SendResp::getAnswer);
+}
+void SendResp::getAnswer(const QMap<QString, QVariant> &mapa) {
+    QJsonObject jsonObject =  QJsonObject::fromVariantMap(mapa);
+    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    QByteArray json = jsonDoc->toJson();
+    qDebug() << json;
+    
+    m_connection->sendResponse(json);
+}
+
 
 AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_connection(connection) {
     connect(this, &AbstractRequestHandler::responseInited, &AbstractRequestHandler::responseSend);
@@ -9,19 +23,19 @@ ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
 void ToSignUp::responseSend(QJsonObject itemObject) {
     parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::SIGN_UP)},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    // QJsonObject jsonObject {
+    //         {"type", static_cast<int>(RequestType::SIGN_UP)},
+    //         {"message", "ebu sho pisat"}
+    // };
+    // if(true) {
+    //     QString token = "sdfhFdvY#YF28Dd4Nqj64";
+    //     jsonObject["token"] = token;// SHA-256 hash,
+    // }
+    // else
+    //     jsonObject["error"] = 1;
+    // QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    // QByteArray json = jsonDoc->toJson();
+    // m_connection->sendResponse(json);
 }
 
 void ToSignUp::parseJSON(QJsonObject itemObject) {
@@ -31,7 +45,7 @@ void ToSignUp::parseJSON(QJsonObject itemObject) {
     qDebug() << "name :" << itemObject["name"].toString() << "\n";
     qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
     // DASHA TUT
-    DataBase::getInstance()->set_usersCredential(itemObject["login"].toString(),
+    DataBase::getInstance()->signal_set_usersCredential_5(itemObject["login"].toString(),
                                                     itemObject["email"].toString(),
                                                     itemObject["password"].toString(),
                                                     itemObject["name"].toString(),
@@ -43,19 +57,19 @@ ToSignIn::ToSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToSignIn::responseSend(QJsonObject itemObject) {
     parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::SIGN_IN)},
-            {"message", "ebu sho pisat"}
-    };
-    if (true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    // QJsonObject jsonObject {
+    //         {"type", static_cast<int>(RequestType::SIGN_IN)},
+    //         {"message", "ebu sho pisat"}
+    // };
+    // if (true) {
+    //     QString token = "sdfhFdvY#YF28Dd4Nqj64";
+    //     jsonObject["token"] = token;// SHA-256 hash,
+    // }
+    // else
+    //     jsonObject["error"] = 1;
+    // QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    // QByteArray json = jsonDoc->toJson();
+    // m_connection->sendResponse(json);
 }
 
 void ToSignIn::parseJSON(QJsonObject itemObject) {
@@ -63,7 +77,11 @@ void ToSignIn::parseJSON(QJsonObject itemObject) {
     qDebug() << "email :" << itemObject["email"].toString() << "\n";
     qDebug() << "password :" << itemObject["password"].toString() << "\n";
     //DASHA TUT
-    DataBase::getInstance()->set_usersCredential(itemObject["login"].toString(), itemObject["email"].toString(),
+    if (itemObject["email"].toString() == 0)
+        DataBase::getInstance()->signal_exist_user(itemObject["login"].toString(),
+                                                    itemObject["password"].toString());
+    else
+        DataBase::getInstance()->signal_exist_user(itemObject["email"].toString(),
                                                     itemObject["password"].toString());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,16 +138,16 @@ ToLogOut::ToLogOut(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToLogOut::responseSend(QJsonObject itemObject) {
     parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::LOG_OUT)}
-    };
-    if(true)
-        jsonObject["message"] = "User succesfully logged out";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    // QJsonObject jsonObject {
+    //         {"type", static_cast<int>(RequestType::LOG_OUT)}
+    // };
+    // if(true)
+    //     jsonObject["message"] = "User succesfully logged out";
+    // else
+    //     jsonObject["error"] = 1;
+    // QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    // QByteArray json = jsonDoc->toJson();
+    // m_connection->sendResponse(json);
 }
 
 void ToLogOut::parseJSON(QJsonObject itemObject) {
@@ -157,7 +175,8 @@ void ToCreatedWorkflow::parseJSON(QJsonObject itemObject) {
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
     //DASHA TUT
-    
+    // Добавь юзер ид
+    DataBase::getInstance()->signal_to_created_workflow(1, itemObject["title"].toString(), itemObject["description"].toString());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
@@ -181,6 +200,7 @@ void ToUpdateWorkflow::parseJSON(QJsonObject itemObject) {
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
     //DASHA TUT
+    DataBase::getInstance()->signal_to_update_workflow(itemObject["workflowId"].toInt(), itemObject["title"].toString(), itemObject["description"].toString());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
@@ -203,28 +223,30 @@ void ToInvitedToWorkflow::parseJSON(QJsonObject itemObject) {
     qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
     qDebug() << "workflowID :" << itemObject["workflowId"].toInt() << "\n";
     //DASHA TUT
+    DataBase::getInstance()->signal_to_invited_to_workflow(itemObject["userId"].toInt(), itemObject["workflowId"].toInt());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
 
 void SendAllWorkflows::responseSend(QJsonObject itemObject) {
     parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::GET_ALL_WORKFLOWS)}
-    };
-    if(true)
-        jsonObject["message"] = "All Workflows sended succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    // QJsonObject jsonObject {
+    //         {"type", static_cast<int>(RequestType::GET_ALL_WORKFLOWS)}
+    // };
+    // if(true)
+    //     jsonObject["message"] = "All Workflows sended succesfully";
+    // else
+    //     jsonObject["error"] = 1;
+    // QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
+    // QByteArray json = jsonDoc->toJson();
+    // m_connection->sendResponse(json);
 }
 
 void SendAllWorkflows::parseJSON(QJsonObject itemObject) {
     Q_UNUSED(itemObject);
-    //qDebug() << "userID :" << itemObject["userId"].toString() << "\n";
+    //qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
     //DASHA TUT
+    DataBase::getInstance()->signal_send_all_workflow_data(1);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendSingleWorkflowData::SendSingleWorkflowData(Connection *socket) : AbstractRequestHandler(socket){}
@@ -313,4 +335,5 @@ void ToUpdateProfile::parseJSON(QJsonObject itemObject) {
     qDebug() << "name :" << itemObject["name"].toString() << "\n";
     qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
     //DASHA TUT
+    //DataBase::getInstance()->signal_to_update_profile(itemObject["userId"].toInt(), itemObject["name"].toString(), itemObject["surname"].toString());
 }
