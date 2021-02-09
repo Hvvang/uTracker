@@ -13,13 +13,8 @@ class AuthWindow : public QObject
 {
     Q_OBJECT
 public:
-    explicit AuthWindow(QObject *parent = nullptr, QQmlEngine *engine = nullptr);
+    explicit AuthWindow(QObject *parent = nullptr, QQmlApplicationEngine *engine = nullptr);
 
-    enum Type {
-        AuthToken,
-        AccessesToken,
-        RefreshToken
-    };
     enum RequestType {
         AUTO_OAUTH,
         AUTO_AUTH,
@@ -29,14 +24,10 @@ public:
 
     Q_INVOKABLE void signIn(const QString &, const QString &);
     Q_INVOKABLE void signUp(const QString &, const QString &, const QString &, const QString &);
-    QString getToken(const Type &);
-    void saveTokens(const QString &, const QString &, const QString &);
+
 
 private:
     void autoSignIn();
-
-public slots:
-    void response(const QString &);
 
 signals:
     void request(const QString &);
@@ -44,7 +35,6 @@ signals:
 private:
     QQmlEngine *m_engine;
     GoogleAuth m_googleAuth;
-    QQuickView *m_view;
 };
 
 #endif // AUTHWINDOW_H

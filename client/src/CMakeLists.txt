@@ -1,11 +1,16 @@
 
 set(SOURCES 
-	googleauth.cpp
+		googleauth.cpp
         authwindow.cpp
+		Client.cpp
+		Router.cpp
+
 )
 set(HEADERS 
-	googleauth.h
-        authwindow.h
+		googleauth.h
+		authwindow.h
+		Client.h
+		Router.h
 )
 
 add_library(auth ${SOURCES} ${HEADERS})

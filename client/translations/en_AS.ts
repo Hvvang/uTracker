@@ -2,45 +2,45 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="as_IN">
 <context>
-    <name>authorization</name>
+    <name>authorisation</name>
     <message>
-        <location filename="../src/qml/authorization.qml" line="34"/>
+        <location filename="../src/qml/authorisation.qml" line="40"/>
         <source>UTRACKER</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="150"/>
-        <location filename="../src/qml/authorization.qml" line="303"/>
+        <location filename="../src/qml/authorisation.qml" line="152"/>
+        <location filename="../src/qml/authorisation.qml" line="304"/>
         <source>Enter your Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="169"/>
+        <location filename="../src/qml/authorisation.qml" line="172"/>
         <source>Continue with email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="221"/>
+        <location filename="../src/qml/authorisation.qml" line="221"/>
         <source>Create new account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="257"/>
+        <location filename="../src/qml/authorisation.qml" line="258"/>
         <source>Create account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="368"/>
+        <location filename="../src/qml/authorisation.qml" line="369"/>
         <source>Sign up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="400"/>
+        <location filename="../src/qml/authorisation.qml" line="403"/>
         <source>Already have an account?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authorization.qml" line="420"/>
+        <location filename="../src/qml/authorisation.qml" line="423"/>
         <source>Log in here</source>
         <translation type="unfinished"></translation>
     </message>

@@ -1,20 +1,25 @@
 import QtQuick 2.8
 import QtQuick.Window 2.12
 import Qt.labs.settings 1.0
+import QtQuick.Controls 2.5
+import QtQuick.Controls.Material 2.3
+
 
 Window {
   id: main
   width: 640
   height: 480
-  property bool isAuthorized: false
+  visible: true
 
-  onIsAuthorizedChanged: print("isAuthorized equal: ", main.isAuthorized);
+  title: "Utracker"
 
-//  Settings {
-//    property alias isAuthorized: main.isAuthorized
-//  }
+  Loader {
+      id: loader
+      objectName: "loader"
+      anchors.fill: parent
 
-//  Loader {
-//    source: isAuthorized ? "workflowpanel/Panel.qml" : "auth/Authorization.qml"
-//  }
+      source: "qml/Authorization.qml"
+  }
+
+
 }

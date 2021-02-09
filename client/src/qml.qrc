@@ -2,8 +2,8 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>fonts/fontello.ttf</file>
-    </qresource>
-    <qresource prefix="/auth">
-        <file alias="Authorization.qml">qml/authorization.qml</file>
+        <file>qml/Authwindow.qml</file>
+        <file>qml/RegisterWidow.qml</file>
+        <file>qml/Authorization.qml</file>
     </qresource>
 </RCC>
