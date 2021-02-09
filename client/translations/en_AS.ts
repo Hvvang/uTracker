@@ -103,6 +103,19 @@
     </message>
 </context>
 <context>
+    <name>Kanbanview</name>
+    <message>
+        <location filename="../src/qml/mainwindow/Kanbanview.qml" line="69"/>
+        <source>New Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/mainwindow/Kanbanview.qml" line="235"/>
+        <source>New Task</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Maincontrolpanel</name>
     <message>
         <location filename="../src/qml/mainwindow/Maincontrolpanel.qml" line="28"/>
@@ -121,17 +134,17 @@
 <context>
     <name>Taskview</name>
     <message>
-        <location filename="../src/qml/mainwindow/Taskview.qml" line="35"/>
+        <location filename="../src/qml/mainwindow/Taskview.qml" line="37"/>
         <source>😄</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/mainwindow/Taskview.qml" line="112"/>
+        <location filename="../src/qml/mainwindow/Taskview.qml" line="115"/>
         <source>A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/mainwindow/Taskview.qml" line="116"/>
+        <location filename="../src/qml/mainwindow/Taskview.qml" line="119"/>
         <source>FirstName LastName</source>
         <translation type="unfinished"></translation>
     </message>

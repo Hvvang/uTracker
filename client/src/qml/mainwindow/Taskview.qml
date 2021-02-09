@@ -8,7 +8,9 @@ import QtQuick 2.14
 Item {
     id: root
     width: 250
-    height: view.height + 30
+    height: view.childrenRect.height + 30
+//    implicitHeight: view.childrenRect.height + 30
+    property int colabsCounter: 0
 
     ColumnLayout {
         id: view
@@ -61,7 +63,8 @@ Item {
 
                 Repeater {
                     id: rep
-                    model: ["common", "feature", "high priority", "important"]
+//                    model: ["common", "feature", "high priority", "important"]
+                    model: 0
 
                     Item {
                         id: tag
@@ -75,6 +78,7 @@ Item {
                             text: qsTr(modelData)
                             color: "white"
                         }
+
                         Rectangle {
                             id: tagBack
                             anchors.fill: parent
@@ -96,7 +100,8 @@ Item {
                 id: workersView
 
                 Repeater {
-                    model: 0 + Math.random() * 5
+                    id: colabsRepeater
+                    model: root.colabsCounter
 
                     Row {
                         id: row
@@ -127,8 +132,11 @@ Item {
 
         anchors.fill: parent
         Material.background: "white"
-        radius: 7
-        onClicked: print("emit open workFlow signal")
+        radius: 6
+        onClicked: {
+            print("emit open task signal")
+            root.colabsCounter += 1
+        }
     }
 }
 

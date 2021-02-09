@@ -52,6 +52,8 @@ public:
     Task getTask(int index);
     void setTask(int index, Task &task);
 
+    Q_INVOKABLE void reset();
+
 private:
     QList<Task> m_model;
 

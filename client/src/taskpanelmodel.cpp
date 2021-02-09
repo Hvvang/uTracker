@@ -146,4 +146,12 @@ void TaskPanelModel::setTask(int index, Task &task) {
     endInsertRows();
 }
 
+void TaskPanelModel::reset() {
+    beginRemoveRows(QModelIndex(), 0, m_model.size());
+    endRemoveRows();
+
+    beginInsertRows(QModelIndex(), 0, m_model.size());
+    endInsertRows();
+}
+
 

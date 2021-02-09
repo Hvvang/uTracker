@@ -88,8 +88,8 @@ QHash<int, QByteArray> KanbanModel::roleNames() const {
     return roles;
 }
 
-void KanbanModel::test() {
-    m_model.at(0).model->removeRows(0,1);
+void KanbanModel::test(int index) {
+    m_model.at(index).model->reset();
 
 }
 

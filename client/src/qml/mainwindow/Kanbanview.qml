@@ -93,12 +93,8 @@ Item {
 
         RowLayout {
             id: rowView
-//            anchors.fill: parent
 
             Repeater {
-                id: repeater
-//                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-
 
                 model: KanbanModel
 
@@ -107,8 +103,7 @@ Item {
 
                     property int _sourceModelIndex: index
                     property var panelsModel: model
-                    anchors.top: parent.top
-                    anchors.topMargin: 0
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
 
                     Repeater {
                         id: rep
@@ -121,8 +116,9 @@ Item {
                             delegate: DropArea {
                                 id: delegateRoot
 
-                                width: task.width; height: (isBlank) ? KanbanModel.getHeight() : task.height
+                                width: task.width; implicitHeight: (isBlank) ? KanbanModel.getHeight() : task.height
 
+                                onHeightChanged: print(height)
                                 property int sourceIndex: index
                                 property int sourceModelIndex: columnView._sourceModelIndex
 
@@ -133,11 +129,8 @@ Item {
                                         var sourceTaskIndex = (drag.source as Taskview).index;
                                         var targetPanelIndex = columnView._sourceModelIndex;
                                         var targetTaskIndex = task.index
-//                                            drag.drop()
                                         KanbanModel.swap(sourcePanelIndex, sourceTaskIndex, targetPanelIndex, targetTaskIndex);
                                     }
-
-//                                        print(columnView._sourceModelIndex, (drag.source as Taskview).panelIndex)
                                 }
 
                                 onExited: {
@@ -163,8 +156,7 @@ Item {
 
                                 }
 
-
-                                 Rectangle {
+                                Rectangle {
                                      id: dropBack
                                      anchors.fill: delegateRoot
                                      radius: 6
@@ -172,6 +164,7 @@ Item {
                                      anchors.margins: 10
                                      color: delegateRoot.containsDrag ? "#d3d2d2" : "transparent";
                                  }
+
 
                                 Taskview {
                                     id: task
@@ -181,6 +174,7 @@ Item {
                                     property var realModel: panelModel
 
                                     visible: !isBlank
+
 
                                     MouseArea {
                                        id: dragArea
@@ -192,6 +186,9 @@ Item {
                                        onClicked: {
                                            if(mouse.button & Qt.RightButton) {
                                                task.realModel.removeRows(task.index, 1);
+                                           }
+                                           if(mouse.button & Qt.LeftButton) {
+                                               task.colabsCounter += 1;
                                            }
                                        }
                                        onPressed: KanbanModel.setHeight(drag.target.height)
