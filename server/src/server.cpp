@@ -8,15 +8,13 @@ Server::Server(quint16 _port, QObject* parent) :QTcpServer(parent), m_port(_port
     m_mutex = new QMutex();
     m_pool = new QThreadPool(this);
     m_pool->setMaxThreadCount(MAX_THREAD_COUNT);
-//    connect(this, &Server::newConnection, this, &Server::link);
-    setConfig();
+    setSsslConfig();
 }
 
 Server::~Server()
 {
     delete m_pool;
     delete m_mutex;
-//    m_connections.clear();
 }
 
 bool Server::startServer()
@@ -26,49 +24,23 @@ bool Server::startServer()
         qWarning(logWarning) << "Server did not start!";
         return false;
     }
-
-//    connect(this, &Connection::addPendingConnection, this, &Server::addPendingConnection);
     qInfo(logInfo()) << "Server started!";
     return true;
 }
 
 void Server::incomingConnection(qintptr socketDescriptor)
 {
-    qInfo(logInfo()) << "new incomingConnection ";
-    Connection *newConnection = new Connection(socketDescriptor, m_config, this);
-//    connect(this, &Server::newConnection, newConnection, &Connection::incomingConnection);
-    m_connections.push_back(newConnection);
-//    connect(newConnection, &Connection::newCon, this, addPendingConnection);
+    qInfo(logInfo()) << "new incomingConnection socketDescriptor = " << socketDescriptor;
+    Connection* newConnection = new Connection(socketDescriptor, m_config, this);
+    m_map_connections[socketDescriptor] = newConnection;
+    connect(newConnection, &Connection::disconnectSocket, this, &Server::deleteConnection);
 //    addPendingConnection(newConnection->getSocket().get());
 }
 
-//void Server::deleteConnection(Connection* ptr)
-//{
-//    m_connections.erase(m_connections.begin() + m_connections.indexOf(ptr));
-//}
-
-void Server::link()
+void Server::deleteConnection(qintptr id)
 {
-    QTcpSocket *clientSocket;
-
-    clientSocket = nextPendingConnection();
-    connect(clientSocket, &QTcpSocket::readyRead, this, &Server::rx);
-    connect(clientSocket, &QTcpSocket::disconnected, this, &Server::disconnected);
-}
-
-void Server::rx()
-{
-    QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
-    qDebug() << clientSocket->readAll();
-    clientSocket->write("Server says Hello");
-}
-
-
-void Server::disconnected()
-{
-    qDebug("Client Disconnected");
-    QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
-    clientSocket->deleteLater();
+    m_connections.remove(id);
+    qDebug(logDebug()) << "remove id " << id;
 }
 
 void Server::setNewTask(Connection* ptr)
@@ -80,9 +52,9 @@ void Server::setNewTask(Connection* ptr)
     task->setTask(ptr->getTask());
     m_pool->start(task);
 }
-bool Server::setConfig()
+bool Server::setSsslConfig()
 {
-    qDebug(logDebug()) << " setSocket 2";
+    qDebug(logDebug()) << " setConfig";
     QByteArray key;
     QByteArray cert;
     QByteArray root;
@@ -116,35 +88,31 @@ bool Server::setConfig()
         qDebug() << "root cert " << file_cert.errorString();
         return false;
     }
-
     QSslKey ssl_key(key, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey);
     QSslCertificate ssl_cert(cert, QSsl::Pem);
     QSslCertificate root_cert(root, QSsl::Pem);
 
     config.setLocalCertificate(ssl_cert);
     config.setPrivateKey(ssl_key);
-//        config.addCaCertificate(root_cert);
+    config.addCaCertificate(root_cert);
 //        config.setProtocol(QSsl::TlsV1_2);
-    config.setPeerVerifyMode(QSslSocket::VerifyNone);
+    config.setPeerVerifyMode(QSslSocket::VerifyPeer);
     m_config = std::make_shared<QSslConfiguration>(config);
     return true;
 }
 
+//
+//void Server::write()
+//{
+//    QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
+//    qDebug() << clientSocket->readAll();
+//    clientSocket->write("Server says Hello");
+//}
+//
 
-/*
-QFile keyFile("./CA/server.key");
-keyFile.open(QIODevice::ReadOnly);
-key = QSslKey(keyFile.readAll(), QSsl::Rsa);
-keyFile.close();
-
-QFile certFile("./CA/server.pem");
-certFile.open(QIODevice::ReadOnly);
-cert = QSslCertificate(certFile.readAll());
-certFile.close();
-
-if (!listen(QHostAddress("127.0.0.1"), 12345)) {
-    qCritical() << "Unable to start the TCP server";
-    exit(0);
-}
- */
-
+//void Server::disconnected()
+//{
+//    qDebug("Client Disconnected");
+//    QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
+//    clientSocket->deleteLater();
+//}

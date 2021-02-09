@@ -30,20 +30,11 @@ void Client::doConnect(char* host, int port)
     if (m_ssl_socket->waitForEncrypted(50000)) {
         m_ssl_socket->write("new client Suceeded");
         qDebug() << " connected to server ";
-        /*
-        if (m_ssl_socket->waitForBytesWritten()) {
-            qDebug(logDebug()) << "doConnect, socket mode =" << m_ssl_socket->mode();
-        }
-        else {
-            qDebug(logDebug()) << m_ssl_socket->errorString();
-        }
-         */
     }
     else {
         qDebug(logDebug()) << "error connection to server :" << m_ssl_socket->errorString();
         exit(1);
     }
-
 //    m_ssl_socket->startClientEncryption();
 }
 
@@ -121,6 +112,7 @@ void Client::testRequestLoop()
 void Client::connectSuccess()
 {
     qInfo(logInfo()) << "handshake success, state = " << m_ssl_socket->state();
+    m_ssl_socket->write("send from client !!!");
 }
 
 
@@ -129,8 +121,3 @@ void Client::sslErrors(const QList<QSslError> &errors)
             foreach (const QSslError &error, errors)
             qDebug() << error.errorString();
 }
-
-//    m_ssl_socket->setLocalCertificate(ssl_cert);
-//    m_ssl_socket->setPrivateKey(ssl_key);
-//    const auto list_certs = QSslCertificate::fromPath("./CA/client.pem", QSsl::Pem);
-//    config.setCaCertificates(list_certs);

@@ -19,7 +19,6 @@ public:
     void testConnect() const;
     void testRequestLoop();
 
-signals:
 
 public slots:
 //    void disconnected();
