@@ -14,7 +14,7 @@ add_compile_options(
     -std=c++17
     -Wall
     -Wextra
-    -Werror
+#    -Werror
     -Wpedantic
 )
 

@@ -24,7 +24,8 @@ int main(int argc, char *argv[]) {
     }
     Client client;
     client.doConnect(argv[1], QString(argv[2]).toInt());
-    client.testRequestLoop();
+    client.testConnect();
+//    client.testRequestLoop();
     return a.exec();
 }
 
