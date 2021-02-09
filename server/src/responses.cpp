@@ -1,4 +1,3 @@
-#include <sys/socket.h>
 #include "responses.h"
 
 AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_connection(connection) {

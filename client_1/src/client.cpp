@@ -5,39 +5,25 @@ class AES;
 
 Client::Client(QObject *parent) : QObject(parent) {
     m_socket = new QTcpSocket(this);
-    m_request = new AbstractRequest(m_socket);
-    m_signUp = new SignUpResponse(m_socket);
-    m_signIn = new SignInResponse(m_socket);
-    m_autoSignIn = new AutoSignInResponse(m_socket);
-    m_googleSignIn = new SignInWithGoogleResponse(m_socket);
-    m_logOut = new LogOutResponse(m_socket);
-    m_createdWorkflow = new CreatedWorkflowResponse(m_socket);
-    m_updateWorkflow = new UpdateWorkflowResponse(m_socket);
-    m_inviteToWorkflow = new InvitedToWorkflowResponse(m_socket);
-    m_allWorkflow = new AllWorkflowsResponse(m_socket);
-    m_singleWorkflow = new SingleWorkflowDataResponse(m_socket);
-    m_sendStat = new SendStatistics(m_socket);
-    m_sendProfile = new SendProfileResponse(m_socket);
-    m_updateProfile = new ToUpdateProfileResponse(m_socket);
+    m_request = std::make_shared<AbstractRequest>(m_socket);
+    m_signUp = std::make_shared<SignUpResponse>(m_socket);
+    m_signIn = std::make_shared<SignInResponse>(m_socket);
+    m_autoSignIn = std::make_shared<AutoSignInResponse>(m_socket);
+    m_googleSignIn = std::make_shared<SignInWithGoogleResponse>(m_socket);
+    m_logOut = std::make_shared<LogOutResponse>(m_socket);
+    m_createdWorkflow = std::make_shared<CreatedWorkflowResponse>(m_socket);
+    m_updateWorkflow = std::make_shared<UpdateWorkflowResponse>(m_socket);
+    m_inviteToWorkflow = std::make_shared<InvitedToWorkflowResponse>(m_socket);
+    m_allWorkflow = std::make_shared<AllWorkflowsResponse>(m_socket);
+    m_singleWorkflow = std::make_shared<SingleWorkflowDataResponse>(m_socket);
+    m_sendStat = std::make_shared<SendStatistics>(m_socket);
+    m_sendProfile = std::make_shared<SendProfileResponse>(m_socket);
+    m_updateProfile = std::make_shared<ToUpdateProfileResponse>(m_socket);
 }
 
 Client::~Client() {
     m_socket->abort();
     delete m_socket;
-    delete m_request;
-    delete m_signUp;
-    delete m_signIn;
-    delete m_autoSignIn;
-    delete m_googleSignIn;
-    delete m_logOut;
-    delete m_createdWorkflow;
-    delete m_updateWorkflow;
-    delete m_inviteToWorkflow;
-    delete m_allWorkflow;
-    delete m_singleWorkflow;
-    delete m_sendStat;
-    delete m_sendProfile;
-    delete m_updateProfile;
 }
 
 void Client::doConnect(char *ip, int port) {
@@ -67,7 +53,7 @@ void Client::testRequestLoop() {
 void Client::parseJSON(QJsonDocument itemDoc) {
     QJsonObject itemObject = itemDoc.object();
 
-    QVector<AbstractResponseHandler *> funcList;
+    QVector<std::shared_ptr<AbstractResponseHandler>> funcList;
 
     funcList.append({m_signIn, m_signUp, m_autoSignIn, m_googleSignIn, m_logOut, m_createdWorkflow});
     funcList.append({m_updateWorkflow, m_inviteToWorkflow, m_allWorkflow, m_singleWorkflow});

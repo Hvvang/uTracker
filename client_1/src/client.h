@@ -28,19 +28,19 @@ public slots:
 
 private:
     QTcpSocket *m_socket;
-    AbstractRequest *m_request;
+    std::shared_ptr<AbstractRequest> m_request;
 
-    AbstractResponseHandler *m_signUp;
-    AbstractResponseHandler *m_signIn;
-    AbstractResponseHandler *m_autoSignIn;
-    AbstractResponseHandler *m_googleSignIn;
-    AbstractResponseHandler *m_logOut;
-    AbstractResponseHandler *m_createdWorkflow;
-    AbstractResponseHandler *m_updateWorkflow;
-    AbstractResponseHandler *m_inviteToWorkflow;
-    AbstractResponseHandler *m_allWorkflow;
-    AbstractResponseHandler *m_singleWorkflow;
-    AbstractResponseHandler *m_sendStat;
-    AbstractResponseHandler *m_sendProfile;
-    AbstractResponseHandler *m_updateProfile;
+    std::shared_ptr<AbstractResponseHandler> m_signUp;
+    std::shared_ptr<AbstractResponseHandler> m_signIn;
+    std::shared_ptr<AbstractResponseHandler> m_autoSignIn;
+    std::shared_ptr<AbstractResponseHandler> m_googleSignIn;
+    std::shared_ptr<AbstractResponseHandler> m_logOut;
+    std::shared_ptr<AbstractResponseHandler> m_createdWorkflow;
+    std::shared_ptr<AbstractResponseHandler> m_updateWorkflow;
+    std::shared_ptr<AbstractResponseHandler> m_inviteToWorkflow;
+    std::shared_ptr<AbstractResponseHandler> m_allWorkflow;
+    std::shared_ptr<AbstractResponseHandler> m_singleWorkflow;
+    std::shared_ptr<AbstractResponseHandler> m_sendStat;
+    std::shared_ptr<AbstractResponseHandler> m_sendProfile;
+    std::shared_ptr<AbstractResponseHandler> m_updateProfile;
 };
