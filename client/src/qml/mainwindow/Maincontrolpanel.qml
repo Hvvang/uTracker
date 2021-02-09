@@ -2,15 +2,12 @@ import QtQuick 2.8
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
-import QtQuick.Layouts 1.15
+import QtQuick.Layouts 1.3
 
 
 Item {
     id: root
     width: Screen.width * 0.10
-    height: parent.height - header.height
-    anchors.top: header.bottom
-
 
     ColumnLayout {
         anchors.bottomMargin: 10
@@ -45,7 +42,7 @@ Item {
 
             property var currentPage: workFlowsBtn
 
-            MenuButton {
+            Menubutton {
                 id: workFlowsBtn
                 icon_text: "\uf16C"
                 name_text: "Work Flows"
@@ -59,7 +56,7 @@ Item {
                     }
                 }
             }
-            MenuButton {
+            Menubutton {
                 id: dailyPlaneBtn
                 icon_text: "\ue807"
                 name_text: "Daily plane"
@@ -74,7 +71,7 @@ Item {
                     }
                 }
             }
-            MenuButton {
+            Menubutton {
                 id: contactListBtn
                 icon_text: "\ue804"
                 name_text: "Contacts"
@@ -88,7 +85,7 @@ Item {
                     }
                 }
             }
-            MenuButton {
+            Menubutton {
                 id: calendarBtn
                 icon_text: "\uf133"
                 name_text: "Calendar"
@@ -102,7 +99,7 @@ Item {
                     }
                 }
             }
-            MenuButton {
+            Menubutton {
                 id: statisticBtn
                 icon_text: "\ue805"
                 name_text: "Statistic"
@@ -127,7 +124,7 @@ Item {
             Layout.fillWidth: true
             spacing: 0
 
-            ControlButton {
+            Contolbutton {
 //                        id: btn
                 icon_text: "\uf1de"
                 name_text: "Settings"
@@ -137,7 +134,7 @@ Item {
 //                    }
 
             }
-            ControlButton {
+            Contolbutton {
 //                        id: btn
                 icon_text: "\ue802"
                 name_text: "What's new?"
@@ -147,7 +144,7 @@ Item {
 //                    }
 
             }
-            ControlButton {
+            Contolbutton{
 //                        id: btn
                 icon_text: "\uf128"
                 name_text: "Support"

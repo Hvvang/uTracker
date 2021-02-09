@@ -23,6 +23,10 @@ add_subdirectory(src)
 add_executable(utracker
   client.cpp
   src/qml.qrc
+  src/kanbanmodel.cpp
+  src/kanbanmodel.h
+  src/taskpanelmodel.h
+  src/taskpanelmodel.cpp
   ${TS_FILES}
 )
 

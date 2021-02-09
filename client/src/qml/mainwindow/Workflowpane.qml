@@ -149,6 +149,13 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
             width: parent.width
         }
         MenuItem {
+            text: "\uf234  invite"
+            font.family: "fontello"
+            onTriggered: back.clicked()
+            height: 30
+            width: parent.width
+        }
+        MenuItem {
             text: "\ue809  edit"
             font.family: "fontello"
             onTriggered: back.Material.background = Material.Yellow
@@ -164,10 +171,3 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
         }
     }
 }
-
-
-/*##^##
-Designer {
-    D{i:8;anchors_y:0}
-}
-##^##*/

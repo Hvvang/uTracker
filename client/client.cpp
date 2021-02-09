@@ -6,6 +6,8 @@
 #include "googleauth.h"
 #include "authwindow.h"
 
+#include "kanbanmodel.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -19,6 +21,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 //    QQmlEngine auth_engine;
 
+    KanbanModel kanban;
+    engine.rootContext()->setContextProperty("KanbanModel", &kanban);
 //    AuthWindow auth(nullptr, &auth_engine);
 
 

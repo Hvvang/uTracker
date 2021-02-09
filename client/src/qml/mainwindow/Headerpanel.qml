@@ -3,7 +3,7 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 import QtGraphicalEffects 1.12
-import QtQuick.Layouts 1.15
+import QtQuick.Layouts 1.3
 
 Item {
     id: root
@@ -53,36 +53,32 @@ Item {
                 Layout.fillHeight: true
 
                 Repeater {
-//                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     id: rep
 
                     model: 3 // route.size
-//                    width: width + routeText.width + sign.width
+
                     Row {
-
-
-
-                    Text {
-                        id: routeText
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        text: qsTr("Route %1").arg(model.index);
-                        color: model.index < rep.count - 1 && !mouseArea.containsMouse ? "#8a8a8a" : "black"
-                        font.family: "fontello"
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: print("go to Route with lvl index %1".arg(index))
+                        Text {
+                            id: routeText
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                            text: qsTr("Route %1").arg(model.index);
+                            color: model.index < rep.count - 1 && !mouseArea.containsMouse ? "#8a8a8a" : "black"
+                            font.family: "fontello"
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: print("go to Route with lvl index %1".arg(index))
+                            }
+                        }
+                        Text {
+                            id: sign
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                            text: qsTr("%1").arg(model.index < rep.count - 1 ? " \ue800 " : "");
+                            color: "#8a8a8a"
+                            font.family: "fontello"
                         }
                     }
-                    Text {
-                        id: sign
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        text: qsTr("%1").arg(model.index < rep.count - 1 ? " \ue800 " : "");
-                        color: "#8a8a8a"
-                        font.family: "fontello"
-                    }
-                }
                 }
 
             }
@@ -146,8 +142,3 @@ Item {
         source: footerline
     }
 }
-
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
- ##^##*/

@@ -2,25 +2,19 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>fonts/fontello.ttf</file>
-    </qresource>
-    <qresource prefix="/auth">
-        <file alias="Authorization.qml">qml/authorization.qml</file>
-    </qresource>
-    <qresource prefix="/mainwindow">
-        <file alias="MainControlPanel.qml">qml/maincontrolpanel.qml</file>
-        <file alias="MenuButton.qml">qml/menubutton.qml</file>
-        <file alias="ControlButton.qml">qml/contolbutton.qml</file>
-        <file alias="HeaderPanel.qml">qml/headerpanel.qml</file>
-        <file alias="WorkFlows.qml">qml/workflowsview.qml</file>
-        <file alias="FlowPane.qml">qml/workflowpane.qml</file>
-        <file alias="Kanban.qml">qml/kanbanview.qml</file>
-        <file alias="DailyPlane.qml">qml/dailyplaneview.qml</file>
-        <file alias="Calendar.qml">qml/calendarview.qml</file>
-        <file alias="Statistic.qml">qml/statisticview.qml</file>
-        <file alias="Contacts.qml">qml/contactsview.qml</file>
-        <file alias="MainWindow.qml">qml/mainwindowview.qml</file>
-    </qresource>
-    <qresource prefix="/components">
-        <file alias="MenuButton.qml">qml/menubutton.qml</file>
+        <file>qml/mainwindow/Maincontrolpanel.qml</file>
+        <file>qml/mainwindow/Contolbutton.qml</file>
+        <file>qml/mainwindow/Headerpanel.qml</file>
+        <file>qml/mainwindow/Menubutton.qml</file>
+        <file>qml/mainwindow/Workflowsview.qml</file>
+        <file>qml/mainwindow/Workflowpane.qml</file>
+        <file>qml/mainwindow/Kanbanview.qml</file>
+        <file>qml/mainwindow/Dailyplaneview.qml</file>
+        <file>qml/mainwindow/Calendarview.qml</file>
+        <file>qml/mainwindow/Statisticview.qml</file>
+        <file>qml/mainwindow/Contactsview.qml</file>
+        <file>qml/mainwindow/Mainwindowview.qml</file>
+        <file>qml/authwindow/Authorization.qml</file>
+        <file>qml/mainwindow/Taskview.qml</file>
     </qresource>
 </RCC>

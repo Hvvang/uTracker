@@ -1,16 +1,16 @@
 import QtQuick 2.8
 import QtQuick.Window 2.12
-//import QtQuick.Controls 2.5
+import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
-import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.13
+
 
 Item {
     id: root
 
     anchors.fill: parent
 
-    HeaderPanel {
+    Headerpanel {
         id: header
     }
 
@@ -26,7 +26,7 @@ Item {
 
             Material.background: "transparent"
 
-            MainControlPanel {
+            Maincontrolpanel {
                 id: menu
 
                 SplitView.minimumWidth: 200
@@ -41,7 +41,7 @@ Item {
 
                 SplitView.minimumWidth: 50
                 SplitView.fillWidth: true
-                source: "/mainwindow/WorkFlows.qml"
+                source: "Workflowsview.qml"
 
             }
 
