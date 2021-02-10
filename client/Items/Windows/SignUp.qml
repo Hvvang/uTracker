@@ -3,6 +3,7 @@ import QtGraphicalEffects 1.15
 import QtQuick.Controls.Material 2.3
 import Material 0.3
 import Material.ListItems 0.1 as ListItem
+import Authorization 1.0
 
 import "../Components"
 
@@ -11,10 +12,38 @@ import "../Components"
 Page {
     id: signUpPage
     function signUpRequest () {
-        console.log("requested")
-        snackbar.open("Account created successfully");
-        signUpPage.pop()
+        console.log("requested " + mAuthor.LOGIN_EX)
+        var login = inputLogin.inputText
+        var mail = inputEmail.inputText
+        var password = inputPassword.inputText
+        mAuthor.signUpHandler(login, mail, password)
+
+//        switch(isValid) {
+//        case Authorization.LOGIN_EX:
+//            snackbar.open("Login already exsist"); break;
+//        case Authorization.MAIL_EX:
+//            snackbar.open("Mail already exsist"); break;
+//        case Authorization.NO_ERR:
+//            snackbar.open("Account created successfully");
+//            signUpPage.pop();
+//        }
+
     }
+    Connections {
+        target: mAuthor
+        onServerResponseSignUp: {
+            switch (err) {
+            case Authorization.LOGIN_EX:
+                snackbar.open("Login already exist"); break;
+            case Authorization.MAIL_EX:
+                snackbar.open("Mail already exist"); break;
+            case Authorization.NO_ERR:
+                snackbar.open("Account created successfully");
+                signUpPage.pop();
+            }
+        }
+    }
+
     LinearGradient {
             anchors.fill: parent
             start: Qt.point(0, 0)

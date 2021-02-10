@@ -7,6 +7,7 @@
 #include <QQuickView>
 #include "user.h"
 #include "authorization.h"
+#include "model/cardsmodel.h"
 
 namespace Request { // this have to be moved to request class/file
     enum TypeRequest {
@@ -37,6 +38,9 @@ private:
 //    QQuickView view;
     User m_user;
     Authorization m_author;
+
+    // Models
+    CardsModel m_cardListModel;
 };
 
 #endif // USERMANAGER_H

@@ -14,11 +14,18 @@ Page {
 //    }
 
     function checkValid () {
-        var valid = mAuthor.signInHandler("hello", "123456789");
-        if (!valid) {
-            snackbar.open("Wrong login or password");
-        } else {
-            root.goMainWindow();
+        var ident = inputNickname.inputText
+        var password = inputPassword.inputText
+        mAuthor.signInHandler(ident, password);
+    }
+    Connections {
+        target: mAuthor
+        onServerResponseSignIn: {
+            if (!valid) {
+                snackbar.open("Wrong login or password");
+            } else {
+                root.goMainWindow();
+            }
         }
     }
 

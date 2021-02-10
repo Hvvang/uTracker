@@ -3,8 +3,24 @@
 
 Authorization::Authorization(QObject *parent) : QObject(parent) {}
 
-bool Authorization::signInHandler(QString ident, QString password) {
+void Authorization::signUpHandler(QString login, QString mail, QString password)
+{
+    auto err = NO_ERR;
+    // request to server
+    if (login == "hello") {
+        err = LOGIN_EX;
+    }
+    else if (mail == "hello@a.a") {
+        err = MAIL_EX;
+    }
+
+    emit serverResponseSignUp(err);
+}
+
+void Authorization::signInHandler(QString ident, QString password) {
     if (ident == "hello" && password == "123456789")
         std::cout << "Hello" << std::endl;
-    return ident == "helslo" && password == "123456789";
+
+    emit serverResponseSignIn(ident == "hello" && password == "123456789");
+
 }

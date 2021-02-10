@@ -16,6 +16,7 @@ Rectangle {
     property string typeInput: "StandartType"
     property string colorInput: "MainColor"
     property string placeholderContent: "value"
+    property alias inputText: input.text
     property int inputWidth: 200
     property int inputHeight: 40
     property alias input: input

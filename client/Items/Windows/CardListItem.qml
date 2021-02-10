@@ -126,7 +126,7 @@ Item {
                     id:layout
                     width: parent.width
                     height: parent.height
-                    model:cardModel
+                    model:mCardModel
                     flickableDirection: Flickable.VerticalFlick
                     boundsBehavior: Flickable.StopAtBounds
                     ScrollBar.vertical: ScrollBar{
@@ -183,59 +183,59 @@ Item {
 
 
 
-                    MouseArea {
-                        id: coords
-                        height: parent.height
-                        width: layout.width - dp(80)
-//                        pressAndHoldInterval: 200
-                        property int pressedX: 0
-                        property int pressedY: 0
-                        property bool isHeld: false
+//                    MouseArea {
+//                        id: coords
+//                        height: parent.height
+//                        width: layout.width - dp(80)
+////                        pressAndHoldInterval: 200
+//                        property int pressedX: 0
+//                        property int pressedY: 0
+//                        property bool isHeld: false
 
-                        onReleased: {
-                            if (layout.draggedItemIndex !== -1) {
-                                var draggedIndex = layout.draggedItemIndex
-                                layout.draggedItemIndex = -1
-                                cardModel.move(draggedIndex,layout.indexAt(mouseX, mouseY + control.globalPos), 1)
-                                isHeld = false
-                            }
-                        }
-//                        onClicked: {
-//                            if (!isHeld) {
-//                                var cardIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
-//                                var cardItem = cardModel.get(index)
-//                                console.log("Request to server: Id of card: " + cardItem.cardId)
-
-//                                // Waiting for response
-
-//                                var component;
-//                                var sprite;
-//                                component = Qt.createComponent("CardView.qml");
-//                                if (component.status === Component.Ready){
-//                                    sprite = component.createObject(cardItem, {text: "info:" + cardId});
-//                                }
+//                        onReleased: {
+//                            if (layout.draggedItemIndex !== -1) {
+//                                var draggedIndex = layout.draggedItemIndex
+//                                layout.draggedItemIndex = -1
+//                                cardModel.move(draggedIndex,layout.indexAt(mouseX, mouseY + control.globalPos), 1)
+//                                isHeld = false
 //                            }
 //                        }
+////                        onClicked: {
+////                            if (!isHeld) {
+////                                var cardIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+////                                var cardItem = cardModel.get(index)
+////                                console.log("Request to server: Id of card: " + cardItem.cardId)
 
-                        onPressed: {
-                            pressedX = mouseX
-                            pressedY = mouseY
-                        }
-                        onPositionChanged: {
-                            if (pressed && Math.abs(mouseY - pressedY) > dp(20) && !isHeld) {
-                                isHeld = true
-                                layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
-                            }
-                            console.log("dragged: " + layout.draggedItemIndex)
-                            console.log("layout: " + layout.indexAt(mouseX, mouseY + control.globalPos))
-//                            if (pressed && isHeld && layout.draggedItemIndex !== -1 && layout.draggedItemIndex !== layout.indexAt(mouseX, mouseY + control.globalPos)) {
-//                                var draggedIndex = layout.draggedItemIndex
+////                                // Waiting for response
+
+////                                var component;
+////                                var sprite;
+////                                component = Qt.createComponent("CardView.qml");
+////                                if (component.status === Component.Ready){
+////                                    sprite = component.createObject(cardItem, {text: "info:" + cardId});
+////                                }
+////                            }
+////                        }
+
+//                        onPressed: {
+//                            pressedX = mouseX
+//                            pressedY = mouseY
+//                        }
+//                        onPositionChanged: {
+//                            if (pressed && Math.abs(mouseY - pressedY) > dp(20) && !isHeld) {
+//                                isHeld = true
 //                                layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
-//                                cardModel.move(draggedIndex, layout.indexAt(mouseX, mouseY + control.globalPos), 1)
 //                            }
-                        }
+//                            console.log("dragged: " + layout.draggedItemIndex)
+//                            console.log("layout: " + layout.indexAt(mouseX, mouseY + control.globalPos))
+////                            if (pressed && isHeld && layout.draggedItemIndex !== -1 && layout.draggedItemIndex !== layout.indexAt(mouseX, mouseY + control.globalPos)) {
+////                                var draggedIndex = layout.draggedItemIndex
+////                                layout.draggedItemIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+////                                cardModel.move(draggedIndex, layout.indexAt(mouseX, mouseY + control.globalPos), 1)
+////                            }
+//                        }
 
-                    }
+//                    }
                 }
 
             }

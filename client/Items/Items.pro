@@ -1,5 +1,5 @@
 QT += quick
-CONFIG += c++11
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -20,7 +20,10 @@ SOURCES += \
         authorization.cpp \
         main.cpp \
         user.cpp \
-        usermanager.cpp
+        usermanager.cpp \
+    model/cardlistsmodel.cpp \
+    model/cardsmodel.cpp \
+    Components/src/card.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,4 +41,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     authorization.h \
     user.h \
-    usermanager.h
+    usermanager.h \
+    model/cardlistsmodel.h \
+    model/cardsmodel.h \
+    Components/src/card.h
