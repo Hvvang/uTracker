@@ -9,10 +9,17 @@ import QtQuick.Layouts 1.3
 Item {
     id: cardList
 
+    function createNewCard() {
+        layout.model.append("Task " + (layout.model.rowCount() + 1))
+        control.position = 1.0
+    }
+
     property int cardListWidth: dp(300)
     property int cardListHeight: dp(1080)
     property string cardListTitle: "Value"
+    property alias cardsModel: layout.model
     readonly property alias cardListHeader: header
+
 
     width: cardListWidth
     height:cardListHeight
@@ -35,48 +42,48 @@ Item {
         ListElement {
             text: "Task1"
         }
-        ListElement {
-            text: "Task2"
-        }
-        ListElement {
-            text: "Task3"
-        }
-        ListElement {
-            text: "Task4"
-        }
-        ListElement {
-            text: "Task5"
-        }
-        ListElement {
-            text: "Task6"
-        }
-        ListElement {
-            text: "Task7"
-        }
-        ListElement {
-            text: "Task8"
-        }
-        ListElement {
-            text: "Task9"
-        }
-        ListElement {
-            text: "Task10"
-        }
-        ListElement {
-            text: "Task11"
-        }
-        ListElement {
-            text: "Task12"
-        }
-        ListElement {
-            text: "Task13"
-        }
-        ListElement {
-            text: "Task14"
-        }
-        ListElement {
-            text: "Task15"
-        }
+//        ListElement {
+//            text: "Task2"
+//        }
+//        ListElement {
+//            text: "Task3"
+//        }
+//        ListElement {
+//            text: "Task4"
+//        }
+//        ListElement {
+//            text: "Task5"
+//        }
+//        ListElement {
+//            text: "Task6"
+//        }
+//        ListElement {
+//            text: "Task7"
+//        }
+//        ListElement {
+//            text: "Task8"
+//        }
+//        ListElement {
+//            text: "Task9"
+//        }
+//        ListElement {
+//            text: "Task10"
+//        }
+//        ListElement {
+//            text: "Task11"
+//        }
+//        ListElement {
+//            text: "Task12"
+//        }
+//        ListElement {
+//            text: "Task13"
+//        }
+//        ListElement {
+//            text: "Task14"
+//        }
+//        ListElement {
+//            text: "Task15"
+//        }
 
     }
 
@@ -239,7 +246,10 @@ Item {
                 }
 
             }
+
+
             View {
+
                 width: parent.width
                 height: dp(20)
                 elevation: 2
@@ -248,6 +258,12 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     color: "#80f6a2bf"
+                    Button {
+                       anchors.fill: parent
+                       text: "add card"
+                       textColor: "#7a163c"
+                       onClicked : createNewCard()
+                    }
                 }
                 elevationInverted: true
             }

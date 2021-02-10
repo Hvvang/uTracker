@@ -26,9 +26,10 @@ import QtGraphicalEffects 1.0
 
 
 Item {
-
+    property alias listModel: deskListView.model
     function createNewList () {
-        deskModel.append({title: "List " + (deskModel.count + 1)})
+        listModel.append("List " + (listModel.rowCount() + 1))
+
         control.position = 1.0
     }
 
@@ -104,11 +105,12 @@ Item {
                     }
                 }
 
-                model: deskModel
+                model: mCardListsModel
                 delegate: CardListItem{
                     id: cardList
+                    cardsModel: modelD
                     cardListHeight: deskListView.height - dp(70)
-                    cardListTitle: model.title
+                    cardListTitle: titleD
 
                     states: [
                     State {

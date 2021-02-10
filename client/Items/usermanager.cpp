@@ -23,5 +23,5 @@ void UserManager::initModules() const
 //    root->setContextProperty()
 //    engine.rootContext()->setContextProperty("mAuthor", QVariant::fromValue(&m_author));
     engine.rootContext()->setContextProperty("mAuthor", (QObject *)&m_author);
-    engine.rootContext()->setContextProperty("mCardModel", (QObject *)&m_cardListModel);
+    engine.rootContext()->setContextProperty("mCardListsModel", (QObject *)&m_cardListModel);
 }

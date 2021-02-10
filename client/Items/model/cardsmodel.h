@@ -28,12 +28,14 @@ public:
 
     // Editable:
     bool setData(const QModelIndex &index, const QVariant &value,
-                 int role = Qt::EditRole) override;
+                 int role = TitleRole) override;
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
     // Add data:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
+    Q_INVOKABLE bool append(QString text);
 
     // Remove data:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
@@ -41,7 +43,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    QVector<int> m_cards;
+    QVector<Card> m_cards;
 };
 
 #endif // CARDSMODEL_H

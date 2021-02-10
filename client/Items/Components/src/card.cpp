@@ -15,7 +15,7 @@ Card &Card::operator=(const Card &card)
 {
     m_title = card.m_title;
     m_id = card.m_id;
-//    return this;
+    return *this;
 }
 
 QString Card::getTitle() const

@@ -7,7 +7,7 @@
 #include <QQuickView>
 #include "user.h"
 #include "authorization.h"
-#include "model/cardsmodel.h"
+#include "model/cardlistsmodel.h"
 
 namespace Request { // this have to be moved to request class/file
     enum TypeRequest {
@@ -40,7 +40,7 @@ private:
     Authorization m_author;
 
     // Models
-    CardsModel m_cardListModel;
+    CardListsModel m_cardListModel;
 };
 
 #endif // USERMANAGER_H
