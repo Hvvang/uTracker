@@ -7,25 +7,25 @@ AbstractResponseHandler::AbstractResponseHandler(QTcpSocket *socket) : m_socket(
 SignUpResponse::SignUpResponse(QTcpSocket *socket) :  AbstractResponseHandler(socket){}
 
 void SignUpResponse::responseHandle(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
+    qDebug() << "message :" << itemObject["message"].toString() << "\n";
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 SignInResponse::SignInResponse(QTcpSocket *socket) :  AbstractResponseHandler(socket){}
 
 void SignInResponse::responseHandle(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
+    qDebug() << "message :" << itemObject["message"].toString() << "\n";
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 SignInWithGoogleResponse::SignInWithGoogleResponse(QTcpSocket *socket) :  AbstractResponseHandler(socket){}
 
 void SignInWithGoogleResponse::responseHandle(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
+    qDebug() << "message :" << itemObject["message"].toString() << "\n";
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 AutoSignInResponse::AutoSignInResponse(QTcpSocket *socket) :  AbstractResponseHandler(socket){}
 
 void AutoSignInResponse::responseHandle(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
+    qDebug() << "message :" << itemObject["message"].toString() << "\n";
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 LogOutResponse::LogOutResponse(QTcpSocket *socket) :  AbstractResponseHandler(socket){}

@@ -42,7 +42,7 @@ public:
     void createWorkflow(QString title, QString description);
     void updateWorkflow(QString title, QString description, int workflowId);
     void inviteToWorkflow(int userId, int workflowId);
-    void getAllWorkflows();
+    void getAllWorkflows(int userId);
     void getSingleWorkflowData(int workflowId);
 
     void getStatistics();

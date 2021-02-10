@@ -1,4 +1,5 @@
 #include "runnable.h"
+#include "database.h"
 
 Runnable::Runnable(Connection *socket) {
     m_ptr = socket;
@@ -16,6 +17,7 @@ Runnable::Runnable(Connection *socket) {
     m_sendStatistics = std::make_shared<SendStatistics>(socket);
     m_sendProfile = std::make_shared<SendProfile>(socket);
     m_updateProfile = std::make_shared<ToUpdateProfile>(socket);
+
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {

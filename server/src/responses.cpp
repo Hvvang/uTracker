@@ -1,4 +1,5 @@
 #include "responses.h"
+#include "database.h"
 
 AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_connection(connection) {
     connect(this, &AbstractRequestHandler::responseInited, &AbstractRequestHandler::responseSend);
@@ -7,300 +8,180 @@ AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_conne
 ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
 void ToSignUp::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::SIGN_UP)},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToSignUp::parseJSON(QJsonObject itemObject){
+bool ToSignUp::isValid(QJsonObject itemObject) {
     qDebug() << "login :" << itemObject["login"].toString() << "\n";
     qDebug() << "email :" << itemObject["email"].toString() << "\n";
     qDebug() << "password :" << itemObject["password"].toString() << "\n";
     qDebug() << "name :" << itemObject["name"].toString() << "\n";
     qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
     // DASHA TUT
+    return true;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignIn::ToSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToSignIn::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::SIGN_IN)},
-            {"message", "ebu sho pisat"}
-    };
-    if (true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToSignIn::parseJSON(QJsonObject itemObject) {
+bool ToSignIn::isValid(QJsonObject itemObject) {
     qDebug() << "login :" << itemObject["login"].toString() << "\n";
     qDebug() << "email :" << itemObject["email"].toString() << "\n";
     qDebug() << "password :" << itemObject["password"].toString() << "\n";
     //DASHA TUT
+    return 1;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignInWithGoogle::ToSignInWithGoogle(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToSignInWithGoogle::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::AUTO_OAUTH)},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToSignInWithGoogle::parseJSON(QJsonObject itemObject) {
-        qDebug() << "token :" << itemObject["token"].toString() << "\n";
-        //DASHA TUT
+bool ToSignInWithGoogle::isValid(QJsonObject itemObject) {
+    qDebug() << "token :" << itemObject["token"].toString() << "\n";
+    //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToAutoSignIn::ToAutoSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToAutoSignIn::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::AUTO_AUTH)},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToAutoSignIn::parseJSON(QJsonObject itemObject) {
+bool ToAutoSignIn::isValid(QJsonObject itemObject) {
     qDebug() << "token :" << itemObject["token"].toString() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToLogOut::ToLogOut(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToLogOut::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::LOG_OUT)}
-    };
-    if(true)
-        jsonObject["message"] = "User succesfully logged out";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToLogOut::parseJSON(QJsonObject itemObject) {
+bool ToLogOut::isValid(QJsonObject itemObject) {
     qDebug() << "userId :" << itemObject["userId"].toInt() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToCreatedWorkflow::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::CREATE_WORKFLOW)}
-    };
-    if(true)
-        jsonObject["message"] = "Workflow created succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToCreatedWorkflow::parseJSON(QJsonObject itemObject) {
+bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToUpdateWorkflow::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::UPDATE_WORKFLOW)}
-    };
-    if(true)
-        jsonObject["message"] = "Workflow updated succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToUpdateWorkflow::parseJSON(QJsonObject itemObject) {
+bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
     qDebug() << "workflowId :" << itemObject["workflowId"].toInt() << "\n";
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToInvitedToWorkflow::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::INVITE_TO_WORKFLOW)}
-    };
-    if(true)
-        jsonObject["message"] = "Invited to Workflow succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToInvitedToWorkflow::parseJSON(QJsonObject itemObject) {
+bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
     qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
     qDebug() << "workflowID :" << itemObject["workflowId"].toInt() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
 
 void SendAllWorkflows::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::GET_ALL_WORKFLOWS)}
-    };
-    if(true)
-        jsonObject["message"] = "All Workflows sended succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void SendAllWorkflows::parseJSON(QJsonObject itemObject) {
+bool SendAllWorkflows::isValid(QJsonObject itemObject) {
     Q_UNUSED(itemObject);
-    //qDebug() << "userID :" << itemObject["userId"].toString() << "\n";
-    //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendSingleWorkflowData::SendSingleWorkflowData(Connection *socket) : AbstractRequestHandler(socket){}
 
 void SendSingleWorkflowData::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA)}
-    };
-    if(true)
-        jsonObject["message"] = "single Workflow sended succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void SendSingleWorkflowData::parseJSON(QJsonObject itemObject) {
+bool SendSingleWorkflowData::isValid(QJsonObject itemObject) {
     qDebug() << "workflowID :" << itemObject["workflowId"].toInt() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendStatistics::SendStatistics(Connection *socket) : AbstractRequestHandler(socket){}
 
 void SendStatistics::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::GET_STATISTICS)}
-    };
-    if(true)
-
-        jsonObject["message"] = "Statistics sended succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+            emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void SendStatistics::parseJSON(QJsonObject itemObject) {
+bool SendStatistics::isValid(QJsonObject itemObject) {
     Q_UNUSED(itemObject);
     //qDebug() << "userID :" << itemObject["userId"].toString() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 void SendProfile::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::GET_PROFILE)}
-    };
-    if(true)
-        jsonObject["message"] = "Profile sended succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void SendProfile::parseJSON(QJsonObject itemObject) {
+bool SendProfile::isValid(QJsonObject itemObject) {
     qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
     //DASHA TUT
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateProfile::ToUpdateProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 void ToUpdateProfile::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", static_cast<int>(RequestType::UPDATE_PROFILE)}
-    };
-    if(true)
-        jsonObject["message"] = "Profile updated succesfully";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
 
-void ToUpdateProfile::parseJSON(QJsonObject itemObject) {
+bool ToUpdateProfile::isValid(QJsonObject itemObject) {
     qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
     qDebug() << "name :" << itemObject["name"].toString() << "\n";
     qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
-    //DASHA TUT
+
+    return true;
 }
