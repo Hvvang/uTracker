@@ -2,6 +2,7 @@
 #include "server.h"
 #include "database.h"
 
+
 Connection::Connection(QObject *parent) : QObject(parent) {
     m_parent = parent;
     m_socket = new QTcpSocket(this);

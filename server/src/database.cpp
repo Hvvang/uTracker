@@ -15,6 +15,7 @@ DataBase::DataBase() : m_db(QSqlDatabase::addDatabase("QSQLITE")) {
     create_tables();
     connect(this, &DataBase::getData, this, &DataBase::sendData);
 }
+
 DataBase::~DataBase() {
     m_db.close();
 }
@@ -227,58 +228,6 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
     return QVariantMap();
 }
 
-//int DataBase::get_int_from_bd(const QString &table, const QString &column, const QString &namestring, const QString &string) {
-//    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//    QSqlQuery query;
-//    query.exec("select " + column + " from " + table + " where " + namestring + " = " + string + ";");
-//    query.first();
-//    return query.value(0).toInt();
-//}
-
-//QString DataBase::get_qstring_from_bd(const QString &table, const QString &column, const QString &namestring, const QString &string) {
-//    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//    QSqlQuery query;
-//    query.exec("select " + column + " from " + table + " where " + namestring + " = \"" + string + "\";");
-//    query.first();
-//    return query.value(0).toString();
-//}
-
-//void DataBase::set_string(const QString &table, const QString &column, const QString &string) {
-//    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//    QSqlQuery query;
-//    query.prepare(
-//        "INSERT INTO " + table + " (" + column +
-//        ") "
-//        "VALUES (:" +
-//        column + ")");
-//    query.bindValue(":" + column, string);
-//    query.exec();
-//}
-//void DataBase::update_string(const QString &table, const QString &column, const QString &string, const QString &columnchanged, const QString &newstring) {
-//    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//    QSqlQuery query;
-//    query.exec(
-//        "UPDATE " + table + " SET " + columnchanged + " = \"" + newstring + "\" WHERE " + column + " = \"" + string + "\";");
-//}
-//
-//
-//void DataBase::set_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2) {
-//    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//    QSqlQuery query;
-//    query.prepare(
-//        "INSERT INTO " + table + " (" + namestr1 + ", " + namestr2 +
-//        ") "
-//        "VALUES (:" +
-//        namestr1 + ", :" + namestr2 + ")");
-//    query.bindValue(":" + namestr1, str1);
-//    query.bindValue(":" + namestr2, str2);
-//    // if (!query.exec()) {
-//    //     mapa["error"] = 1;
-//    // } else {
-//    //     mapa["message"] = "all good";
-//    // }
-//}
-
 void DataBase::update_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2, const QString &column, const QString &string) {
     //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
     QSqlQuery query;
@@ -297,12 +246,7 @@ void DataBase::set_two_int(const QString &table, const QString &namestr1, int st
     query.bindValue(":" + namestr2, str2);
     query.exec();
 }
-//void DataBase::to_invited_to_workflow(int user_id, int workflow_id) {
-//    set_two_int("WF_connector", "workflow_id", workflow_id, "user_id", user_id);
-//}
 
-//void DataBase::send_profile(int user_id) {  //преоброзовать в json
-//}
 
 // //QJsonArray npcArray;
 // //QVector<int> vitya = {1, 2, 3, 4, 5};

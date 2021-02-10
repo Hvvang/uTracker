@@ -75,12 +75,13 @@ void AbstractRequest::inviteToWorkflow(int userId, int workflowId) {
     mapa["workflowId"] = workflowId;
     createJSON(mapa);
 }
+
 void AbstractRequest::getAllWorkflows(int userId) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     mapa["userId"] = userId;
-    createJSON(mapa);
 }
+
 void AbstractRequest::getSingleWorkflowData(int workflowId) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);

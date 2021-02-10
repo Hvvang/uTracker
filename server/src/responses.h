@@ -39,7 +39,7 @@ public:
     void responseInited(QJsonObject itemObject);
 
     public slots:
-    virtual void responseSend(QJsonObject itemObject) = 0;
+    void responseSend(QJsonObject itemObject);
 
 protected:
     Connection *m_connection;
@@ -51,9 +51,6 @@ class ToSignUp : public AbstractRequestHandler {
 public:
     ToSignUp(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToSignIn : public AbstractRequestHandler {
@@ -61,9 +58,6 @@ Q_OBJECT
 public:
     ToSignIn(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 
@@ -72,9 +66,6 @@ Q_OBJECT
 public:
     ToSignInWithGoogle(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToAutoSignIn : public AbstractRequestHandler {
@@ -82,9 +73,6 @@ Q_OBJECT
 public:
     ToAutoSignIn(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToLogOut : public AbstractRequestHandler {
@@ -92,9 +80,6 @@ Q_OBJECT
 public:
     ToLogOut(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToCreatedWorkflow : public AbstractRequestHandler {
@@ -102,9 +87,6 @@ Q_OBJECT
 public:
     ToCreatedWorkflow(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToUpdateWorkflow : public AbstractRequestHandler  {
@@ -112,9 +94,6 @@ Q_OBJECT
 public:
     ToUpdateWorkflow(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToInvitedToWorkflow : public AbstractRequestHandler  {
@@ -122,9 +101,6 @@ Q_OBJECT
 public:
     ToInvitedToWorkflow(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class SendAllWorkflows : public AbstractRequestHandler  {
@@ -132,9 +108,6 @@ Q_OBJECT
 public:
     SendAllWorkflows(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class SendSingleWorkflowData : public AbstractRequestHandler  {
@@ -142,9 +115,6 @@ Q_OBJECT
 public:
     SendSingleWorkflowData(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class SendStatistics : public AbstractRequestHandler  {
@@ -152,9 +122,6 @@ Q_OBJECT
 public:
     SendStatistics(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class SendProfile : public AbstractRequestHandler  {
@@ -162,9 +129,6 @@ Q_OBJECT
 public:
     SendProfile(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
 class ToUpdateProfile : public AbstractRequestHandler  {
@@ -172,8 +136,5 @@ Q_OBJECT
 public:
     ToUpdateProfile(Connection *socket);
     bool isValid(QJsonObject itemObject);
-
-public slots:
-    void responseSend(QJsonObject itemObject);
 };
 
