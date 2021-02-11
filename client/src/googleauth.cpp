@@ -72,6 +72,7 @@ GoogleAuth::GoogleAuth(QObject *parent) : QObject(parent) {
         // TODO: send gotted shrared key to server for getting tokens on server side of application
 
     });
+    this->google->grant();
 }
 
 GoogleAuth::~GoogleAuth() {

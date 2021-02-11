@@ -38,7 +38,7 @@ Item {
 
             onClicked: {
                 console.log("Continue with Google clicked");
-                GoogleAuth.click()
+                client.googleAuthorize();
             }
             Keys.onPressed: {
                 if (event.key === Qt.Key_Enter - 1)
@@ -63,7 +63,7 @@ Item {
             Material.elevation: 4
 
             onClicked: {
-                snackbar.customOpen("error")
+                snackbar.customOpen("Now this option is unfortunately unavailible 😕")
                 console.log("Continue with GitHub clicked");
             }
             Keys.onPressed: {
@@ -133,7 +133,7 @@ Item {
 
         Button {
             id: signUpBtn
-            text: qsTr("Sign up")
+            text: qsTr("Continue with email")
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
@@ -144,13 +144,11 @@ Item {
             KeyNavigation.tab: goToSignUpBtn
 
             onClicked: {
-                print("Sign Up clicked!")
+                print("Continue with email clicked!")
 
                 var error = email.emailError || password.passwordError
                 if (!error) {
-
-                    print("Register button pressed!")
-                    Auth.signUp(email.text, password.text, name.text, lastName.text)
+                    client.authorize(email.text, password.text);
                 }
                 else {
                     if (email.emailError) {

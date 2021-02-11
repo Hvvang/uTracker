@@ -13,10 +13,10 @@
 #include "connection.h"
 
 enum class RequestType {
-    SIGN_UP,
-    SIGN_IN,
-    AUTO_AUTH,
-    AUTO_OAUTH,
+    AUTO_OAUTH = 0,
+    AUTO_AUTH = 1,
+    SIGN_UP = 2,
+    SIGN_IN = 3,
     LOG_OUT,
     CREATE_WORKFLOW,
     UPDATE_WORKFLOW,
@@ -25,7 +25,7 @@ enum class RequestType {
     GET_SINGLE_WORKFLOW_DATA,
     GET_STATISTICS,
     GET_PROFILE,
-    UPDATE_PROFILE
+    UPDATE_PROFILE,
 };
 
 class AbstractRequestHandler : public QObject{

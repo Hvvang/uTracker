@@ -2,7 +2,6 @@ import QtQuick 2.8
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
-import ".."
 
 Item {
     id: root
@@ -14,6 +13,8 @@ Item {
 
         property string text
         property int duration: 2000
+
+        onTextChanged: customOpen(text);
 
         y: parent.height - 44
         width: parent.width

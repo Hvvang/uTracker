@@ -29,8 +29,10 @@ int main(int argc, char *argv[])
 
     engine.load(url);
 
-//    Router router(engine.rootObjects()[0]);
-//    Client client;
+    Router router(engine.rootObjects()[0]);
+    Client client(&engine);
+
+    engine.rootContext()->setContextProperty("client", &client);
 
     return app.exec();
 }

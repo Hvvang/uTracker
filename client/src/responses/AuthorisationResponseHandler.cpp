@@ -16,9 +16,11 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
         // TODO: add this message to pop up in UI
         qWarning() << "An error occurred: " << handleMessage(data);
+        m_client->notifyUserAboutError(handleMessage(data));
     }
     else if (error(data) == AbstractResponseHandler::ResponseErrorType::BadToken) {
         // TODO: refresh token
+//        m_client->refresh_token();
     }
     else {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
@@ -28,6 +30,6 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
 
         m_client->saveToken("auth_token", token);
         m_client->switchWindow(Client::Ui::AuthWindow, Client::Ui::MainWindow);
-
+        m_client->notifyUserAboutError(handleMessage(data));
     }
 }

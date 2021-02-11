@@ -9,11 +9,13 @@
 #include <QJsonDocument>
 #include "AuthorisationResponseHandler.h"
 #include "Router.h"
+#include "googleauth.h"
 
 Client* Client::m_instance = nullptr;
 
-Client::Client(const QHostAddress &host, const quint16 port, QObject *parent)
-    : QObject(parent) {
+Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
+    : QObject(parent)
+    , m_engine(engine) {
 
     switchWindow(Ui::Root, Ui::AuthWindow);
 
@@ -23,6 +25,8 @@ Client::Client(const QHostAddress &host, const quint16 port, QObject *parent)
         qDebug() << "Client successfully connected to server.";
 
         initResponseHandlers();
+        connect(this, &Client::request, this, &Client::send);
+//        autoSignIn();
 
         connect(&m_socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
         connect(&m_socket, &QTcpSocket::readyRead, this, &Client::readyRead);
@@ -41,8 +45,33 @@ void Client::bytesWritten(qint64 bytes) {
 
 void Client::readyRead() {
     qDebug() << "RESPONSE FROM SERVER:\n";
-    qDebug() << m_socket.readAll();
-    emit responseHandled(m_socket.readAll());
+    auto data = m_socket.readAll();
+    qDebug() << data;
+
+    QJsonDocument itemDoc = QJsonDocument::fromJson(data.data());
+    QJsonObject rootObject = itemDoc.object();
+    qDebug() << "itemDoc = " << itemDoc;
+
+    int responseType;
+    if (rootObject.contains("type")) {
+        responseType = rootObject.value("type").toInt();
+        qDebug() << "responseType = " << responseType;
+    } else {
+        return;
+    }
+
+    switch (static_cast<ResponseType>(responseType)) {
+        case Client::ResponseType::SIGN_UP:
+            emit signUpResponse(data); break;
+        case ResponseType::SIGN_IN:
+            emit signInResponse(data); break;
+        case ResponseType::LOG_OUT:
+            emit logOutResponse(data); break;
+        case ResponseType::ERROR:
+            emit errorResponse(data); break;
+        default:
+            qDebug() << "Emit some error in response!";
+    }
 }
 
 void Client::deinitResponseHandlers() {
@@ -51,7 +80,16 @@ void Client::deinitResponseHandlers() {
 void Client::initResponseHandlers() {
     AuthorisationResponseHandler authHandler;
 
-    connect(this, &Client::responseHandled, &authHandler, &AuthorisationResponseHandler::handled);
+    connect(this, &Client::signUpResponse, &authHandler, &AuthorisationResponseHandler::processResponse);
+    connect(this, &Client::signInResponse, &authHandler, &AuthorisationResponseHandler::processResponse);
+}
+
+void Client::send(const QString &data) {
+    QByteArray json = data.toUtf8();
+
+    QByteArray buffer;
+    m_socket.write(buffer.setNum(json.size()));
+    m_socket.write("\n" + json);
 }
 
 void Client::switchWindow(const Client::Ui &from, const Client::Ui &to) {
@@ -59,10 +97,10 @@ void Client::switchWindow(const Client::Ui &from, const Client::Ui &to) {
     QUrl url;
 
     if (to == Ui::AuthWindow) {
-        url = "qrc:/authwindow/Authorisation.qml";
+        url = "qrc:/qml/Authorization.qml";
     }
     else if (to == Ui::MainWindow) {
-        url = "qrc:/mainwindow/main.qml";
+        url = "qrc:/qml/main.qml";
     }
     m_router->loadWindow(url);
 }
@@ -80,17 +118,17 @@ void Client::switchPanel(const Client::Ui &from, const Client::Ui &to) {
 
     switch(to) {
         case Ui::WorkFlows:
-            url = "qrc:/authhwindow/authorisation.qml"; break;
+            url = "qrc:/qml/Authorization.qml"; break;
         case Ui::DailyPlane:
-            url = "qrc:/authhwindow/authorisation.qml"; break;
+            url = "qrc:/qml/Authorization.qml"; break;
         case Ui::Contacts:
-            url = "qrc:/authhwindow/authorisation.qml"; break;
+            url = "qrc:/qml/Authorization.qml"; break;
         case Ui::Calendar:
-            url = "qrc:/authhwindow/authorisation.qml"; break;
+            url = "qrc:/qml/Authorization.qml"; break;
         case Ui::Statistic:
-            url = "qrc:/authhwindow/authorisation.qml"; break;
+            url = "qrc:/qml/Authorization.qml"; break;
         case Ui::Kanban:
-            url = "qrc:/authhwindow/authorisation.qml"; break;
+            url = "qrc:/qml/Authorization.qml"; break;
     }
     m_router->loadPanel(url);
 }
@@ -120,4 +158,66 @@ QString Client::getToken(const QString &type) {
     auto json = QJsonDocument().fromJson(file.readAll()).object();
     return json.value(type).toString();
 }
+
+void Client::googleAuthorize() {
+    if (!m_googleInstance)
+        m_googleInstance = new GoogleAuth(this);
+}
+
+void Client::autoSignIn() {
+    QString token;
+    QJsonObject json;
+
+    if (token = m_client->getToken("auth_token"); !token.isEmpty()) {
+        json["type"] = static_cast<int>(Client::RequestType::AUTO_AUTH);
+        json["token"] = token;
+    } else if (token = m_client->getToken("accesses_token"); !token.isEmpty()) {
+        json["type"] = static_cast<int>(Client::RequestType::AUTO_OAUTH);
+        json["token"] = token;
+    } else {
+        return;
+    }
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::authorize(const QString &email, const QString &password) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::SIGN_IN);
+    json["email"] = email;
+    json["password"] = password;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::registrate(const QString &email, const QString &password,
+                    const QString &name, const QString &surname) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::SIGN_UP);;
+    json["email"] = email;
+    json["password"] = password;
+    json["name"] = name;
+    json["surname"] = surname;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::notifyUserAboutError(const QString &error) {
+    if (m_engine) {
+        if (!m_snackbarInstance) {
+            m_snackbarInstance = m_engine->rootObjects()[0]->findChild<QQuickItem *>("snackbar");
+        }
+        if (m_snackbarInstance) {
+            m_snackbarInstance->setProperty("text", error);
+        }
+    }
+}
+
 

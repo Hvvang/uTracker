@@ -132,7 +132,7 @@ Item {
                 if (!error) {
 
                     print("Register button pressed!")
-                    Auth.signUp(email.text, password.text, name.text, lastName.text)
+                    client.registrate(email.text, password.text, name.text, lastName.text);
                 }
                 else {
                     if (email.emailError) {

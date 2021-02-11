@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(utracker LANGUAGES CXX)
+project(client LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -24,16 +24,16 @@ include_directories(src/responses)
 add_subdirectory(src)
 add_subdirectory(src/responses)
 
-add_executable(utracker
+add_executable(client
     main.cpp
     src/qml.qrc
     ${TS_FILES}
 )
 
 
-target_compile_definitions(utracker
+target_compile_definitions(client
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(utracker
+target_link_libraries(client
   PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth auth ResponsesLib)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
