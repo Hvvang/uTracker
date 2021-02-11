@@ -19,37 +19,38 @@ DataBase::DataBase() : m_db(QSqlDatabase::addDatabase("QSQLITE")) {
 DataBase::~DataBase() {
     m_db.close();
 }
+
 void DataBase::create_tables() {
     //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
     QSqlQuery query;
-    query.exec("create table IF NOT EXISTS UsersCredential ("
-               "id integer primary key AUTOINCREMENT,"
-               "login varchar UNIQUE,"
-               "password varchar,"
-               "auth_token varchar UNIQUE,"
-               "first_name varchar,"
-               "last_name varchar,"
-               "photo blob,"
-               "google_token varchar,"
-               "github_token varchar)"
-               );
+    query.exec(
+        "create table IF NOT EXISTS UsersCredential ("
+        "id integer primary key AUTOINCREMENT,"
+        "login varchar UNIQUE,"
+        "password varchar,"
+        "auth_token varchar UNIQUE,"
+        "first_name varchar,"
+        "last_name varchar,"
+        "photo blob,"
+        "google_token varchar,"
+        "github_token varchar)");
     query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, description varchar)");
     query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
     query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, panel_id int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist json, files blob)");
     query.exec("create table IF NOT EXISTS T_connector (id integer primary key AUTOINCREMENT, task_id int, worker_id int)");
-    query.exec("create table IF NOT EXISTS WF_connector (id integer primary key AUTOINCREMENT, workflow_id int, user_id int)");
+    query.exec("create table IF NOT EXISTS WF_connector (id integer primary key AUTOINCREMENT,workflow_id int, user_id int, UNIQUE (workflow_id, user_id))");
 }
 
 void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &map) {
     QVariantMap result;
-    switch(static_cast<RequestType>(type)) {
+    switch (static_cast<RequestType>(type)) {
         case RequestType::AUTO_AUTH:
             break;
         case RequestType::SIGN_UP:
             result = createUser(map.value("email").toString(),
-                                 map.value("password").toString(),
-                                 map.value("name").toString(),
-                                 map.value("surname").toString());
+                                map.value("password").toString(),
+                                map.value("name").toString(),
+                                map.value("surname").toString());
             break;
         case RequestType::SIGN_IN:
             result = containsUser(map.value("email").toString(),
@@ -61,23 +62,24 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             break;
         case RequestType::CREATE_WORKFLOW:
             result = createWorkflow(map.value("userId").toInt(),
-                           map.value("title").toString(),
-                           map.value("desctiption").toString());
+                                    map.value("title").toString(),
+                                    map.value("description").toString());
             break;
         case RequestType::UPDATE_WORKFLOW:
             result = updateWorkflow(map.value("workflowId").toInt(),
-                               map.value("title").toString(),
-                               map.value("desctiption").toString());
+                                    map.value("title").toString(),
+                                    map.value("description").toString());
             break;
         case RequestType::INVITE_TO_WORKFLOW:
             result = inviteToWorkflow(map.value("userId").toInt(),
-                             map.value("workflowId").toInt());
+                                      map.value("workflowId").toInt());
             break;
         case RequestType::GET_ALL_WORKFLOWS:
+            qDebug() << "lol";
             result = getWorkflows(map.value("userId").toInt());
             break;
         case RequestType::GET_SINGLE_WORKFLOW_DATA:
-            result = getWorkflow(map.value("workflow_id").toInt());
+            result = getWorkflow(map.value("workflowId").toInt());
             break;
         case RequestType::GET_STATISTICS:
             break;
@@ -92,7 +94,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
     }
 
     if (!result.isEmpty()) {
-        QJsonObject jsonObject =  QJsonObject::fromVariantMap(result);
+        QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
         emit m_connection->sendResponse(jsonDoc.toJson());
     }
@@ -125,9 +127,8 @@ DataBase::createUser(const QString &login,
                      const QString &surname) {
     QSqlQuery query;
     query.prepare(
-            "INSERT INTO UsersCredential (auth_token, login, password, first_name, last_name) "
-            "VALUES (:auth_token, :login, :password, :first_name, :last_name);");
-//    query.bindValue(":auth_token", login);
+        "INSERT INTO UsersCredential (login, password, first_name, last_name) "
+        "VALUES (:login, :password, :first_name, :last_name);");
     query.bindValue(":login", login);
     query.bindValue(":password", password);
     query.bindValue(":first_name", name);
@@ -147,32 +148,41 @@ DataBase::createUser(const QString &login,
 QVariantMap
 DataBase::createWorkflow(int owner_id, const QString &title, const QString &description) {
     // set_two_string("WorkFlows", "title", title, "description", description);
-    QSqlQuery query;
-    query.prepare(
-            "INSERT INTO WorkFlows (owner_id, title, description) "
-            "VALUES (:owner_id, :title, :description)");
-    query.bindValue(":owner_id", owner_id);
-    query.bindValue(":title", title);
-    query.bindValue(":description", description);
-    query.exec();
+    insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'");
+    // QSqlQuery query;
+    // query.prepare(
+    //         "INSERT INTO WorkFlows (owner_id, title, description) "
+    //         "VALUES (:owner_id, :title, :description)");
+    // query.bindValue(":owner_id", owner_id);
+    // query.bindValue(":title", title);
+    // query.bindValue(":description", description);
+    // query.exec();
     return QVariantMap();
 }
 
 QVariantMap
 DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &description) {
-    update_two_string("WorkFlows",
-                      "title",
-                      title,
-                      "description",
-                      description,
-                      "id",
-                      QString(workflow_id));
+    // update_two_string("WorkFlows",
+    //                   "title",
+    //                   title,
+    //                   "description",
+    //                   description,
+    //                   "id",
+    //                   QString(workflow_id));
+    if (title != 0 && description != 0) {
+        update("WorkFlows", "title = '" + title + "', description = '" + description + "'", "id = " + QString::number(workflow_id));
+    } else if (title != 0) {
+        update("WorkFlows", "title = '" + title, "id = " + QString::number(workflow_id));
+    } else if (description != 0) {
+        update("WorkFlows", "description = '" + description + "'", "id = " + QString::number(workflow_id));
+    }
     return QVariantMap();
 }
 
 QVariantMap
 DataBase::inviteToWorkflow(int user_id, int workflow_id) {
-    set_two_int("WF_connector", "workflow_id", workflow_id, "user_id", user_id);
+    // set_two_int("WF_connector", "workflow_id", workflow_id, "user_id", user_id);
+    insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(user_id));
     return QVariantMap();
 }
 
@@ -186,8 +196,7 @@ QVariantMap DataBase::getWorkflows(int user_id) {
     if (query.first()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
         npcArray.append(jsonObject);
-    }
-    else {
+    } else {
         maxi_mapa["error"] = 1;
     }
     while (query.next()) {
@@ -201,30 +210,38 @@ QVariantMap DataBase::getWorkflows(int user_id) {
 }
 
 QVariantMap DataBase::getWorkflow(int workflow_id) {
-    QSqlQuery query;
-    query.prepare("select * from WorkFlows where id = :workflow_id;");
-    query.bindValue(":workflow_id", workflow_id);
-    query.exec();
-    query.first();
+    QSqlQuery query = select("WorkFlows", "*", "id = " + QString::number(workflow_id));
+    // query.prepare("select * from WorkFlows where id = :workflow_id;");
+    // query.bindValue(":workflow_id", workflow_id);
+    // query.exec();
     QMap<QString, QVariant> mapa;
-    mapa["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
-    mapa["userId"] = query.value(0).toInt();
-    mapa["title"] = query.value(1).toString();
-    mapa["description"] = query.value(2).toString();
-    mapa["message"] = "Nazar";
+    if (query.first()) {
+        mapa["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
+        mapa["userId"] = query.value(0).toInt();
+        mapa["title"] = query.value(1).toString();
+        mapa["description"] = query.value(2).toString();
+        mapa["message"] = "Nazar";
+    } else {
+        mapa["error"] = 1;
+        mapa["message"] = "workflowId isn't in basadate";
+    }
     return mapa;
 }
 
 QVariantMap DataBase::getProfile(int user_id) {
-    QSqlQuery query;
-    query.exec("select first_name, last_name from WorkFlows where id = " + QString(user_id) + ";");
-    query.first();
+    QSqlQuery query = select("WorkFlows", "first_name, last_name", "id = " + QString::number(user_id) + ";");
+    // query.exec("select first_name, last_name from WorkFlows where id = " + QString::number(user_id) + ";");
     QMap<QString, QVariant> mapa;
-    mapa["type"] = static_cast<int>(RequestType::GET_PROFILE);
-    mapa["userId"] = query.value(0).toInt();
-    mapa["title"] = query.value(1).toString();
-    mapa["description"] = query.value(2).toString();
-    mapa["message"] = "Nazar";
+    if (query.first()) {
+        mapa["type"] = static_cast<int>(RequestType::GET_PROFILE);
+        mapa["userId"] = query.value(0).toInt();
+        mapa["title"] = query.value(1).toString();
+        mapa["description"] = query.value(2).toString();
+        mapa["message"] = "Nazar";
+    } else {
+        mapa["error"] = 1;
+        mapa["message"] = "User isn't in basadate";
+    }
     //    QString email
     //    QString password
     //    QString auth_token
@@ -237,29 +254,43 @@ QVariantMap DataBase::getProfile(int user_id) {
 }
 
 QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QString &surname) {
-    update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
+    // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
+    update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id));
     return QVariantMap();
 }
 
-void DataBase::update_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2, const QString &column, const QString &string) {
-    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-    QSqlQuery query;
-    query.exec("UPDATE " + table + " SET " + namestr1 + " = \"" + str1 + ", " + namestr2 + " = \"" + str2 + "\" WHERE " + column + " = \"" + string + "\";");
-}
+    bool DataBase::insert(const QString &table, const QString &insert, const QString &values) {
+        QSqlQuery query;
+        return query.exec("INSERT INTO " + table + " (" + insert + ") VALUES (" + values + ");");
+    }
+    bool DataBase::update(const QString &table, const QString &update, const QString &where) {
+        QSqlQuery query;
+        return query.exec("UPDATE " + table + " SET " + update + " WHERE " + where + ";");
+    }
+    QSqlQuery DataBase::select(const QString &table, const QString &select, const QString &where) {
+        QSqlQuery query;
+        query.exec("SELECT " + select + " FROM " + table + " WHERE " + where + ";");
+        return query;
+    }
 
-void DataBase::set_two_int(const QString &table, const QString &namestr1, int str1, const QString &namestr2, int str2) {
-    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-    QSqlQuery query;
-    query.prepare(
-        "INSERT INTO " + table + " (" + namestr1 + ", " + namestr2 +
-        ") "
-        "VALUES (:" +
-        namestr1 + ", :" + namestr2 + ")");
-    query.bindValue(":" + namestr1, str1);
-    query.bindValue(":" + namestr2, str2);
-    query.exec();
-}
+// void DataBase::update_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2, const QString &column, const QString &string) {
+//     //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
+//     QSqlQuery query;
+//     query.exec("UPDATE " + table + " SET " + namestr1 + " = \"" + str1 + ", " + namestr2 + " = \"" + str2 + "\" WHERE " + column + " = \"" + string + "\";");
+// }
 
+// void DataBase::set_two_int(const QString &table, const QString &namestr1, int str1, const QString &namestr2, int str2) {
+//     //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
+//     QSqlQuery query;
+//     query.prepare(
+//         "INSERT INTO " + table + " (" + namestr1 + ", " + namestr2 +
+//         ") "
+//         "VALUES (:" +
+//         namestr1 + ", :" + namestr2 + ")");
+//     query.bindValue(":" + namestr1, str1);
+//     query.bindValue(":" + namestr2, str2);
+//     query.exec();
+// }
 
 // //QJsonArray npcArray;
 // //QVector<int> vitya = {1, 2, 3, 4, 5};

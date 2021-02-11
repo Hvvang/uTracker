@@ -35,16 +35,16 @@ void Client::doConnect(char *ip, int port) {
 }
 
 void Client::testRequestLoop() {
-    m_request->signUp("ndykyy1", "21453#gs8kFSdfD1F244iuSn1", "Nazar1", "Dykyy1", "NazarDykyy1@gmail.com");
-    m_request->signIn("NazarDykyy1@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn1");
+    // m_request->signUp("ndykyy1", "21453#gs8kFSdfD1F244iuSn1", "Nazar1", "Dykyy1", "NazarDykyy1@gmail.com");
+    // m_request->signIn("NazarDykyy1@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn1");
 //     m_request->autoSignIn("token");
 //     m_request->autoSignInWithGoogle("token");
 //     m_request->logOut(1);
-//     m_request->createWorkflow("EL TITLE", "EL DESCRIPTION");
-//     m_request->updateWorkflow("QString title", "QString description", 1);
-//     m_request->inviteToWorkflow(1, 1);
-//     m_request->getAllWorkflows(1);
-//     m_request->getSingleWorkflowData(1);
+    // m_request->createWorkflow("EL TITLE", "EL DESCRIPTION");
+    // m_request->updateWorkflow("QString title", "QString description", 1);
+    // m_request->inviteToWorkflow(1, 1);
+    m_request->getAllWorkflows(1);
+    // m_request->getSingleWorkflowData(1);
 //     m_request->getStatistics();
 //     m_request->getProfile(1);
 //     m_request->updateProfile(1, "Nazar", "Dykyy");
