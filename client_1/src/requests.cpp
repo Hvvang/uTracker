@@ -45,14 +45,15 @@ void AbstractRequest::autoSignIn(QString token) {
     mapa["token"] = token;
     createJSON(mapa);
 }
-void AbstractRequest::logOut(int id) {
+void AbstractRequest::logOut(int userId) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::LOG_OUT);
-    mapa["userId"] = id;
+    mapa["userId"] = userId;
     createJSON(mapa);
 }
 
 void AbstractRequest::createWorkflow(QString title, QString description, int ownerId) {
+//    Q_UNUSED(ownerId);
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
     mapa["ownerId"] = ownerId;

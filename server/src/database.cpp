@@ -83,15 +83,14 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
         case RequestType::GET_STATISTICS:
             break;
         case RequestType::GET_PROFILE:
-            getProfile(map.value("userId").toInt());
+            result = getProfile(map.value("userId").toInt());
             break;
         case RequestType::UPDATE_PROFILE:
-            updateProfile(map.value("userId").toInt(),
+            result = updateProfile(map.value("userId").toInt(),
                           map.value("name").toString(),
                           map.value("surname").toString());
             break;
     }
-    qDebug() << result;
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
@@ -179,14 +178,20 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
     } else if (description != 0) {
         update("WorkFlows", "description = '" + description + "'", "id = " + QString::number(workflow_id));
     }
-    return QVariantMap();
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
+    map["message"] = "Заебісь зайшло в Update workflow";
+    return map;
 }
 
 QVariantMap
 DataBase::inviteToWorkflow(int user_id, int workflow_id) {
     // set_two_int("WF_connector", "workflow_id", workflow_id, "user_id", user_id);
     insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(user_id));
-    return QVariantMap();
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
+    map["message"] = "Заебісь зайшло в invite";
+    return map;
 }
 
 QVariantMap DataBase::getWorkflows(int user_id) {
@@ -260,7 +265,10 @@ QVariantMap DataBase::getProfile(int user_id) {
 QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QString &surname) {
     // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
     update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id));
-    return QVariantMap();
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
+    map["message"] = "Заебісь зайшло в UpdateProfile";
+    return map;
 }
 
     bool DataBase::insert(const QString &table, const QString &insert, const QString &values) {

@@ -37,7 +37,7 @@ public:
     void signIn(QString email, QString  login, QString pass);
     void autoSignInWithGoogle(QString token);
     void autoSignIn(QString token);
-    void logOut(int id);
+    void logOut(int userId);
 
     void createWorkflow(QString title, QString description, int ownerId);
     void updateWorkflow(QString title, QString description, int workflowId);

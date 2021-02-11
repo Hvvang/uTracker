@@ -14,117 +14,116 @@ void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
 ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
 bool ToSignUp::isValid(QJsonObject itemObject) {
-    qDebug() << "login :" << itemObject["login"].toString() << "\n";
-    qDebug() << "email :" << itemObject["email"].toString() << "\n";
-    qDebug() << "password :" << itemObject["password"].toString() << "\n";
-    qDebug() << "name :" << itemObject["name"].toString() << "\n";
-    qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
-    // DASHA TUT
-    return true;
+    if (!itemObject["email"].toString().isEmpty()
+      && !itemObject["password"].toString().isEmpty()
+      && !itemObject["name"].toString().isEmpty()
+      && !itemObject["surname"].toString().isEmpty())
+        return true;
+    return false;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignIn::ToSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToSignIn::isValid(QJsonObject itemObject) {
-    qDebug() << "login :" << itemObject["login"].toString() << "\n";
-    qDebug() << "email :" << itemObject["email"].toString() << "\n";
-    qDebug() << "password :" << itemObject["password"].toString() << "\n";
-    //DASHA TUT
-    return true;
+    if (!itemObject["password"].toString().isEmpty()) {
+        if (!itemObject["login"].toString().isEmpty()
+            || !itemObject["email"].toString().isEmpty())
+            return true;
+    }
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignInWithGoogle::ToSignInWithGoogle(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToSignInWithGoogle::isValid(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
-    //DASHA TUT
-    return true;
+    if (!itemObject["token"].toString().isEmpty())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToAutoSignIn::ToAutoSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToAutoSignIn::isValid(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
-    //DASHA TUT
-    return true;
+    if (!itemObject["token"].toString().isEmpty())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToLogOut::ToLogOut(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToLogOut::isValid(QJsonObject itemObject) {
-    qDebug() << "userId :" << itemObject["userId"].toInt() << "\n";
-    //DASHA TUT
-    return true;
+    if (!itemObject["userId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
-    qDebug() << "title :" << itemObject["title"].toString() << "\n";
-    qDebug() << "description :" << itemObject["description"].toString() << "\n";
-    qDebug() << "ownerId :" << itemObject["ownerId"].toInt() << "\n";
-    //DASHA TUT
-    return true;
+    if (!itemObject["title"].toString().isEmpty()
+        && !itemObject["description"].toString().isEmpty()
+        && itemObject["ownerId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
-    qDebug() << "workflowId :" << itemObject["workflowId"].toInt() << "\n";
-    qDebug() << "title :" << itemObject["title"].toString() << "\n";
-    qDebug() << "description :" << itemObject["description"].toString() << "\n";
-    //DASHA TUT
-    return true;
+    if (!itemObject["title"].toString().isEmpty()
+        && !itemObject["description"].toString().isEmpty()
+        && itemObject["workflowId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
-    qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
-    qDebug() << "workflowID :" << itemObject["workflowId"].toInt() << "\n";
-    //DASHA TUT
-    return true;
+    if (itemObject["userId"].toInt()
+        && itemObject["workflowId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendAllWorkflows::isValid(QJsonObject itemObject) {
-    qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
-    return true;
+    if (itemObject["userId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendSingleWorkflowData::SendSingleWorkflowData(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendSingleWorkflowData::isValid(QJsonObject itemObject) {
-    qDebug() << "workflowID :" << itemObject["workflowId"].toInt() << "\n";
-    //DASHA TUT
-    return true;
+    if (itemObject["workflowId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendStatistics::SendStatistics(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendStatistics::isValid(QJsonObject itemObject) {
     Q_UNUSED(itemObject);
-    //qDebug() << "userID :" << itemObject["userId"].toString() << "\n";
-    //DASHA TUT
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendProfile::isValid(QJsonObject itemObject) {
-    qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
-    //DASHA TUT
-    return true;
+    if (itemObject["userId"].toInt())
+        return true;
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateProfile::ToUpdateProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToUpdateProfile::isValid(QJsonObject itemObject) {
-    qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
-    qDebug() << "name :" << itemObject["name"].toString() << "\n";
-    qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
-
-    return true;
+    if (!itemObject["name"].toString().isEmpty()
+        && !itemObject["surname"].toString().isEmpty()
+        && itemObject["userId"].toInt())
+        return true;
+    return false;
 }
