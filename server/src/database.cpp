@@ -61,7 +61,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
         case RequestType::LOG_OUT:
             break;
         case RequestType::CREATE_WORKFLOW:
-            result = createWorkflow(map.value("userId").toInt(),
+            result = createWorkflow(map.value("ownerId").toInt(),
                                     map.value("title").toString(),
                                     map.value("description").toString());
             break;
@@ -75,7 +75,6 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                       map.value("workflowId").toInt());
             break;
         case RequestType::GET_ALL_WORKFLOWS:
-            qDebug() << "lol";
             result = getWorkflows(map.value("userId").toInt());
             break;
         case RequestType::GET_SINGLE_WORKFLOW_DATA:
@@ -92,7 +91,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                           map.value("surname").toString());
             break;
     }
-
+    qDebug() << result;
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
@@ -149,15 +148,19 @@ QVariantMap
 DataBase::createWorkflow(int owner_id, const QString &title, const QString &description) {
     // set_two_string("WorkFlows", "title", title, "description", description);
     insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'");
-    // QSqlQuery query;
-    // query.prepare(
-    //         "INSERT INTO WorkFlows (owner_id, title, description) "
-    //         "VALUES (:owner_id, :title, :description)");
-    // query.bindValue(":owner_id", owner_id);
-    // query.bindValue(":title", title);
-    // query.bindValue(":description", description);
-    // query.exec();
-    return QVariantMap();
+//     QSqlQuery query;
+//     query.prepare(
+//             "INSERT INTO WorkFlows (owner_id, title, description) "
+//             "VALUES (:owner_id, :title, :description)");
+//     query.bindValue(":owner_id", owner_id);
+//     query.bindValue(":title", title);
+//     query.bindValue(":description", description);
+//     query.exec();
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
+    map["message"] = "Заебісь зайшло в кріейт";
+
+    return map;
 }
 
 QVariantMap
@@ -205,6 +208,7 @@ QVariantMap DataBase::getWorkflows(int user_id) {
     }
     maxi_mapa["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     maxi_mapa["array"] = npcArray;
+    maxi_mapa["message"] = "Заебісь зайшло в getWorkflows";
 
     return maxi_mapa;
 }

@@ -40,7 +40,7 @@ void Client::testRequestLoop() {
 //     m_request->autoSignIn("token");
 //     m_request->autoSignInWithGoogle("token");
 //     m_request->logOut(1);
-    // m_request->createWorkflow("EL TITLE", "EL DESCRIPTION");
+    m_request->createWorkflow("EL TITLE", "EL DESCRIPTION", 1);
     // m_request->updateWorkflow("QString title", "QString description", 1);
     // m_request->inviteToWorkflow(1, 1);
     m_request->getAllWorkflows(1);

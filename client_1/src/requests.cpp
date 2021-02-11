@@ -52,9 +52,10 @@ void AbstractRequest::logOut(int id) {
     createJSON(mapa);
 }
 
-void AbstractRequest::createWorkflow(QString title, QString description) {
+void AbstractRequest::createWorkflow(QString title, QString description, int ownerId) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
+    mapa["ownerId"] = ownerId;
     mapa["title"] = title;
     mapa["description"] = description;
     createJSON(mapa);
@@ -80,6 +81,7 @@ void AbstractRequest::getAllWorkflows(int userId) {
     QMap<QString, QVariant> mapa;
     mapa["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     mapa["userId"] = userId;
+    createJSON(mapa);
 }
 
 void AbstractRequest::getSingleWorkflowData(int workflowId) {

@@ -62,6 +62,7 @@ ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandle
 bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
     qDebug() << "title :" << itemObject["title"].toString() << "\n";
     qDebug() << "description :" << itemObject["description"].toString() << "\n";
+    qDebug() << "ownerId :" << itemObject["ownerId"].toInt() << "\n";
     //DASHA TUT
     return true;
 }
@@ -88,7 +89,7 @@ bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
 SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendAllWorkflows::isValid(QJsonObject itemObject) {
-    Q_UNUSED(itemObject);
+    qDebug() << "userID :" << itemObject["userId"].toInt() << "\n";
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -39,7 +39,7 @@ public:
     void autoSignIn(QString token);
     void logOut(int id);
 
-    void createWorkflow(QString title, QString description);
+    void createWorkflow(QString title, QString description, int ownerId);
     void updateWorkflow(QString title, QString description, int workflowId);
     void inviteToWorkflow(int userId, int workflowId);
     void getAllWorkflows(int userId);
