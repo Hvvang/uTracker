@@ -36,7 +36,7 @@ void Client::doConnect(char *ip, int port) {
 
 void Client::testRequestLoop() {
     m_request->signUp("ndykyy1", "21453#gs8kFSdfD1F244iuSn1", "Nazar1", "Dykyy1", "NazarDykyy1@gmail.com");
-    m_request->signIn("NazarDykyy@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn");
+    m_request->signIn("NazarDykyy1@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn1");
 //     m_request->autoSignIn("token");
 //     m_request->autoSignInWithGoogle("token");
 //     m_request->logOut(1);
