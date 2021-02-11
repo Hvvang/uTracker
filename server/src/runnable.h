@@ -23,9 +23,17 @@ private:
     QMutex *m_mutex;
     Connection *m_ptr;
 
-    AbstractRequestHandler *m_signUp;
-    AbstractRequestHandler *m_signIn;
-    AbstractRequestHandler *m_autoSignIn;
-    AbstractRequestHandler *m_googleSignIn;
-    AbstractRequestHandler *m_logOut;
+    std::shared_ptr<AbstractRequestHandler> m_signUp;
+    std::shared_ptr<AbstractRequestHandler> m_signIn;
+    std::shared_ptr<AbstractRequestHandler> m_autoSignIn;
+    std::shared_ptr<AbstractRequestHandler> m_googleSignIn;
+    std::shared_ptr<AbstractRequestHandler> m_logOut;
+    std::shared_ptr<AbstractRequestHandler> m_createWorkFlow;
+    std::shared_ptr<AbstractRequestHandler> m_updateWorkFlow;
+    std::shared_ptr<AbstractRequestHandler> m_inviteToWorkFlow;
+    std::shared_ptr<AbstractRequestHandler> m_sendAllWorkFlows;
+    std::shared_ptr<AbstractRequestHandler> m_sendSingleWorkFlow;
+    std::shared_ptr<AbstractRequestHandler> m_sendStatistics;
+    std::shared_ptr<AbstractRequestHandler> m_sendProfile;
+    std::shared_ptr<AbstractRequestHandler> m_updateProfile;
 };
