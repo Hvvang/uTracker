@@ -1,131 +1,129 @@
-#include <sys/socket.h>
+#include "database.h"
 #include "responses.h"
 
 AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_connection(connection) {
     connect(this, &AbstractRequestHandler::responseInited, &AbstractRequestHandler::responseSend);
 }
+
+void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
+    qDebug() << " =========================== TYPE "<< itemObject["type"].toInt() << "=========================\n";
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
-void ToSignUp::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", "SIGN_UP"},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
-}
-
-void ToSignUp::parseJSON(QJsonObject itemObject){
-    qDebug() << "login :" << itemObject["login"].toString() << "\n";
-    qDebug() << "email :" << itemObject["email"].toString() << "\n";
-    qDebug() << "password :" << itemObject["password"].toString() << "\n";
-    qDebug() << "name :" << itemObject["name"].toString() << "\n";
-    qDebug() << "surname :" << itemObject["surname"].toString() << "\n";
-    // DASHA TUT
+bool ToSignUp::isValid(QJsonObject itemObject) {
+    if (!itemObject["email"].toString().isEmpty()
+            && !itemObject["password"].toString().isEmpty()
+            && !itemObject["name"].toString().isEmpty()
+            && !itemObject["surname"].toString().isEmpty())
+        return true;
+    return false;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignIn::ToSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
-void ToSignIn::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", "SIGN_IN"},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
+bool ToSignIn::isValid(QJsonObject itemObject) {
+    if (!itemObject["password"].toString().isEmpty()) {
+        if (!itemObject["login"].toString().isEmpty()
+                || !itemObject["email"].toString().isEmpty())
+            return true;
     }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
-}
-
-void ToSignIn::parseJSON(QJsonObject itemObject) {
-    qDebug() << "login :" << itemObject["login"].toString() << "\n";
-    qDebug() << "email :" << itemObject["email"].toString() << "\n";
-    qDebug() << "password :" << itemObject["password"].toString() << "\n";
-    //DASHA TUT
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignInWithGoogle::ToSignInWithGoogle(Connection *socket) : AbstractRequestHandler(socket){}
 
-void ToSignInWithGoogle::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", "AUTO_OAUTH"},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-
-    m_connection->sendResponse(json);
-}
-
-void ToSignInWithGoogle::parseJSON(QJsonObject itemObject) {
-        qDebug() << "token :" << itemObject["token"].toString() << "\n";
-        //DASHA TUT
+bool ToSignInWithGoogle::isValid(QJsonObject itemObject) {
+    if (!itemObject["token"].toString().isEmpty())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToAutoSignIn::ToAutoSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
-void ToAutoSignIn::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", "AUTO_AUTH"},
-            {"message", "ebu sho pisat"}
-    };
-    if(true) {
-        QString token = "sdfhFdvY#YF28Dd4Nqj64";
-        jsonObject["token"] = token;// SHA-256 hash,
-    }
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
-}
-
-void ToAutoSignIn::parseJSON(QJsonObject itemObject) {
-    qDebug() << "token :" << itemObject["token"].toString() << "\n";
-    //DASHA TUT
+bool ToAutoSignIn::isValid(QJsonObject itemObject) {
+    if (!itemObject["token"].toString().isEmpty())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToLogOut::ToLogOut(Connection *socket) : AbstractRequestHandler(socket){}
 
-void ToLogOut::responseSend(QJsonObject itemObject) {
-    parseJSON(itemObject);
-    QJsonObject jsonObject {
-            {"type", "LOG_OUT"}
-    };
-    if(true)
-        jsonObject["message"] = "Succesfull";
-    else
-        jsonObject["error"] = 1;
-    QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
-    QByteArray json = jsonDoc->toJson();
-    m_connection->sendResponse(json);
-}
-
-void ToLogOut::parseJSON(QJsonObject itemObject) {
-    qDebug() << "userId :" << itemObject["userId"].toString() << "\n";
-    //DASHA TUT
+bool ToLogOut::isValid(QJsonObject itemObject) {
+    if (!itemObject["userId"].toInt())
+        return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
+    if (!itemObject["title"].toString().isEmpty()
+            && !itemObject["description"].toString().isEmpty()
+            && itemObject["ownerId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
+    if (!itemObject["title"].toString().isEmpty()
+            && !itemObject["description"].toString().isEmpty()
+            && itemObject["workflowId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
+    if (itemObject["userId"].toInt()
+            && itemObject["workflowId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool SendAllWorkflows::isValid(QJsonObject itemObject) {
+    if (itemObject["userId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+SendSingleWorkflowData::SendSingleWorkflowData(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool SendSingleWorkflowData::isValid(QJsonObject itemObject) {
+    if (itemObject["workflowId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+SendStatistics::SendStatistics(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool SendStatistics::isValid(QJsonObject itemObject) {
+    Q_UNUSED(itemObject);
+    return true;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool SendProfile::isValid(QJsonObject itemObject) {
+    if (itemObject["userId"].toInt())
+        return true;
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToUpdateProfile::ToUpdateProfile(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToUpdateProfile::isValid(QJsonObject itemObject) {
+    if (!itemObject["name"].toString().isEmpty()
+            && !itemObject["surname"].toString().isEmpty()
+            && itemObject["userId"].toInt())
+        return true;
+    return false;
+}
