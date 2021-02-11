@@ -1,5 +1,7 @@
 #include "connection.h"
 #include "server.h"
+#include "database.h"
+
 
 Connection::Connection(QObject *parent) : QObject(parent) {
     m_parent = parent;

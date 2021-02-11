@@ -1,21 +1,22 @@
 #include "runnable.h"
+#include "database.h"
 
 Runnable::Runnable(Connection *socket) {
     m_ptr = socket;
 
-    m_signIn = new ToSignIn(socket);
-    m_signUp = new ToSignUp(socket);
-    m_autoSignIn = new ToAutoSignIn(socket);
-    m_googleSignIn = new ToSignInWithGoogle(socket);
-    m_logOut = new ToLogOut(socket);
-    m_createWorkFlow = new ToCreatedWorkflow(socket);
-    m_updateWorkFlow = new ToUpdateWorkflow(socket);
-    m_inviteToWorkFlow = new ToInvitedToWorkflow(socket);
-    m_sendAllWorkFlows = new SendAllWorkflows(socket);
-    m_sendSingleWorkFlow = new SendSingleWorkflowData(socket);
-    m_sendStatistics = new SendStatistics(socket);
-    m_sendProfile = new SendProfile(socket);
-    m_updateProfile = new ToUpdateProfile(socket);
+    m_signIn = std::make_shared<ToSignIn>(socket);
+    m_signUp = std::make_shared<ToSignUp>(socket);
+    m_autoSignIn = std::make_shared<ToAutoSignIn>(socket);
+    m_googleSignIn = std::make_shared<ToSignInWithGoogle>(socket);
+    m_logOut = std::make_shared<ToLogOut>(socket);
+    m_createWorkFlow = std::make_shared<ToCreatedWorkflow>(socket);
+    m_updateWorkFlow = std::make_shared<ToUpdateWorkflow>(socket);
+    m_inviteToWorkFlow = std::make_shared<ToInvitedToWorkflow>(socket);
+    m_sendAllWorkFlows = std::make_shared<SendAllWorkflows>(socket);
+    m_sendSingleWorkFlow = std::make_shared<SendSingleWorkflowData>(socket);
+    m_sendStatistics = std::make_shared<SendStatistics>(socket);
+    m_sendProfile = std::make_shared<SendProfile>(socket);
+    m_updateProfile = std::make_shared<ToUpdateProfile>(socket);
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
@@ -29,7 +30,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
 
     QJsonObject itemObject = itemDoc.object();
 
-    QVector<AbstractRequestHandler *> funcList;
+    QVector<std::shared_ptr<AbstractRequestHandler>> funcList;
     funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow});
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow, m_sendAllWorkFlows, m_sendSingleWorkFlow});
     funcList.append({m_sendStatistics, m_sendProfile, m_updateProfile});
@@ -52,14 +53,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
             emit funcList[types.indexOf(i)]->responseInited(itemObject);
 }
 
-Runnable::~Runnable() {
-    delete m_signIn;
-    delete m_signUp;
-    delete m_autoSignIn;
-    delete m_googleSignIn;
-    delete m_logOut;
-    delete m_createWorkFlow;
-}
+Runnable::~Runnable() {}
 
 void Runnable::setMutex(QMutex *mutex) {
     m_mutex = mutex;
