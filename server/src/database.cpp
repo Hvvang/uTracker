@@ -146,7 +146,7 @@ DataBase::createUser(const QString &login,
 QVariantMap
 DataBase::createWorkflow(int owner_id, const QString &title, const QString &description) {
     // set_two_string("WorkFlows", "title", title, "description", description);
-    insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'");
+//    insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'");
 //     QSqlQuery query;
 //     query.prepare(
 //             "INSERT INTO WorkFlows (owner_id, title, description) "
@@ -157,8 +157,13 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &desc
 //     query.exec();
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
-    map["message"] = "Заебісь зайшло в кріейт";
-
+    if (insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'")) {
+        map["message"] = "Заебісь зайшло в create Workflow";
+    }
+    else {
+        map["error"] = 1;
+        map["message"] = "Huyova зайшло в UpdateProfile";
+    }
     return map;
 }
 
@@ -171,30 +176,40 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
     //                   description,
     //                   "id",
     //                   QString(workflow_id));
-    if (title != 0 && description != 0) {
-        update("WorkFlows", "title = '" + title + "', description = '" + description + "'", "id = " + QString::number(workflow_id));
-    } else if (title != 0) {
-        update("WorkFlows", "title = '" + title, "id = " + QString::number(workflow_id));
-    } else if (description != 0) {
-        update("WorkFlows", "description = '" + description + "'", "id = " + QString::number(workflow_id));
+    bool is_ok = false;
+    if (!title.isEmpty() && !description.isEmpty()) {
+        is_ok = update("WorkFlows", "title = '" + title + "', description = '" + description + "'", "id = " + QString::number(workflow_id));
+    } else if (description.isEmpty()) {
+        is_ok = update("WorkFlows", "title = '" + title, "id = " + QString::number(workflow_id));
+    } else if (title.isEmpty()) {
+        is_ok = update("WorkFlows", "description = '" + description + "'", "id = " + QString::number(workflow_id));
     }
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
-    map["message"] = "Заебісь зайшло в Update workflow";
+    if (is_ok)
+        map["message"] = "Заебісь зайшло в Update workflow";
+    else {
+        map["error"] = 1;
+        map["message"] = "User isn't in basadate";
+    }
     return map;
 }
 
 QVariantMap
 DataBase::inviteToWorkflow(int user_id, int workflow_id) {
-    // set_two_int("WF_connector", "workflow_id", workflow_id, "user_id", user_id);
-    insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(user_id));
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
-    map["message"] = "Заебісь зайшло в invite";
+    if (insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(user_id))) {
+        map["message"] = "Заебісь зайшло в Invite to Workflow";
+    }
+    else {
+        map["error"] = 1;
+        map["message"] = "Huyova зайшло в Invite to Profile";
+    }
     return map;
 }
 
-QVariantMap DataBase::getWorkflows(int user_id) {
+QVariantMap DataBase::getWorkflows(int user_id) { // треба норм дописать мапу яку повертаю з ерорами
     QJsonArray npcArray;
     QSqlQuery query;
     query.prepare("select workflow_id from WF_connector where user_id = :user_id;");
@@ -263,11 +278,16 @@ QVariantMap DataBase::getProfile(int user_id) {
 }
 
 QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QString &surname) {
-    // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
-    update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id));
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
-    map["message"] = "Заебісь зайшло в UpdateProfile";
+    // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
+    if (update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id))) {
+        map["message"] = "Заебісь зайшло в UpdateProfile";
+    }
+    else {
+        map["error"] = 1;
+        map["message"] = "Huyova зайшло в UpdateProfile";
+    }
     return map;
 }
 
@@ -284,25 +304,6 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
         query.exec("SELECT " + select + " FROM " + table + " WHERE " + where + ";");
         return query;
     }
-
-// void DataBase::update_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2, const QString &column, const QString &string) {
-//     //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//     QSqlQuery query;
-//     query.exec("UPDATE " + table + " SET " + namestr1 + " = \"" + str1 + ", " + namestr2 + " = \"" + str2 + "\" WHERE " + column + " = \"" + string + "\";");
-// }
-
-// void DataBase::set_two_int(const QString &table, const QString &namestr1, int str1, const QString &namestr2, int str2) {
-//     //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
-//     QSqlQuery query;
-//     query.prepare(
-//         "INSERT INTO " + table + " (" + namestr1 + ", " + namestr2 +
-//         ") "
-//         "VALUES (:" +
-//         namestr1 + ", :" + namestr2 + ")");
-//     query.bindValue(":" + namestr1, str1);
-//     query.bindValue(":" + namestr2, str2);
-//     query.exec();
-// }
 
 // //QJsonArray npcArray;
 // //QVector<int> vitya = {1, 2, 3, 4, 5};
