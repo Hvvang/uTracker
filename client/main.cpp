@@ -4,7 +4,7 @@
 #include <QQmlContext>
 
 #include "Client.h"
-#include "Router.h"
+
 
 void init_fontBase() {
     QFontDatabase fontDatabase;
@@ -27,12 +27,10 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    engine.load(url);
-
-    Router router(engine.rootObjects()[0]);
     Client client(&engine);
-
     engine.rootContext()->setContextProperty("client", &client);
+
+    engine.load(url);
 
     return app.exec();
 }

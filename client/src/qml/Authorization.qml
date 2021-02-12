@@ -8,54 +8,6 @@ Item {
     visible: true
     anchors.fill: parent
 
-    Popup {
-        id: snackbar
-
-        property string text
-        property int duration: 2000
-
-        onTextChanged: customOpen(text);
-
-        y: parent.height - 44
-        width: parent.width
-        height: 44
-
-        background: Rectangle {
-            color: "#323232"
-        }
-
-        contentItem: Text {
-            text: snackbar.text
-            color: "white"
-        }
-
-        function customOpen(text) {
-            snackbar.text = text
-            open()
-            timer.restart();
-        }
-
-        Timer {
-            id: timer
-
-            interval: snackbar.duration
-            onTriggered: {
-                if (!running) {
-                    snackbar.close()
-                }
-            }
-        }
-        enter: Transition {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 }
-        }
-        exit: Transition {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0 }
-        }
-        Behavior on opacity {
-            NumberAnimation { duration: 300 }
-        }
-    }
-
     StackView {
         id: stack
         initialItem: authwindow

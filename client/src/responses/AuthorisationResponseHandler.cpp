@@ -13,10 +13,11 @@ AuthorisationResponseHandler::AuthorisationResponseHandler(QObject *parent)
 }
 
 void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
+    qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
         // TODO: add this message to pop up in UI
         qWarning() << "An error occurred: " << handleMessage(data);
-        m_client->notifyUserAboutError(handleMessage(data));
+        emit m_client->notification(handleMessage(data));
     }
     else if (error(data) == AbstractResponseHandler::ResponseErrorType::BadToken) {
         // TODO: refresh token
@@ -29,7 +30,6 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
         auto token = rootObject.value("token").toString();
 
         m_client->saveToken("auth_token", token);
-        m_client->switchWindow(Client::Ui::AuthWindow, Client::Ui::MainWindow);
-        m_client->notifyUserAboutError(handleMessage(data));
+        m_client->notification(handleMessage(data));
     }
 }

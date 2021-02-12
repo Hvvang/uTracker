@@ -34,6 +34,6 @@ add_executable(client
 target_compile_definitions(client
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(client
-  PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth auth ResponsesLib)
+  PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth source ResponsesLib)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

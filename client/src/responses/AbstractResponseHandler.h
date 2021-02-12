@@ -13,7 +13,7 @@ public:
 
     enum class ResponseErrorType {
         NoError = 200,
-        NotValid,
+        NotValid = 1,
         BadToken,
     };
     enum class ResponseType {

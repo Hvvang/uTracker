@@ -54,8 +54,6 @@ public:
 
     void initResponseHandlers();
     void deinitResponseHandlers();
-    void switchWindow(const Ui &from, const Ui &to);
-    void switchPanel(const Ui &from, const Ui &to);
     void saveToken(const QString &type, const QString &value);
     QString getToken(const QString &type);
     static Client* singleton();
@@ -66,12 +64,13 @@ public:
     Q_INVOKABLE void authorize(const QString &email, const QString &password);
     Q_INVOKABLE void registrate(const QString &email, const QString &password, const QString &name, const QString &surname);
 
-    void notifyUserAboutError(const QString &error);
 
 protected:
     static Client* m_instance;
 
 signals:
+    void notification(const QString &msg);
+
     void request(const QString &);
     void responseHandled(const QByteArray &);
 
@@ -88,7 +87,6 @@ public slots:
 private:
     QTcpSocket m_socket;
     QQmlApplicationEngine *m_engine{nullptr};
-    QQuickItem *m_snackbarInstance{nullptr};
     GoogleAuth *m_googleInstance{nullptr};
 };
 

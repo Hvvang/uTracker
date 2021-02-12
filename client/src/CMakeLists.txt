@@ -3,17 +3,14 @@ set(SOURCES
 		googleauth.cpp
         authwindow.cpp
 		Client.cpp
-		Router.cpp
-
 )
 set(HEADERS 
 		googleauth.h
 		authwindow.h
 		Client.h
-		Router.h
 )
 
-add_library(auth ${SOURCES} ${HEADERS})
+add_library(source ${SOURCES} ${HEADERS})
 
-target_link_libraries(auth
+target_link_libraries(source
   PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth)
