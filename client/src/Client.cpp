@@ -181,5 +181,14 @@ void Client::registrate(const QString &email, const QString &password,
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+#include "kanbanmodel.h"
+
+void Client::openWorkflow(int index) {
+//    KanbanModel kanban(this);
+//
+//    m_engine->rootContext()->setContextProperty("KanbanModel", &kanban);
+    emit switchMenu("qrc:/qml/workflowswindow/Kanbanview.qml");
+}
+
 
 

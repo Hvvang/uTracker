@@ -17,10 +17,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-//    QQmlEngine auth_engine;
-
-
-//    AuthWindow auth(nullptr, &auth_engine);
 
     init_fontBase();
 
@@ -33,6 +29,7 @@ int main(int argc, char *argv[])
 
     Client client(&engine);
     KanbanModel kanban;
+
     engine.rootContext()->setContextProperty("KanbanModel", &kanban);
     engine.rootContext()->setContextProperty("client", &client);
 

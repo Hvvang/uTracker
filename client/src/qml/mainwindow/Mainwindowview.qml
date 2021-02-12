@@ -35,14 +35,21 @@ Item {
 
             Loader {
                 id: workPanelLoader
-                objectName: "panelLoader"
 
                 anchors.margins: 10
+//                anchors.fill: parent
 
                 SplitView.minimumWidth: 50
                 SplitView.fillWidth: true
-                source: "Workflowsview.qml"
 
+                source: "qrc:/qml/workflowswindow/Workflowsview.qml"
+
+                Connections {
+                    target: client
+                    function onSwitchMenu(source) {
+                      workPanelLoader.source = source;
+                    }
+                }
             }
 
         }

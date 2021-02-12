@@ -22,15 +22,9 @@ public:
         SIGN_IN,
     };
 
-    Q_INVOKABLE void signIn(const QString &, const QString &);
-    Q_INVOKABLE void signUp(const QString &, const QString &, const QString &, const QString &);
-
 
 private:
     void autoSignIn();
-
-signals:
-    void request(const QString &);
 
 private:
     QQmlEngine *m_engine;

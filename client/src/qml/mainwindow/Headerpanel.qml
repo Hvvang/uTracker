@@ -115,6 +115,13 @@ Item {
                 font.weight: Font.Black
                 Material.foreground: "white";
                 Material.background: Material.Pink;
+
+                onClicked: {
+                    contextMenu.x = profileBtn - 100
+
+                    contextMenu.y = 100
+                    contextMenu.popup()
+                }
             }
         }
     }
@@ -140,5 +147,42 @@ Item {
         samples: 17
         color: "#cc000000"
         source: footerline
+    }
+
+    Menu {
+        id: contextMenu
+
+
+
+        width: 100
+        topMargin: 0
+        dim: true
+        topPadding: 0
+        bottomPadding: 0
+
+        font.pixelSize: 13
+
+        background: Pane {
+            anchors.fill: parent
+            Material.primary: Material.Grey
+            Material.elevation: 6
+
+        }
+
+        MenuItem {
+            text: "\ue807  Profile"
+            font.family: "fontello"
+            onTriggered: back.clicked()
+            height: 30
+            width: parent.width
+        }
+        MenuSeparator {}
+        MenuItem {
+            text: "\ue80b  Log out"
+            font.family: "fontello"
+            onTriggered: back.clicked()
+            height: 30
+            width: parent.width
+        }
     }
 }

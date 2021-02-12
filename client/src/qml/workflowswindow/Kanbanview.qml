@@ -5,13 +5,15 @@ import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 import QtQml.Models 2.14
 
+import "../components"
+
 Item {
     id: root
     anchors.fill: parent
-    anchors.margins: 10
+//    anchors.margins: 10
 
-    height: parent.height
-    width: parent.width
+//    height: parent.height
+//    width: parent.width
 
     property int currentPanelIndexOnDragging: 0
 
@@ -118,7 +120,6 @@ Item {
 
                                 width: task.width; implicitHeight: (isBlank) ? KanbanModel.getHeight() : task.height
 
-                                onHeightChanged: print(height)
                                 property int sourceIndex: index
                                 property int sourceModelIndex: columnView._sourceModelIndex
 

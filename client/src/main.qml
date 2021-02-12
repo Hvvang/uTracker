@@ -15,17 +15,17 @@ Window {
 
   title: "Utracker"
 
-  Connections {
-      target: client
-      function onNotification(msg) {
-        snackbar.customOpen(msg);
-      }
-  }
+
 
   Popup {
     id: snackbar
 
-    objectName: "bar"
+    Connections {
+        target: client
+        function onNotification(msg) {
+          snackbar.customOpen(msg);
+        }
+    }
 
     property string text
     property int duration: 2000
@@ -74,10 +74,17 @@ Window {
 
   Loader {
       id: loader
-      objectName: "loader"
+
+      Connections {
+          target: client
+          function onSwitchWindow(window) {
+            loader.source = window;
+          }
+      }
       anchors.fill: parent
 
-      source: "qml/Authorization.qml"
+//      source: "qml/Authorization.qrml"
+      source: "qml/mainwindow/Mainwindowview.qml"
   }
 
 

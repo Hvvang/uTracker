@@ -14,8 +14,6 @@ AuthWindow::AuthWindow(QObject *parent, QQmlApplicationEngine *engine)
 
     engine->rootContext()->setContextProperty("GoogleAuth", &m_googleAuth);
     engine->rootContext()->setContextProperty("Auth", this);
-
-    autoSignIn();
 }
 
 void AuthWindow::autoSignIn() {
@@ -33,33 +31,7 @@ void AuthWindow::autoSignIn() {
     }
     QJsonDocument document;
     document.setObject(json);
-    emit request(document.toJson(QJsonDocument::Compact));
-}
-
-void AuthWindow::signIn(const QString &email, const QString &password) {
-    QJsonObject json;
-
-    json["type"] = SIGN_IN;
-    json["email"] = email;
-    json["password"] = password;
-
-    QJsonDocument document;
-    document.setObject(json);
-    emit request(document.toJson(QJsonDocument::Compact));
-}
-
-void AuthWindow::signUp(const QString &email, const QString &password, const QString &name, const QString &surname) {
-    QJsonObject json;
-
-    json["type"] = SIGN_UP;
-    json["email"] = email;
-    json["password"] = password;
-    json["name"] = name;
-    json["surname"] = surname;
-
-    QJsonDocument document;
-    document.setObject(json);
-    emit request(document.toJson(QJsonDocument::Compact));
+//    emit request(document.toJson(QJsonDocument::Compact));
 }
 
 

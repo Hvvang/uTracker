@@ -17,7 +17,7 @@ AbstractResponseHandler::ResponseErrorType AbstractResponseHandler::error(const 
 
     if (rootObject.contains("error"))
         return static_cast<ResponseErrorType>(rootObject.value("error").toInt());
-    else return ResponseErrorType::NotValid;
+    else return ResponseErrorType::NoError;
 }
 
 QString AbstractResponseHandler::handleMessage(const QByteArray &data) {

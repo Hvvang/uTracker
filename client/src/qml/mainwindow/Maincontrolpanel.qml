@@ -4,6 +4,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 
+import "../components"
 
 Item {
     id: root
@@ -40,120 +41,72 @@ Item {
             Layout.fillWidth: true
             spacing: 0
 
-            property var currentPage: workFlowsBtn
+            property var currentPage;
 
-            Menubutton {
-                id: workFlowsBtn
-                icon_text: "\uf16C"
-                name_text: "Work Flows"
-                description: "View work flows"
-                selected: workFlowsBtn === columnContainer.currentPage
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        columnContainer.currentPage = workFlowsBtn
-                        router.load(win, "qrc:/mainwindow/WorkFlows.qml")
-                    }
+            Repeater {
+                model: ListModel {
+                    id: menuBtnModel
+                    ListElement {icon_text: "\uf16C"; name_text: "Work Flows"; description: "View work flows"; selected: true}
+                    ListElement {icon_text: "\ue807"; name_text: "Daily plane"; description: "View work for today"; selected: false}
+                    ListElement {icon_text: "\ue804"; name_text: "Contacts"; description: "View contact list"; selected: false}
+                    ListElement {icon_text: "\uf133"; name_text: "Calendar"; description: "View uncompleted tasks"; selected: false}
+                    ListElement {icon_text: "\ue805"; name_text: "Statistic"; description: "View your progress statistic"; selected: false}
                 }
-            }
-            Menubutton {
-                id: dailyPlaneBtn
-                icon_text: "\ue807"
-                name_text: "Daily plane"
-                description: "View work for today"
-                selected: dailyPlaneBtn === parent.currentPage
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        columnContainer.currentPage = dailyPlaneBtn
-                        router.load(win, "qrc:/mainwindow/DailyPlane.qml")
+                delegate: Menubutton {
+                    id: menuBtn
+
+                    icon_text: model.icon_text
+                    name_text: model.name_text
+                    description: model.description
+                    selected: columnContainer.currentPage ? menuBtn === columnContainer.currentPage : model.selected
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            columnContainer.currentPage = menuBtn
+                        }
                     }
                 }
             }
-            Menubutton {
-                id: contactListBtn
-                icon_text: "\ue804"
-                name_text: "Contacts"
-                description: "View contact list"
-                selected: contactListBtn === parent.currentPage
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        columnContainer.currentPage = contactListBtn
-                        router.load(win, "qrc:/mainwindow/Contacts.qml")
-                    }
-                }
-            }
-            Menubutton {
-                id: calendarBtn
-                icon_text: "\uf133"
-                name_text: "Calendar"
-                description: "View uncompleted tasks"
-                selected: calendarBtn === parent.currentPage
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        columnContainer.currentPage = calendarBtn
-                        router.load(win, "qrc:/mainwindow/Calendar.qml")
-                    }
-                }
-            }
-            Menubutton {
-                id: statisticBtn
-                icon_text: "\ue805"
-                name_text: "Statistic"
-                description: "View your progress statistic"
-                selected: statisticBtn === parent.currentPage
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        columnContainer.currentPage = statisticBtn
-                        router.load(win, "qrc:/mainwindow/Statistic.qml")
-                    }
-                }
-            }
+
         }
         Item {
             Layout.fillHeight: true
         }
 
         ColumnLayout {
+            id: controlLayout
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.columnSpan: 0
             Layout.fillWidth: true
             spacing: 0
 
-            Contolbutton {
-//                        id: btn
-                icon_text: "\uf1de"
-                name_text: "Settings"
+            property var currentPage;
 
-//                    onClicked: {
-//                        selected = true
-//                    }
+            Repeater {
+                model: ListModel {
+                    id: controlBtnModel
+                    ListElement {icon_text: "\uf1de"; name_text: "Settings"; selected: false}
+                    ListElement {icon_text: "\ue802"; name_text: "What's new?"; selected: false}
+                    ListElement {icon_text: "\uf128"; name_text: "Support"; selected: false}
+                }
 
+                delegate: Contolbutton {
+                    id: contolBtn
+
+                    icon_text: model.icon_text
+                    name_text: model.name_text
+
+                    selected: controlLayout.currentPage ? contolBtn === controlLayout.currentPage : model.selected
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            controlLayout.currentPage = contolBtn
+                        }
+                    }
+                }
             }
-            Contolbutton {
-//                        id: btn
-                icon_text: "\ue802"
-                name_text: "What's new?"
 
-//                    onClicked: {
-//                        selected = true
-//                    }
-
-            }
-            Contolbutton{
-//                        id: btn
-                icon_text: "\uf128"
-                name_text: "Support"
-
-//                    onClicked: {
-//                        selected = true
-//                    }
-
-            }
         }
     }
 }

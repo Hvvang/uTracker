@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 
 Item {
+    id: root
     property string icon_text: ""
     property string name_text: ""
     property bool selected: false
@@ -20,28 +21,34 @@ Item {
         anchors.topMargin: -5
         anchors.fill: parent
 
-        Text {
-            id: iconText
-            text: qsTr(icon_text)
+
+        RowLayout {
+            anchors.rightMargin: 10
             anchors.leftMargin: 20
-            anchors.left: parent.left
-            font.pixelSize: 13
-            font.family: "fontello"
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.fill: parent
+
+            Text {
+                id: iconText
+
+                text: qsTr(icon_text)
+                Layout.preferredWidth: 20
+                font.pixelSize: 13
+                font.family: "fontello"
+            }
+
+            Text {
+                id: nameText
+
+                text: qsTr(name_text)
+                Layout.fillWidth: true
+                font.pixelSize: 12
+                font.family: "fontello"
+            }
+
+
         }
 
-        Text {
-            id: nameText
 
-            text: qsTr(name_text)
-            anchors.leftMargin: 20
-            anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 12
-            verticalAlignment: Text.AlignVCenter
-            anchors.left: iconText.right
-            anchors.right: parent.right
-            font.family: "fontello"
-        }
 
         Material.foreground: "black"
         Material.background: "transparent"
@@ -52,6 +59,8 @@ Item {
             visible: selected
             opacity: 0.3
 
+            anchors.bottomMargin: 5
+            anchors.topMargin: 5
 
         }
 

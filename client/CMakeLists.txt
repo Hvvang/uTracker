@@ -25,7 +25,7 @@ add_subdirectory(src)
 add_subdirectory(src/responses)
 
 add_executable(utracker
-  client.cpp
+  main.cpp
   src/qml.qrc
   src/kanbanmodel.cpp
   src/kanbanmodel.h
@@ -35,9 +35,9 @@ add_executable(utracker
 )
 
 
-target_compile_definitions(client
+target_compile_definitions(utracker
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(client
+target_link_libraries(utracker
   PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth source ResponsesLib)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

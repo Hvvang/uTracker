@@ -14,8 +14,6 @@ public:
 
     void processResponse(const QByteArray &data) override;
 
-signals:
-    void authorised();
 };
 
 

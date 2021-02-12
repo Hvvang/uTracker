@@ -97,7 +97,7 @@ enum class RequestType {
     "message": str
 }
 ```
-c
+
 ***
 **Request for `GET_ALL_WORKFLOWS` from client to server**
 ```json

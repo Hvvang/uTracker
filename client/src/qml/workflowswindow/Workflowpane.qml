@@ -122,7 +122,9 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
         Material.background: "white"
         radius: 7
 
-        onClicked: print("emit open workFlow signal")
+        onClicked: {
+            client.openWorkflow(model.index)
+        }
     }
 
     Menu {

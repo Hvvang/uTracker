@@ -15,7 +15,7 @@ AuthorisationResponseHandler::AuthorisationResponseHandler(QObject *parent)
 void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
-        // TODO: add this message to pop up in UI
+
         qWarning() << "An error occurred: " << handleMessage(data);
         emit m_client->notification(handleMessage(data));
     }
@@ -31,5 +31,6 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
 
         m_client->saveToken("auth_token", token);
         m_client->notification(handleMessage(data));
+        emit m_client->switchWindow(UI_MainWindow);
     }
 }
