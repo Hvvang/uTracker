@@ -1,47 +1,56 @@
-import QtQuick 2.9
+import QtQuick 2.15
 import QtQuick.Window 2.11
 import QtQuick.Controls 1.3 as Controls
+import QtQuick.Controls 2.15
 import Material 0.3
 import Material.ListItems 0.1 as ListItem
+import QtQuick.Layouts 1.3
 
 Page {
 
     function createNewDesk() {
         console.log("Request to create new desk");
+        console.log("!!!!!" + (rootAccount.height - userSection.count * (48 * Units.dp + 3) - dp(200)))
+        desksSection.append({title: "Desk " + (desksSection.count + 1), idNum: desksSection.count + 1})
+        control.position = 1.0
+//        sectionItems.model.dataChanged()
     }
 
-    property var userSection: [
-        {
-            title: "Profile",
-            id: -1
+    ListModel {
+        id: userSection
+        ListElement {
+            title: "Profile"
+            idNum: 0
         }
-    ]
-    property var desksSection: [
-        {
-            title: "Desk 1",
-            id: 1
-        },
-        {
-            title: "Desk 2",
-            id: 2
-        },
-        {
-            title: "Desk 3",
-            id: 3
-        },
-        {
-            title: "Desk 4",
-            id: 4
+    }
+    ListModel {
+        id: desksSection
+        ListElement {
+            title: "Desk 1"
+            idNum: 1
         }
-    ]
+        ListElement{
+            title: "Desk 2"
+            idNum: 2
+        }
+        ListElement{
+            title: "Desk 3"
+            idNum: 3
+        }
+        ListElement{
+            title: "Desk 4"
+            idNum: 4
+        }
+    }
     property var sections: [userSection, desksSection]
     property var sectionsTitles: ["User information", "Desks"]
     property var selectedComponent: undefined
+//    property bool isListContentHeight: true
 
     id: rootAccount
     visible: true
-    width: 1920
-    height: 1080
+    width: dp(1920)
+    height: dp(1080)
 
     title: "uTracker"
     backgroundColor: "#dab6c2"
@@ -93,14 +102,38 @@ Page {
                             elevation: 1
                         }
 
-                        Repeater {
+                        ListView {
+                            id: sectionItems
+
+                            width: parent.width
+                            clip: true
+                            property bool isContentHeight: contentHeight < (rootAccount.height - (userSection.count  + 3) * dp(48) - dp(200))
+                            height: isContentHeight ? contentHeight
+                                    : (rootAccount.height - (userSection.count  + 3) * dp(48) - dp(200))
                             model: sections[index]
+                            interactive: false
+                            flickableDirection: Flickable.VerticalFlick
+                            boundsBehavior: Flickable.StopAtBounds
+                            ScrollBar.vertical: ScrollBar{
+                                property real globalPos: control.position * sectionItems.contentHeight
+                                id: control
+                                hoverEnabled: true
+                                active: sectionItems.height < sectionItems.contentHeight && (hovered || pressed)
+                                size: 0.3
+                                contentItem: Rectangle {
+                                        implicitWidth: 3
+                                        implicitHeight: 100
+                                        radius: width / 2
+                                        color: !(sectionItems.height < sectionItems.contentHeight) ? "#007a163c" :
+                                                                 (control.pressed || control.hovered ? "#807a163c" : "#407a163c")
+                                }
+                            }
                             delegate: ListItem.Standard {
-                                text: modelData.title
-                                selected: modelData.id === selectedComponent.id
+                                text: model.title
+//                                selected: model.idNum === selectedComponent.idNum
                                 onClicked: {
-                                    selectedComponent = modelData
-                                    console.log(modelData.title)
+//                                    selectedComponent = model
+//                                    console.log(model.title)
                                     navDrawer.close()
                                 }
                             }
@@ -109,6 +142,8 @@ Page {
                 }
                 Button {
                     text: "New desk +"
+//                    elevation: sectionItems.isContentHeight ? 1 : 0
+                    elevation: 1
                     height: dp(40)
                     width: parent.width
                     onClicked: createNewDesk();

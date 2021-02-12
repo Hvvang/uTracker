@@ -19,6 +19,7 @@ Item {
     property string cardListTitle: "Value"
     property alias cardsModel: layout.model
     readonly property alias cardListHeader: header
+    property alias cardTitleEditor: name
 
 
     width: cardListWidth
@@ -110,18 +111,44 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     color: "#80f6a2bf"
-//                                border.width: 2
-//                                border.color: "#f6a2bf"
-//                                radius: parent.radius
                     Text {
+                        id:cardTitle
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
-//                                horizontalAlignment: Text.AlignHCenter
                         anchors.leftMargin: dp(15)
                         color: "#7a163c"
                         font.pixelSize: dp(24)
                         text: cardListTitle
                         font.bold: true
+//                        visible:
+                    }
+//                    Item {
+//                        anchors.fill: parent
+////                        focus: true
+                        TextField {
+                            id: name
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.margins: dp(20)
+                            Component.onCompleted: {
+                                name.forceActiveFocus()
+                            }
+                            Keys.onEscapePressed: {
+                                focus = false
+                            }
+
+                            anchors.fill: parent
+//                            focus: true
+                            color: "#7a163c"
+                            onFocusChanged:  {
+                                console.log(cardListTitle + ": " + focus)
+                                cardTitle.visible = !focus
+                                if (text.length > 0)
+                                    cardTitle.text = text
+                                visible = focus
+                            }
+//                        }
+
+                        visible: true
                     }
                 }
             }

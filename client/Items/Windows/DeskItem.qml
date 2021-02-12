@@ -29,33 +29,16 @@ Item {
     property alias listModel: deskListView.model
     function createNewList () {
         listModel.append("List " + (listModel.rowCount() + 1))
-
+//        listModel.append({titleD: "List " + (listModel.rowCount() + 1)})
         control.position = 1.0
+
     }
 
     ListModel {
         id: deskModel
-//        ListElement {
-//            title: "List 1"
-//        }
-//        ListElement {
-//            title: "List 2"
-//        }
-//        ListElement {
-//            title: "List 3"
-//        }
-//        ListElement {
-//            title: "List 4"
-//        }
-//        ListElement {
-//            title: "List 5"
-//        }
-//        ListElement {
-//            title: "List 6"
-//        }
-//        ListElement {
-//            title: "List 7"
-//        }
+        ListElement {
+            titleD: "List 1"
+        }
     }
 
     id: deskItem
@@ -75,20 +58,23 @@ Item {
             height: parent.height - dp(20)
             anchors.centerIn: parent
             spacing: deskListView.spacing
-
             ListView {
                 id: deskListView
                 width: contentWidth < parent.width - (barier.width + deskListView.spacing)
                        ? contentWidth : parent.width - (barier.width + deskListView.spacing)
                 height: parent.height - dp(20)
                 spacing: dp(20)
+                clip: true
                 orientation: Qt.Horizontal
+                flickableDirection: Flickable.HorizontalFlick
+                boundsBehavior: Flickable.StopAtBounds
 //                anchors {
 //                    top: parent.top
 //                    left: parent.left
 //                    margins: dp(10)
 //                }
                 interactive: false
+                model: mCardListsModel
 
                 ScrollBar.horizontal: ScrollBar{
                     property real globalPos: control.position * deskListView.contentWidth
@@ -97,21 +83,24 @@ Item {
                     active: deskListView.height < deskListView.contentWidth && (hovered || pressed)
                     size: 0.3
                     contentItem: Rectangle {
-                            implicitWidth: 3
-                            implicitHeight: 50
-                            radius: width / 2
-                            color: !(deskListView.width < deskListView.contentWidth) ? "#007a163c" :
-                                                     (control.pressed || control.hovered ? "#807a163c" : "#407a163c")
+                        implicitWidth: 3
+                        implicitHeight: 50
+                        radius: width / 2
+                        color: !(deskListView.width < deskListView.contentWidth) ? "#007a163c" :
+                                                 (control.pressed || control.hovered ? "#807a163c" : "#407a163c")
                     }
                 }
 
-                model: mCardListsModel
-                delegate: CardListItem{
+                delegate: CardListItem {
                     id: cardList
                     cardsModel: modelD
                     cardListHeight: deskListView.height - dp(70)
                     cardListTitle: titleD
 
+                    cardTitleEditor.onAccepted:  {
+                        console.log("!!!")
+                        buttonAddList.clicked()
+                    }
                     states: [
                     State {
                             name: "inDrag"
@@ -129,29 +118,6 @@ Item {
                 Item {
                     id: dndContainer
                     anchors.fill: parent
-                }
-
-                MouseArea {
-                    id: coords
-                    anchors {
-                        top:parent.top
-                        left: parent.left
-                    }
-                    width: parent.width
-                    height: dp(70)
-
-                    onReleased: {
-                        if (deskListView.draggedItemIndex !== -1) {
-                            var draggedIndex = deskListView.draggedItemIndex
-                            deskListView.draggedItemIndex = -1
-                            deskModel.move(draggedIndex,deskListView.indexAt(mouseX + control.globalPos, mouseY),1)
-                        }
-                    }
-                    onPressed: {
-                        deskListView.draggedItemIndex = deskListView.indexAt(mouseX + control.globalPos, mouseY)
-                        console.log("Pressed")
-                    }
-
                 }
 
             }
@@ -180,6 +146,33 @@ Item {
                            ? 0 : 1
                     color: "grey"
                 }
+            }
+        }
+        MouseArea {
+            id: coords
+            anchors {
+                top:parent.top
+                left: parent.left
+            }
+            width: deskListView.width
+            height: dp(70)
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+            onReleased: {
+                if (mouse.button === Qt.RightButton)
+                    return
+                if (deskListView.draggedItemIndex !== -1) {
+                    var draggedIndex = deskListView.draggedItemIndex
+                    deskListView.draggedItemIndex = -1
+                    mCardListsModel.move(draggedIndex,deskListView.indexAt(mouseX + control.globalPos, mouseY),1)
+                }
+            }
+
+            onPressed: {
+                if (mouse.button === Qt.RightButton)
+                    return
+                deskListView.draggedItemIndex = deskListView.indexAt(mouseX + control.globalPos, mouseY)
+                console.log("Pressed " + deskListView.draggedItemIndex)
             }
         }
 
