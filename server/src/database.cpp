@@ -43,6 +43,7 @@ void DataBase::create_tables() {
 
 void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &map) {
     QVariantMap result;
+    qDebug() << "type is: " << type;
     switch (static_cast<RequestType>(type)) {
         case RequestType::AUTO_AUTH:
             break;
@@ -215,22 +216,22 @@ QVariantMap DataBase::getWorkflows(int user_id) { // треба норм доп�
     query.prepare("select workflow_id from WF_connector where user_id = :user_id;");
     query.bindValue(":user_id", user_id);
     query.exec();
-    QMap<QString, QVariant> maxi_mapa;
+    QMap<QString, QVariant> maxi_map;
     if (query.first()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
         npcArray.append(jsonObject);
     } else {
-        maxi_mapa["error"] = 1;
+        maxi_map["error"] = 1;
     }
     while (query.next()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
         npcArray.append(jsonObject);
     }
-    maxi_mapa["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
-    maxi_mapa["array"] = npcArray;
-    maxi_mapa["message"] = "Заебісь зайшло в getWorkflows";
+    maxi_map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
+    maxi_map["array"] = npcArray;
+    maxi_map["message"] = "Заебісь зайшло в getWorkflows";
 
-    return maxi_mapa;
+    return maxi_map;
 }
 
 QVariantMap DataBase::getWorkflow(int workflow_id) {
@@ -238,33 +239,37 @@ QVariantMap DataBase::getWorkflow(int workflow_id) {
     // query.prepare("select * from WorkFlows where id = :workflow_id;");
     // query.bindValue(":workflow_id", workflow_id);
     // query.exec();
-    QMap<QString, QVariant> mapa;
+    QMap<QString, QVariant> map;
     if (query.first()) {
-        mapa["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
-        mapa["userId"] = query.value(0).toInt();
-        mapa["title"] = query.value(1).toString();
-        mapa["description"] = query.value(2).toString();
-        mapa["message"] = "Nazar";
+        map["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
+        map["userId"] = query.value(0).toInt();
+        map["title"] = query.value(1).toString();
+        map["description"] = query.value(2).toString();
+        map["message"] = "Nazar";
     } else {
-        mapa["error"] = 1;
-        mapa["message"] = "workflowId isn't in basadate";
+        map["error"] = 1;
+        map["message"] = "workflowId isn't in basadate";
     }
-    return mapa;
+    return map;
 }
 
 QVariantMap DataBase::getProfile(int user_id) {
-    QSqlQuery query = select("WorkFlows", "first_name, last_name", "id = " + QString::number(user_id) + ";");
+    QSqlQuery query;
+    query.exec("SELECT login, first_name, last_name FROM usersCredential where id = \"" + QString::number(user_id) + "\";");
+//    QSqlQuery query = select("usersCredential", "login, first_name, last_name", "id = " + QString::number(user_id) + ";");
     // query.exec("select first_name, last_name from WorkFlows where id = " + QString::number(user_id) + ";");
-    QMap<QString, QVariant> mapa;
+    QMap<QString, QVariant> map;
+
+    qDebug() << "login : " <<  query.value(0).toString();
     if (query.first()) {
-        mapa["type"] = static_cast<int>(RequestType::GET_PROFILE);
-        mapa["userId"] = query.value(0).toInt();
-        mapa["title"] = query.value(1).toString();
-        mapa["description"] = query.value(2).toString();
-        mapa["message"] = "Nazar";
+        map["type"] = static_cast<int>(RequestType::GET_PROFILE);
+        map["login"] = query.value(0).toString();
+        map["first_name"] = query.value(1).toString();
+        map["last_name"] = query.value(2).toString();
+        map["message"] = "Profile data has successfully gotten";
     } else {
-        mapa["error"] = 1;
-        mapa["message"] = "User isn't in basadate";
+        map["error"] = 1;
+        map["message"] = "User doesn't exist in database";
     }
     //    QString email
     //    QString password
@@ -274,14 +279,15 @@ QVariantMap DataBase::getProfile(int user_id) {
     //    byte photo
     //    QString google_token
     //    QString github_token varchar
-    return mapa;
+    qDebug() << "map is " << map;
+    return map;
 }
 
 QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QString &surname) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
     // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
-    if (update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id))) {
+    if (update("usersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id))) {
         map["message"] = "Заебісь зайшло в UpdateProfile";
     }
     else {

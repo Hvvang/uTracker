@@ -2,10 +2,12 @@
 set(SOURCES
         AbstractResponseHandler.cpp
         AuthorisationResponseHandler.cpp
+        ProfileDataResposeHandler.cpp
         )
 set(HEADERS
         AbstractResponseHandler.h
         AuthorisationResponseHandler.h
+        ProfileDataResposeHandler.h
         )
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})

@@ -28,9 +28,9 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
 
     Client client(&engine);
-    KanbanModel kanban;
-
-    engine.rootContext()->setContextProperty("KanbanModel", &kanban);
+//    KanbanModel kanban;
+//
+//    engine.rootContext()->setContextProperty("KanbanModel", &kanban);
     engine.rootContext()->setContextProperty("client", &client);
 
     engine.load(url);

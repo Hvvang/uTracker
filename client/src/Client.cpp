@@ -9,14 +9,19 @@
 #include <QJsonDocument>
 #include "AuthorisationResponseHandler.h"
 #include "googleauth.h"
+#include "kanbanmodel.h"
+#include "ProfileDataResposeHandler.h"
 
 Client* Client::m_instance = nullptr;
 
 Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
     : QObject(parent)
-    , m_engine(engine) {
+    , m_engine(engine)
+    , m_workflows(new WorkflowsModel(this)) {
 
-    m_socket.connectToHost(QHostAddress::LocalHost, port);
+    m_engine->rootContext()->setContextProperty("WorkflowsModel", m_workflows);
+
+    m_socket.connectToHost(host, port);
 
     connect(&m_socket, &QTcpSocket::connected, this, [=]{
         qDebug() << "Client successfully connected to server.";
@@ -41,13 +46,11 @@ void Client::bytesWritten(qint64 bytes) {
 }
 
 void Client::readyRead() {
-
-    qDebug() << "RESPONSE FROM SERVER:\n";
-
     while (!m_socket.atEnd()) {
 
         QByteArray size = m_socket.readLine();
         auto data = m_socket.read(size.toInt());
+        qDebug() << "response is " << data;
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
 
 
@@ -61,12 +64,14 @@ void Client::readyRead() {
                 return;
             }
             switch (static_cast<ResponseType>(responseType)) {
-                case Client::ResponseType::SIGN_UP:
+                case ResponseType::SIGN_UP:
                     emit signUpResponse(data); break;
                 case ResponseType::SIGN_IN:
                     emit signInResponse(data); break;
                 case ResponseType::LOG_OUT:
                     emit logOutResponse(data); break;
+                case ResponseType::PROFILE:
+                    emit profileDataRespone(data); break;
                 case ResponseType::ERROR:
                     emit errorResponse(data); break;
                 default:
@@ -81,10 +86,12 @@ void Client::deinitResponseHandlers() {
 
 void Client::initResponseHandlers() {
     auto authHandler = new AuthorisationResponseHandler(this);
+    auto profileHandler = new ProfileDataResposeHandler(this);
     // memory leak hear
 
     connect(this, &Client::signUpResponse, authHandler, &AuthorisationResponseHandler::processResponse);
     connect(this, &Client::signInResponse, authHandler, &AuthorisationResponseHandler::processResponse);
+    connect(this, &Client::profileDataRespone, profileHandler, &ProfileDataResposeHandler::processResponse);
 }
 
 void Client::send(const QString &data) {
@@ -103,10 +110,33 @@ Client *Client::singleton() {
     return m_instance;
 }
 
+void Client::getProfileData() {
 
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::GET_PROFILE);
+    json["token"] = m_accessesToken;
+    json["userId"] = 1;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::setProfile(const QString &login, const QString &name, const QString &surname) {
+    m_profile.login = login;
+    m_profile.name = name;
+    m_profile.surname = surname;
+    emit profileNameChanged();
+}
+
+void Client::setId(quint64 id) {
+    m_id = id;
+}
 
 void Client::saveToken(const QString &type, const QString &value) {
     QFile file(AUTH_CONFIGURE_FILE);
+    m_accessesToken = value;
 
     if (!file.open(QIODevice::ReadWrite)) {
         return;
@@ -181,13 +211,20 @@ void Client::registrate(const QString &email, const QString &password,
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
-#include "kanbanmodel.h"
+
 
 void Client::openWorkflow(int index) {
 //    KanbanModel kanban(this);
 //
 //    m_engine->rootContext()->setContextProperty("KanbanModel", &kanban);
     emit switchMenu("qrc:/qml/workflowswindow/Kanbanview.qml");
+}
+
+QChar Client::nameFirstLetter() {
+    if (!m_profile.name.isEmpty()) {
+        return m_profile.name.front();
+    }
+    return QChar();
 }
 
 

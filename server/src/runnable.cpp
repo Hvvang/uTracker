@@ -30,6 +30,8 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
 
     QJsonObject itemObject = itemDoc.object();
 
+    qDebug() << "request is " << itemObject;
+
     QVector<std::shared_ptr<AbstractRequestHandler>> funcList;
     funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow});
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow, m_sendAllWorkFlows, m_sendSingleWorkFlow});

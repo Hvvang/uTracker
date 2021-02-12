@@ -7,6 +7,17 @@
 
 #include <QObject>
 
+enum class ResponseType {
+    AUTO_OAUTH = 0,
+    AUTO_AUTH = 1,
+    SIGN_UP = 2,
+    SIGN_IN = 3,
+    LOG_OUT = 4,
+
+    PROFILE = 11,
+    ERROR = 5,
+};
+
 class AbstractResponseHandler : public QObject {
 Q_OBJECT
 public:
@@ -15,12 +26,6 @@ public:
         NoError = 200,
         NotValid = 1,
         BadToken,
-    };
-    enum class ResponseType {
-        SIGN_UP,
-        SIGN_IN,
-        LOG_OUT,
-        ERROR,
     };
 
     explicit AbstractResponseHandler(QObject *parent = nullptr);
@@ -37,6 +42,7 @@ signals:
     void signUp(const QByteArray &);
     void signIn(const QByteArray &);
     void logOut(const QByteArray &);
+    void profile(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);

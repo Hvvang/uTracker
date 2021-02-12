@@ -112,6 +112,7 @@ bool SendStatistics::isValid(QJsonObject itemObject) {
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendProfile::isValid(QJsonObject itemObject) {
+    qDebug() << itemObject["userId"].toInt();
     if (itemObject["userId"].toInt())
         return true;
     return false;

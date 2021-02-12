@@ -111,7 +111,7 @@ Item {
             RoundButton {
                 id: profileBtn
 
-                text: qsTr("A")
+                text: qsTr(client.letter)
                 font.weight: Font.Black
                 Material.foreground: "white";
                 Material.background: Material.Pink;

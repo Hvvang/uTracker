@@ -1,18 +1,18 @@
 //
-// Created by Artem Shemidko on 03.02.2021.
+// Created by Artem Shemidko on 12.02.2021.
 //
 
-#include "AuthorisationResponseHandler.h"
+#include "ProfileDataResposeHandler.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include "Client.h"
 
-AuthorisationResponseHandler::AuthorisationResponseHandler(QObject *parent)
+ProfileDataResposeHandler::ProfileDataResposeHandler(QObject *parent)
     : AbstractResponseHandler(parent) {
-    connect(this, &AuthorisationResponseHandler::signIn, this,  &AuthorisationResponseHandler::processResponse);
+    connect(this, &AbstractResponseHandler::profile, this,  &ProfileDataResposeHandler::processResponse);
 }
 
-void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
+void ProfileDataResposeHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
 
@@ -27,11 +27,9 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
-        auto token = rootObject.value("token").toString();
-
-        m_client->saveToken("auth_token", token);
-        m_client->notification(handleMessage(data));
-        m_client->getProfileData();
-        emit m_client->switchWindow(UI_MainWindow);
+        auto login = rootObject.value("login").toString();
+        auto name = rootObject.value("first_name").toString();
+        auto surname = rootObject.value("last_name").toString();
+        m_client->setProfile(login, name, surname);
     }
 }

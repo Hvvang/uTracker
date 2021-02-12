@@ -5,28 +5,39 @@ import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 
 Item {
-    anchors.fill: parent
-//    width: parent.width
-//    height: parent.height
+    id: root
 
-//    Component.onCompleted: print(width)
+    property var workflowmodel: WorkflowsModel
+
+    anchors.fill: parent
+    width: parent.width
+    height: parent.height
+
     Flickable {
         anchors.fill: parent
+        width: parent.width
+        height: parent.height
 
-        contentHeight: 10 / grid.columns * 210
+        Component.onCompleted: print(workflowmodel.rowCount())
+        contentHeight: workflowmodel.rowCount() / grid.columns * 250
+
+
         clip: true
 
         GridLayout {
             id: grid
+
             anchors.fill: parent
 
-            columns: parent.width / 200
+            columns: root.width / 200
             rows: -1
 
             Repeater {
-                model: 10
+                model: workflowmodel
 
-                Workflowpane {}
+                Workflowpane {
+                    flowModel: flowColaborants
+                }
             }
 
         }

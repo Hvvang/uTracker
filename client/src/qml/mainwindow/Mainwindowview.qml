@@ -10,6 +10,10 @@ Item {
 
     anchors.fill: parent
 
+    width: parent.width
+    height: parent.height
+
+
     Headerpanel {
         id: header
     }
@@ -31,16 +35,18 @@ Item {
 
                 SplitView.minimumWidth: 200
                 SplitView.maximumWidth: 400
+
             }
 
             Loader {
                 id: workPanelLoader
 
                 anchors.margins: 10
-//                anchors.fill: parent
 
                 SplitView.minimumWidth: 50
                 SplitView.fillWidth: true
+
+
 
                 source: "qrc:/qml/workflowswindow/Workflowsview.qml"
 

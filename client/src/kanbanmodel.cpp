@@ -32,7 +32,6 @@ int KanbanModel::rowCount(const QModelIndex &parent) const
         return 0;
 
     return m_model.size();
-    // FIXME: Implement me!
 }
 
 QVariant KanbanModel::data(const QModelIndex &index, int role) const

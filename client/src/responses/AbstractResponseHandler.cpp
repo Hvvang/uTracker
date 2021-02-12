@@ -27,13 +27,13 @@ QString AbstractResponseHandler::handleMessage(const QByteArray &data) {
     return rootObject.value("message").toString();
 }
 
-AbstractResponseHandler::ResponseType AbstractResponseHandler::type(const QByteArray &data) {
+ResponseType AbstractResponseHandler::type(const QByteArray &data) {
     QJsonDocument itemDoc = QJsonDocument::fromJson(data);
     QJsonObject rootObject = itemDoc.object();
 
     if (rootObject.contains("type"))
         return static_cast<ResponseType>(rootObject.value("type").toInt());
-    else ResponseType::ERROR;
+    else return ResponseType::ERROR;
 }
 
 void AbstractResponseHandler::mediator(const QByteArray &data) {
@@ -44,6 +44,8 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit signIn(data); break;
         case ResponseType::LOG_OUT:
             emit logOut(data); break;
+        case ResponseType::PROFILE:
+            emit profile(data); break;
         default:
             qDebug() << "Emit some error in response!";
     }

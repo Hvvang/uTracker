@@ -75,11 +75,6 @@
         <source>Upgrade</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="114"/>
-        <source>A</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Kanbanview</name>
@@ -159,19 +154,23 @@
 <context>
     <name>Workflowpane</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="30"/>
-        <source>A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="38"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="40"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="51"/>
-        <source>What is Lorem Ipsum?
-Lorem Ipsum is simply dummy text of the printing and typesetting industry.</source>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="101"/>
+        <source>%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="112"/>
+        <source>+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="128"/>
+        <source>personal</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

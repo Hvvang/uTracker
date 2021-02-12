@@ -16,14 +16,24 @@
 #include <QQuickItem>
 
 #include "googleauth.h"
+#include "WorkflowsModel.h"
+#include "kanbanmodel.h"
+
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
 #define UI_AuthWindow "qrc:/qml/Authorization.qml"
 #define UI_MainWindow "qrc:/qml/mainwindow/Mainwindowview.qml"
 
+struct Profile {
+    QString login = "";
+    QString name = "";
+    QString surname = "";
+};
+
 class Client: public QObject {
 Q_OBJECT
+    Q_PROPERTY(QChar letter READ nameFirstLetter NOTIFY profileNameChanged)
 public:
     enum class Ui {
         Root,
@@ -40,16 +50,11 @@ public:
         AUTO_AUTH = 1,
         SIGN_UP = 2,
         SIGN_IN = 3,
+
+        GET_PROFILE = 11,
     };
 
-    enum class ResponseType {
-        AUTO_OAUTH = 0,
-        AUTO_AUTH = 1,
-        SIGN_UP = 2,
-        SIGN_IN = 3,
-        LOG_OUT = 4,
-        ERROR = 5,
-    };
+
 
     Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost, const quint16 port = 5000, QObject *parent = nullptr);
 
@@ -59,12 +64,19 @@ public:
     QString getToken(const QString &type);
     static Client* singleton();
 
+    void getProfileData();
+    void setProfile(const QString &login, const QString &name, const QString &surname);
+    void setId(quint64 m_id);
+
     void autoSignIn();
 
     Q_INVOKABLE void googleAuthorize();
     Q_INVOKABLE void authorize(const QString &email, const QString &password);
     Q_INVOKABLE void registrate(const QString &email, const QString &password, const QString &name, const QString &surname);
     Q_INVOKABLE void openWorkflow(int index);
+    QChar nameFirstLetter();
+
+
 
 protected:
     static Client* m_instance;
@@ -80,8 +92,11 @@ signals:
     void signUpResponse(const QByteArray &);
     void signInResponse(const QByteArray &);
     void logOutResponse(const QByteArray &);
+    void profileDataRespone(const QByteArray &);
 
     void errorResponse(const QByteArray &);
+
+    void profileNameChanged();
 
 public slots:
     void bytesWritten(qint64 bytes);
@@ -92,6 +107,12 @@ private:
     QTcpSocket m_socket;
     QQmlApplicationEngine *m_engine{nullptr};
     GoogleAuth *m_googleInstance{nullptr};
+    Profile m_profile;
+    QString m_accessesToken;
+    qint64 m_id;
+
+    WorkflowsModel *m_workflows;
+    KanbanModel *m_kanban;
 
 };
 

@@ -12,6 +12,8 @@ Item {
     width: 200
     height: 200
 
+    property var flowModel;
+
     ColumnLayout {
         z: 10
         id: wrapper
@@ -27,7 +29,7 @@ Item {
 
             Text {
                 id: logo
-                text: qsTr("A")
+                text: flowIcon
                 verticalAlignment: Text.AlignVCenter
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 17
@@ -47,9 +49,8 @@ Item {
         }
 
         Text {
-            id: flowTitle
-            text: qsTr("What is Lorem Ipsum?
-Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
+            id: workflowTitle
+            text: flowTitle
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
@@ -76,7 +77,7 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
                 anchors.right: parent.right
                 anchors.left: parent.left
                 anchors.top: percent.bottom
-                value: 25
+                value: flowProgress
             }
 
         }
@@ -89,26 +90,48 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
             Row {
                 spacing: -20
 
+                Component.onCompleted: print("model is ", flowModel.rowCount())
+
                 Repeater {
-                    model: 4
+                    model: flowModel
 
                     RoundButton {
                         width: 40
                         height: 40
-                        text: "A"
+                        text: qsTr("%1").arg(colaborantIcon)
 
                         Material.background: Material.Pink
                         Material.foreground: "white"
                     }
+
                 }
                 RoundButton {
                     width: 40
                     height: 40
-                    text: "+6"
+                    visible: flowModel.hidden()
+                    text: qsTr("+%1").arg(flowModel.hidden())
                     font.pointSize: 10
 
                     Material.background: Material.Grey
                     Material.foreground: "black"
+                }
+
+                Rectangle {
+                    id: tag
+
+                    visible: !flowModel.hidden()
+                    width: txt.width + 10
+                    height: txt.height + 10
+                    Text {
+                        id: txt
+                        anchors.centerIn: parent
+                        text: qsTr("personal");
+                        color: Material.color(Material.Pink)
+                    }
+                    radius: 7
+                    border.width: 1
+                    border.color: Material.color(Material.Pink)
+                    color: "transparent"
                 }
             }
         }
