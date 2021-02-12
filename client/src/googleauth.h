@@ -22,7 +22,7 @@ public:
     void refreshToken(const QString &);
 
 signals:
-    void gotToken(const QString &, const QString &, const QString &);
+    void gotToken(const QString &, const QString &);
 
 private:
     QOAuth2AuthorizationCodeFlow * google;
