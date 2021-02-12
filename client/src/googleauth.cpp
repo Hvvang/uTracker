@@ -60,7 +60,8 @@ GoogleAuth::GoogleAuth(QObject *parent) : QObject(parent) {
     connect(this->google, &QOAuth2AuthorizationCodeFlow::granted, [=](){
         const QString token = this->google->token();
 
-        emit gotToken(google->token(), google->refreshToken(), nullptr);
+        emit gotToken("accesses_token", google->token());
+        emit gotToken("refresh_token", google->refreshToken());
 
 //        auto reply = this->google->post(getRefreshUrl());
 
@@ -71,6 +72,7 @@ GoogleAuth::GoogleAuth(QObject *parent) : QObject(parent) {
         // TODO: send gotted shrared key to server for getting tokens on server side of application
 
     });
+    this->google->grant();
 }
 
 GoogleAuth::~GoogleAuth() {
@@ -93,7 +95,8 @@ void GoogleAuth::refreshToken(const QString &token) {
 
     connect(reply, &QNetworkReply::finished, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
-            emit gotToken(google->token(), google->refreshToken(), nullptr);
+            emit gotToken("accesses_token", google->token());
+            emit gotToken("refresh_token", google->refreshToken());
         }
         qDebug() << "REQUEST FINISHED. Error? " << (reply->error() != QNetworkReply::NoError);
         qDebug() << reply->readAll();

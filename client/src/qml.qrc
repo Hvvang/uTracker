@@ -16,5 +16,8 @@
         <file>qml/mainwindow/Mainwindowview.qml</file>
         <file>qml/authwindow/Authorization.qml</file>
         <file>qml/mainwindow/Taskview.qml</file>
+        <file>qml/Authwindow.qml</file>
+        <file>qml/RegisterWidow.qml</file>
+        <file>qml/Authorization.qml</file>
     </qresource>
 </RCC>
