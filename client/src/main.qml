@@ -83,8 +83,8 @@ Window {
       }
       anchors.fill: parent
 
-//      source: "qml/authwindow/Authorization.qml"
-      source: "qml/mainwindow/Mainwindowview.qml"
+      source: "qml/authwindow/Authorization.qml"
+//      source: "qml/mainwindow/Mainwindowview.qml"
   }
 
 

@@ -18,14 +18,15 @@ Item {
         width: parent.width
         height: parent.height
 
-        Component.onCompleted: print(workflowmodel.rowCount())
-        contentHeight: workflowmodel.rowCount() / grid.columns * 250
-
+        contentHeight: workflowmodel.rowCount() / grid.columns * 210
+        contentWidth: workflowmodel.rowCount() / grid.columns * 210
 
         clip: true
 
         GridLayout {
             id: grid
+            columnSpacing: 5
+            rowSpacing: 5
 
             anchors.fill: parent
 

@@ -6,9 +6,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "Client.h"
+
 AbstractResponseHandler::AbstractResponseHandler(QObject *parent)
     : QObject(parent) {
-    connect(this, &AbstractResponseHandler::handled, this,  &AbstractResponseHandler::mediator);
+    connect(m_client, &Client::handled, this,  &AbstractResponseHandler::mediator);
 }
 
 AbstractResponseHandler::ResponseErrorType AbstractResponseHandler::error(const QByteArray &data) {
@@ -46,6 +48,10 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit logOut(data); break;
         case ResponseType::PROFILE:
             emit profile(data); break;
+        case ResponseType::CREATE_WORKFLOW:
+            emit newWorkflow(data); break;
+        case ResponseType::ARICHIVE_WORKFLOW:
+            emit archiveWorkflow(data); break;
         default:
             qDebug() << "Emit some error in response!";
     }

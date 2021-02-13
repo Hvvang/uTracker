@@ -3,7 +3,7 @@
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
     Workflow w1;
-    w1.icon = "A";
+    w1.deadline = "A";
     w1.title = "What is Lorem Ipsum?\n"
             "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
     w1.progress = 34;
@@ -25,7 +25,7 @@ QVariant WorkflowsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     switch(role) {
-        case IconRole: return m_data[index.row()].icon;
+        case DeadlineRole: return m_data[index.row()].deadline;
         case TitleRole: return m_data[index.row()].title;
         case ProgressRole: return m_data[index.row()].progress;
         case ColaborantsRole: return QVariant::fromValue(m_data[index.row()].colaborants);
@@ -50,26 +50,41 @@ Qt::ItemFlags WorkflowsModel::flags(const QModelIndex &index) const
     return Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-bool WorkflowsModel::insertRows(int row, int count, const QModelIndex &parent)
-{
+bool WorkflowsModel::insertRows(int row, int count, const QModelIndex &parent) {
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endInsertRows();
 }
 
-bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent)
-{
+bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
     beginRemoveRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
+    delete m_data.at(row).colaborants;
+    m_data.removeAt(row);
     endRemoveRows();
 }
 
 QHash<int, QByteArray> WorkflowsModel::roleNames() const {
     QHash<int, QByteArray> roles;
-    roles[IconRole] = "flowIcon";
+    roles[DeadlineRole] = "flowDeadline";
     roles[TitleRole] = "flowTitle";
     roles[ProgressRole] = "flowProgress";
     roles[ColaborantsRole] = "flowColaborants";
     return roles;
+}
+
+void WorkflowsModel::append(const QString &title, const QString &deadline) {
+    Workflow w1;
+    w1.deadline = deadline;
+    w1.title = title;
+    w1.progress = 100;
+    w1.colaborants = new ColaborantsModel(this);
+
+    beginInsertRows(QModelIndex(), 0, 0);
+    m_data.prepend(w1);
+    endInsertRows();
+}
+
+void WorkflowsModel::archive(int index) {
+    removeRows(index, 1);
 }
 

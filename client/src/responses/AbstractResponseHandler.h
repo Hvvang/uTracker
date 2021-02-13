@@ -13,6 +13,8 @@ enum class ResponseType {
     SIGN_UP = 2,
     SIGN_IN = 3,
     LOG_OUT = 4,
+    CREATE_WORKFLOW = 5,
+    ARICHIVE_WORKFLOW = 6,
 
     PROFILE = 11,
     ERROR = 5,
@@ -37,12 +39,12 @@ public:
     virtual void processResponse(const QByteArray &data) = 0;
 
 signals:
-    void handled(const QByteArray &);
-
     void signUp(const QByteArray &);
     void signIn(const QByteArray &);
     void logOut(const QByteArray &);
     void profile(const QByteArray &);
+    void newWorkflow(const QByteArray &);
+    void archiveWorkflow(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);

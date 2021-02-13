@@ -4,6 +4,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 import QtQuick.Controls 2.13
 
+import "../workflowswindow"
 
 Item {
     id: root
@@ -13,6 +14,9 @@ Item {
     width: parent.width
     height: parent.height
 
+    WorkflowDialog {
+        id: dialog
+    }
 
     Headerpanel {
         id: header

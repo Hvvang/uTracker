@@ -51,10 +51,11 @@ public:
         SIGN_UP = 2,
         SIGN_IN = 3,
 
+        CREATE_WORKFLOW = 5,
+        ARCHIVE_WORKFLOW = 6,
+
         GET_PROFILE = 11,
     };
-
-
 
     Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost, const quint16 port = 5000, QObject *parent = nullptr);
 
@@ -70,12 +71,17 @@ public:
 
     void autoSignIn();
 
+    QChar nameFirstLetter();
+    void newWorkflow(const QString &title, const QString &deadline);
+    void removeWorkflow(int index);
+
+
     Q_INVOKABLE void googleAuthorize();
     Q_INVOKABLE void authorize(const QString &email, const QString &password);
     Q_INVOKABLE void registrate(const QString &email, const QString &password, const QString &name, const QString &surname);
     Q_INVOKABLE void openWorkflow(int index);
-    QChar nameFirstLetter();
-
+    Q_INVOKABLE void createWorkflow(const QString &title, const QString &date);
+    Q_INVOKABLE void archiveWorkflow(int index);
 
 
 protected:
@@ -89,10 +95,14 @@ signals:
 
     void request(const QString &);
 
-    void signUpResponse(const QByteArray &);
-    void signInResponse(const QByteArray &);
-    void logOutResponse(const QByteArray &);
-    void profileDataRespone(const QByteArray &);
+//    void signUpResponse(const QByteArray &);
+//    void signInResponse(const QByteArray &);
+//    void logOutResponse(const QByteArray &);
+//    void profileDataRespone(const QByteArray &);
+//    void createWorkflowResponse(const QByteArray &);
+//    void deleteWorkflowResponse(const QByteArray &);
+
+    void handled(const QByteArray &);
 
     void errorResponse(const QByteArray &);
 
@@ -109,11 +119,10 @@ private:
     GoogleAuth *m_googleInstance{nullptr};
     Profile m_profile;
     QString m_accessesToken;
-    qint64 m_id;
+    qint64 m_id = 1;
 
     WorkflowsModel *m_workflows;
     KanbanModel *m_kanban;
-
 };
 
 #define m_client Client::singleton()

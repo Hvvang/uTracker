@@ -2,38 +2,23 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>fonts/fontello.ttf</file>
-
-<!--Components-->
         <file>qml/components/Contolbutton.qml</file>
         <file>qml/components/Menubutton.qml</file>
         <file>qml/components/Taskview.qml</file>
-
-<!--MainWindow-->
         <file>qml/mainwindow/Maincontrolpanel.qml</file>
         <file>qml/mainwindow/Mainwindowview.qml</file>
         <file>qml/mainwindow/Headerpanel.qml</file>
-
-<!--AuthWindow-->
         <file>qml/authwindow/Authwindow.qml</file>
         <file>qml/authwindow/RegisterWidow.qml</file>
         <file>qml/authwindow/Authorization.qml</file>
-
-<!--WorkflowsWindow-->
         <file>qml/workflowswindow/Workflowsview.qml</file>
         <file>qml/workflowswindow/Workflowpane.qml</file>
         <file>qml/workflowswindow/Kanbanview.qml</file>
-
-<!--CalendarWindow-->
         <file>qml/calendarwindow/Calendarview.qml</file>
-
-<!--ContactsWindow-->
         <file>qml/contactswindow/Contactsview.qml</file>
-
-<!--DailyPlanWindow-->
         <file>qml/dailyplanwindow/Dailyplaneview.qml</file>
-
-<!--StatisticWindow-->
         <file>qml/statisticwindow/Statisticview.qml</file>
-
+        <file>qml/workflowswindow/WorkflowDialog.qml</file>
+        <file>qml/components/DatePicker.qml</file>
     </qresource>
 </RCC>

@@ -8,9 +8,8 @@
 
 struct Workflow {
     QString title;
-    QString icon;
+    QString deadline;
     unsigned progress;
-    int colabs;
     ColaborantsModel *colaborants;
 };
 
@@ -20,7 +19,7 @@ class WorkflowsModel : public QAbstractListModel
 
 public:
     enum {
-        IconRole = Qt::UserRole,
+        DeadlineRole = Qt::UserRole,
         TitleRole,
         ProgressRole,
         ColaborantsRole,
@@ -47,6 +46,9 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
+    void append(const QString &title, const QString &deadline);
+
+    Q_INVOKABLE void archive(int index);
 
 private:
     QList<Workflow> m_data;

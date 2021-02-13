@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.3
 
 import "../components"
 
+
 Item {
     id: root
     width: Screen.width * 0.10
@@ -33,6 +34,8 @@ Item {
 
             Material.background: Material.Blue
             Material.foreground: "white"
+
+            onClicked: dialog.open()
         }
         ColumnLayout {
             id: columnContainer
@@ -49,7 +52,7 @@ Item {
                     ListElement {icon_text: "\uf16C"; name_text: "Work Flows"; description: "View work flows"; selected: true}
                     ListElement {icon_text: "\ue807"; name_text: "Daily plane"; description: "View work for today"; selected: false}
                     ListElement {icon_text: "\ue804"; name_text: "Contacts"; description: "View contact list"; selected: false}
-                    ListElement {icon_text: "\uf133"; name_text: "Calendar"; description: "View uncompleted tasks"; selected: false}
+                    ListElement {icon_text: "\ue80c"; name_text: "Calendar"; description: "View uncompleted tasks"; selected: false}
                     ListElement {icon_text: "\ue805"; name_text: "Statistic"; description: "View your progress statistic"; selected: false}
                 }
 

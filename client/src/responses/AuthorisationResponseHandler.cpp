@@ -10,6 +10,7 @@
 AuthorisationResponseHandler::AuthorisationResponseHandler(QObject *parent)
     : AbstractResponseHandler(parent) {
     connect(this, &AuthorisationResponseHandler::signIn, this,  &AuthorisationResponseHandler::processResponse);
+    connect(this, &AuthorisationResponseHandler::signUp, this,  &AuthorisationResponseHandler::processResponse);
 }
 
 void AuthorisationResponseHandler::processResponse(const QByteArray &data) {

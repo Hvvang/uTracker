@@ -2,17 +2,17 @@
 // Created by Artem Shemidko on 12.02.2021.
 //
 
-#include "ProfileDataResposeHandler.h"
+#include "ProfileDataResponseHandler.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include "Client.h"
 
-ProfileDataResposeHandler::ProfileDataResposeHandler(QObject *parent)
+ProfileDataResponseHandler::ProfileDataResponseHandler(QObject *parent)
     : AbstractResponseHandler(parent) {
-    connect(this, &AbstractResponseHandler::profile, this,  &ProfileDataResposeHandler::processResponse);
+    connect(this, &AbstractResponseHandler::profile, this,  &ProfileDataResponseHandler::processResponse);
 }
 
-void ProfileDataResposeHandler::processResponse(const QByteArray &data) {
+void ProfileDataResponseHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
 

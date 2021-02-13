@@ -7,10 +7,13 @@
 #include <QUrl>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include "AuthorisationResponseHandler.h"
+
 #include "googleauth.h"
 #include "kanbanmodel.h"
-#include "ProfileDataResposeHandler.h"
+#include "AuthorisationResponseHandler.h"
+#include "ProfileDataResponseHandler.h"
+#include "CreateWorkflowResponseHandler.h"
+#include "ArchiveWorkflowResponseHandler.h"
 
 Client* Client::m_instance = nullptr;
 
@@ -63,20 +66,7 @@ void Client::readyRead() {
             } else {
                 return;
             }
-            switch (static_cast<ResponseType>(responseType)) {
-                case ResponseType::SIGN_UP:
-                    emit signUpResponse(data); break;
-                case ResponseType::SIGN_IN:
-                    emit signInResponse(data); break;
-                case ResponseType::LOG_OUT:
-                    emit logOutResponse(data); break;
-                case ResponseType::PROFILE:
-                    emit profileDataRespone(data); break;
-                case ResponseType::ERROR:
-                    emit errorResponse(data); break;
-                default:
-                    qDebug() << "Emit some error in response!";
-            }
+            emit handled(data);
         }
     }
 }
@@ -86,12 +76,16 @@ void Client::deinitResponseHandlers() {
 
 void Client::initResponseHandlers() {
     auto authHandler = new AuthorisationResponseHandler(this);
-    auto profileHandler = new ProfileDataResposeHandler(this);
+    auto profileHandler = new ProfileDataResponseHandler(this);
+    auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
+    auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
     // memory leak hear
 
-    connect(this, &Client::signUpResponse, authHandler, &AuthorisationResponseHandler::processResponse);
-    connect(this, &Client::signInResponse, authHandler, &AuthorisationResponseHandler::processResponse);
-    connect(this, &Client::profileDataRespone, profileHandler, &ProfileDataResposeHandler::processResponse);
+//    connect(this, &Client::signUpResponse, authHandler, &AuthorisationResponseHandler::processResponse);
+//    connect(this, &Client::signInResponse, authHandler, &AuthorisationResponseHandler::processResponse);
+//    connect(this, &Client::profileDataRespone, profileHandler, &ProfileDataResponseHandler::processResponse);
+//    connect(this, &Client::createWorkflowResponse, createWorkflowHandler, &CreateWorkflowResponseHandler::processResponse);
+//    connect(this, &Client::deleteWorkflowResponse, archiveWorkflowHandler, &ArchiveWorkflowResponseHandler::processResponse);
 }
 
 void Client::send(const QString &data) {
@@ -111,12 +105,11 @@ Client *Client::singleton() {
 }
 
 void Client::getProfileData() {
-
     QJsonObject json;
 
     json["type"] = static_cast<int>(Client::RequestType::GET_PROFILE);
     json["token"] = m_accessesToken;
-    json["userId"] = 1;
+    json["userId"] = m_id;
 
     QJsonDocument document;
     document.setObject(json);
@@ -226,6 +219,42 @@ QChar Client::nameFirstLetter() {
     }
     return QChar();
 }
+
+void Client::createWorkflow(const QString &title, const QString &date) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::CREATE_WORKFLOW);
+    json["token"] = m_accessesToken;
+    json["title"] = title;
+    json["deadline"] = date;
+    json["userId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::archiveWorkflow(int index) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::ARCHIVE_WORKFLOW);
+    json["token"] = m_accessesToken;
+    json["workflowId"] = index;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::newWorkflow(const QString &title, const QString &deadline) {
+    m_workflows->append(title, deadline);
+}
+
+void Client::removeWorkflow(int index) {
+    m_workflows->archive(index);
+}
+
+
 
 
 

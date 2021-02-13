@@ -29,7 +29,8 @@ Item {
 
             Text {
                 id: logo
-                text: flowIcon
+                text: qsTr("\uf133 %1").arg(flowDeadline)
+                font.family: "fontello"
                 verticalAlignment: Text.AlignVCenter
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 17
@@ -190,7 +191,7 @@ Item {
         MenuItem {
             text: "\ue808  archive"
             font.family: "fontello"
-            onTriggered: back.Material.background = Material.Red
+            onTriggered: client.archiveWorkflow(model.index)
             height: 30
             width: parent.width
         }

@@ -92,7 +92,7 @@
 <context>
     <name>Maincontrolpanel</name>
     <message>
-        <location filename="../src/qml/mainwindow/Maincontrolpanel.qml" line="29"/>
+        <location filename="../src/qml/mainwindow/Maincontrolpanel.qml" line="30"/>
         <source>    New Work Flow</source>
         <translation type="unfinished"></translation>
     </message>
@@ -152,24 +152,57 @@
     </message>
 </context>
 <context>
-    <name>Workflowpane</name>
+    <name>WorkflowDialog</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="40"/>
-        <source></source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="101"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="38"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="112"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="80"/>
+        <source>Chose deadline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="101"/>
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="131"/>
+        <source>Create a workflow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="165"/>
+        <source>Discard</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Workflowpane</name>
+    <message>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="32"/>
+        <source> %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="41"/>
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="102"/>
+        <source>%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="113"/>
         <source>+%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="128"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="129"/>
         <source>personal</source>
         <translation type="unfinished"></translation>
     </message>

@@ -3,10 +3,10 @@
 
 #include <AbstractResponseHandler.h>
 
-class ProfileDataResposeHandler : public AbstractResponseHandler {
+class ProfileDataResponseHandler : public AbstractResponseHandler {
 Q_OBJECT
 public:
-    explicit ProfileDataResposeHandler(QObject *parent = nullptr);
+    explicit ProfileDataResponseHandler(QObject *parent = nullptr);
 
     void processResponse(const QByteArray &data) override;
 
