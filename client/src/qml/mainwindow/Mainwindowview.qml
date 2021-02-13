@@ -17,6 +17,9 @@ Item {
     WorkflowDialog {
         id: dialog
     }
+    InviteColaborantDialog {
+        id: inviteDialog
+    }
 
     Headerpanel {
         id: header

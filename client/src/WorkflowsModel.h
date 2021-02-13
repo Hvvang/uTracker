@@ -7,6 +7,7 @@
 
 
 struct Workflow {
+    quint64 id;
     QString title;
     QString deadline;
     unsigned progress;
@@ -49,6 +50,8 @@ public:
     void append(const QString &title, const QString &deadline);
 
     Q_INVOKABLE void archive(int index);
+
+    void addColaborant(quint64 index, const Colaborant &contact);
 
 private:
     QList<Workflow> m_data;

@@ -19,10 +19,6 @@ void ProfileDataResponseHandler::processResponse(const QByteArray &data) {
         qWarning() << "An error occurred: " << handleMessage(data);
         emit m_client->notification(handleMessage(data));
     }
-    else if (error(data) == AbstractResponseHandler::ResponseErrorType::BadToken) {
-        // TODO: refresh token
-//        m_client->refresh_token();
-    }
     else {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();

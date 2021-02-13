@@ -77,6 +77,29 @@
     </message>
 </context>
 <context>
+    <name>InviteColaborantDialog</name>
+    <message>
+        <location filename="../src/qml/workflowswindow/InviteColaborantDialog.qml" line="37"/>
+        <source>%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/InviteColaborantDialog.qml" line="72"/>
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/InviteColaborantDialog.qml" line="86"/>
+        <source>Invite contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/InviteColaborantDialog.qml" line="114"/>
+        <source>Discard</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Kanbanview</name>
     <message>
         <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="71"/>
@@ -192,17 +215,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="102"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="100"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="113"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="111"/>
         <source>+%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="129"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="127"/>
         <source>personal</source>
         <translation type="unfinished"></translation>
     </message>

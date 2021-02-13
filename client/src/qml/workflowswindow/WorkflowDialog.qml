@@ -81,7 +81,7 @@ Item {
 
                 text: Qt.formatDate(datepicker.selectedDate, "dd-MM-yyyy")
 
-                KeyNavigation.tab: signUpBtn
+                KeyNavigation.tab: createBtn
 
                 Material.accent: deadlineError ? "red" : "black"
                 Material.foreground: deadlineError ? "red" : "black"
@@ -127,7 +127,7 @@ Item {
 
             }
             Button {
-                id: signUpBtn
+                id: createBtn
                 text: qsTr("Create a workflow")
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop

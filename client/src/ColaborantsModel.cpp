@@ -49,6 +49,7 @@ bool ColaborantsModel::insertRows(int row, int count, const QModelIndex &parent)
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endInsertRows();
+    return true;
 }
 
 bool ColaborantsModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -56,6 +57,7 @@ bool ColaborantsModel::removeRows(int row, int count, const QModelIndex &parent)
     beginRemoveRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endRemoveRows();
+    return true;
 }
 
 
@@ -69,5 +71,12 @@ QHash<int, QByteArray> ColaborantsModel::roleNames() const {
 }
 
 int ColaborantsModel::hidden() {
-    return m_data.size() - 4;
+    return qMax<int>(m_data.size() - 4, 0);
 }
+
+void ColaborantsModel::add(const Colaborant &contact) {
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_data.push_back(contact);
+    endInsertRows();
+}
+

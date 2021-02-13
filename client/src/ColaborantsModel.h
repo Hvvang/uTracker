@@ -8,7 +8,7 @@ struct Colaborant {
     QString name;
     QString surname;
     QChar icon;
-    bool status;
+    QString status;
 };
 
 class ColaborantsModel : public QAbstractListModel
@@ -43,6 +43,8 @@ public:
      QHash<int, QByteArray> roleNames() const override;
 
      Q_INVOKABLE int hidden();
+
+     void add(const Colaborant &contact);
 
 private:
     QList<Colaborant> m_data;

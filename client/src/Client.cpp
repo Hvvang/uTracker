@@ -15,6 +15,8 @@
 #include "ProfileDataResponseHandler.h"
 #include "CreateWorkflowResponseHandler.h"
 #include "ArchiveWorkflowResponseHandler.h"
+#include "InviteContactResponseHandler.h"
+
 
 Client* Client::m_instance = nullptr;
 
@@ -80,6 +82,7 @@ void Client::initResponseHandlers() {
     auto profileHandler = new ProfileDataResponseHandler(this);
     auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
     auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
+    auto addColaborantHandler = new InviteContactResponseHandler(this);
     // memory leak hear
 }
 
@@ -241,12 +244,29 @@ void Client::archiveWorkflow(int index) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::inviteContact(const QString &contact, int index) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::INVITE_CONTACT);
+    json["token"] = m_accessesToken;
+    json["workflowId"] = index;
+    json["contact"] = contact;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::newWorkflow(const QString &title, const QString &deadline) {
     m_workflows->append(title, deadline);
 }
 
 void Client::removeWorkflow(int index) {
     m_workflows->archive(index);
+}
+
+void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
+    m_workflows->addColaborant(flowIndex, contact);
 }
 
 

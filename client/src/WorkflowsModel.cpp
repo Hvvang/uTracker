@@ -2,6 +2,13 @@
 
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
+    Workflow w1;
+    w1.deadline = "A";
+    w1.title = "What is Lorem Ipsum?\n"
+            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
+    w1.progress = 34;
+    w1.colaborants = new ColaborantsModel(this);
+    m_data.push_back(w1);
 }
 
 int WorkflowsModel::rowCount(const QModelIndex &parent) const
@@ -47,6 +54,7 @@ bool WorkflowsModel::insertRows(int row, int count, const QModelIndex &parent) {
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endInsertRows();
+    return true;
 }
 
 bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
@@ -54,6 +62,7 @@ bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
     delete m_data.at(row).colaborants;
     m_data.removeAt(row);
     endRemoveRows();
+    return true;
 }
 
 QHash<int, QByteArray> WorkflowsModel::roleNames() const {
@@ -81,3 +90,11 @@ void WorkflowsModel::archive(int index) {
     removeRows(index, 1);
 }
 
+void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
+    foreach (auto &flow, m_data) {
+        if (flow.id == index) {
+            flow.colaborants->add(contact);
+            break;
+        }
+    }
+}

@@ -91,8 +91,6 @@ Item {
             Row {
                 spacing: -20
 
-                Component.onCompleted: print("model is ", flowModel.rowCount())
-
                 Repeater {
                     model: flowModel
 
@@ -177,7 +175,7 @@ Item {
         MenuItem {
             text: "\uf234  invite"
             font.family: "fontello"
-            onTriggered: back.clicked()
+            onTriggered: inviteDialog.open(model.index)
             height: 30
             width: parent.width
         }

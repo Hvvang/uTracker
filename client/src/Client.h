@@ -54,6 +54,8 @@ public:
         CREATE_WORKFLOW = 5,
         ARCHIVE_WORKFLOW = 6,
 
+        INVITE_CONTACT = 8,
+
         GET_PROFILE = 11,
     };
 
@@ -74,6 +76,7 @@ public:
     QChar nameFirstLetter();
     void newWorkflow(const QString &title, const QString &deadline);
     void removeWorkflow(int index);
+    void addColaborant(quint64 flowIndex, const Colaborant &contact);
 
 
     Q_INVOKABLE void googleAuthorize();
@@ -82,6 +85,7 @@ public:
     Q_INVOKABLE void openWorkflow(int index);
     Q_INVOKABLE void createWorkflow(const QString &title, const QString &date);
     Q_INVOKABLE void archiveWorkflow(int index);
+    Q_INVOKABLE void inviteContact(const QString &contact, int index);
 
 
 protected:
@@ -94,14 +98,6 @@ signals:
     void switchMenu(const QString &panelPath);
 
     void request(const QString &);
-
-//    void signUpResponse(const QByteArray &);
-//    void signInResponse(const QByteArray &);
-//    void logOutResponse(const QByteArray &);
-//    void profileDataRespone(const QByteArray &);
-//    void createWorkflowResponse(const QByteArray &);
-//    void deleteWorkflowResponse(const QByteArray &);
-
     void handled(const QByteArray &);
 
     void errorResponse(const QByteArray &);

@@ -20,5 +20,6 @@
         <file>qml/statisticwindow/Statisticview.qml</file>
         <file>qml/workflowswindow/WorkflowDialog.qml</file>
         <file>qml/components/DatePicker.qml</file>
+        <file>qml/workflowswindow/InviteColaborantDialog.qml</file>
     </qresource>
 </RCC>

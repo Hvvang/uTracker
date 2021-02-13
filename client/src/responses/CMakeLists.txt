@@ -5,6 +5,7 @@ set(SOURCES
         ProfileDataResponseHandler.cpp
         CreateWorkflowResponseHandler.cpp
         ArchiveWorkflowResponseHandler.cpp
+        InviteContactResponseHandler.cpp
         )
 set(HEADERS
         AbstractResponseHandler.h
@@ -12,6 +13,7 @@ set(HEADERS
         ProfileDataResponseHandler.h
         CreateWorkflowResponseHandler.h
         ArchiveWorkflowResponseHandler.h
+        InviteContactResponseHandler.h
         )
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})

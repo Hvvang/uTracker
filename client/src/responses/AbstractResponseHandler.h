@@ -45,6 +45,7 @@ signals:
     void profile(const QByteArray &);
     void newWorkflow(const QByteArray &);
     void archiveWorkflow(const QByteArray &);
+    void inviteContact(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);
