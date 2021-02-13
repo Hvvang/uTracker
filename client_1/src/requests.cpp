@@ -1,5 +1,6 @@
 #include "client.h"
 #include "requests.h"
+#include "loggingcategories.h"
 
 AbstractRequest::AbstractRequest(std::shared_ptr<QSslSocket> socket) {
     m_socket = socket;
@@ -10,7 +11,7 @@ void AbstractRequest::createJSON(QMap<QString, QVariant> map) {
     QJsonObject jsonObject =  QJsonObject::fromVariantMap(map);
     QJsonDocument *jsonDoc = new QJsonDocument(jsonObject);
     QByteArray json = jsonDoc->toJson();
-    qDebug() << json;
+    qDebug(logDebug) << "json = " << json;
 
     QByteArray buffer;
     m_socket->write(buffer.setNum(json.size()));

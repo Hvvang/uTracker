@@ -89,12 +89,17 @@ bool Client::configSSL()
 
 void Client::testConnect() const
 {
+    qDebug(logDebug) << "Client::testConnect";
+//    QString input;
+//    input << "ddd"
     m_ssl_socket->write("hello");
     qDebug(logDebug()) << "testConnect, socket mode =" << m_ssl_socket->mode();
 }
 
 void Client::testRequestLoop()
 {
+    qDebug(logDebug) << "Client::testRequestLoop";
+
     m_request->signUp("ndykyy1", "21453#gs8kFSdfD1F244iuSn1", "Nazar1", "Dykyy1", "NazarDykyy1@gmail.com");
     m_request->signIn("NazarDykyy1@gmail.com", "ndykyy", "21453#gs8kFSdfD1F244iuSn1");
 //     m_request->autoSignIn("token");//-

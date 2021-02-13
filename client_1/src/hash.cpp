@@ -1,10 +1,10 @@
 #include "hash.h"
 
-static std::string to_hex(unsigned char s) {
-    std::stringstream ss;
-    ss << std::hex << (int) s;
-    return ss.str();
-}
+//static std::string to_hex(unsigned char s) {
+//    std::stringstream ss;
+//    ss << std::hex << (int) s;
+//    return ss.str();
+//}
 
 QByteArray mx_hash(const QString& pass )
 {

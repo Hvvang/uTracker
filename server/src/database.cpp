@@ -4,6 +4,7 @@
 #include <QSqlQueryModel>
 
 DataBase *DataBase::m_pInstance = nullptr;
+
 DataBase *DataBase::getInstance() {
     if (m_pInstance == nullptr)
         m_pInstance = new DataBase();
