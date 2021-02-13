@@ -27,7 +27,6 @@ enum class RequestType {
     UPDATE_PROFILE
 };
 
-
 class AbstractRequest {
 
 public:
@@ -51,7 +50,6 @@ public:
 
     void getProfile(int userId);
     void updateProfile(int userId, QString name, QString surname);
-
 protected:
     std::shared_ptr<QSslSocket> m_socket;
 };
