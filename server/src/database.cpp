@@ -3,6 +3,8 @@
 #include <QSqlError>
 #include <QSqlQueryModel>
 
+#include "hash.h"
+
 DataBase *DataBase::m_pInstance = nullptr;
 DataBase *DataBase::getInstance() {
     if (m_pInstance == nullptr)
@@ -39,6 +41,13 @@ void DataBase::create_tables() {
     query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, panel_id int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist json, files blob)");
     query.exec("create table IF NOT EXISTS T_connector (id integer primary key AUTOINCREMENT, task_id int, worker_id int)");
     query.exec("create table IF NOT EXISTS WF_connector (id integer primary key AUTOINCREMENT,workflow_id int, user_id int, UNIQUE (workflow_id, user_id))");
+}
+
+bool DataBase::isValidToken(QJsonObject itemObject) {
+//    Q_UNUSED(itemObject);
+    if(!itemObject["token"].toString().isEmpty())
+        return true;
+    return false;
 }
 
 void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &map) {
@@ -90,13 +99,43 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                           map.value("name").toString(),
                           map.value("surname").toString());
             break;
+        case RequestType::CREATE_LIST :
+            result = createList(map.value("title").toString(),
+                                map.value("workdlowId").toInt());
+            break;
+        case RequestType::REMOVE_LIST :
+            result = removeList(map.value("listId").toInt());
+            break;
+        case RequestType::CREATE_TASK :
+            result = createTask(map.value("title").toString(),
+                                map.value("listId").toInt());
+            break;
+        case RequestType::UPDATE_TASK :
+            result = updateTask(map.value("taskId").toInt(),
+                                map.value("description").toString(),
+                                map.value("checkList").toStringList());
+            break;
+        case RequestType::MOVE_TASK :
+            result = moveTask(map.value("taskId").toInt(),
+                              map.value("listId").toInt());
+            break;
+        case RequestType::REMOVE_TASK :
+            result = removeTask(map.value("taskId").toInt());
+            break;
+        case RequestType::GET_TASK_DATA :
+            result = getTaskData(map.value("taskId").toInt());
+            break;
     }
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+
+        qDebug() << jsonDoc.toJson();
+
         emit m_connection->sendResponse(jsonDoc.toJson());
     }
 }
+
 
 QVariantMap DataBase::containsUser(const QString &login, const QString &password) {
     QSqlQuery query;
@@ -125,18 +164,20 @@ DataBase::createUser(const QString &login,
                      const QString &surname) {
     QSqlQuery query;
     query.prepare(
-        "INSERT INTO UsersCredential (login, password, first_name, last_name) "
-        "VALUES (:login, :password, :first_name, :last_name);");
+        "INSERT INTO UsersCredential (login, password, first_name, last_name, auth_token) "
+        "VALUES (:login, :password, :first_name, :last_name, *auth_token);");
     query.bindValue(":login", login);
     query.bindValue(":password", password);
     query.bindValue(":first_name", name);
     query.bindValue(":last_name", surname);
+    query.bindValue(":auth_token", mx_hash(password, login));
 
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::SIGN_UP);
     if (!query.exec()) {
         map["error"] = 1;
         map["message"] = "User with such login already exist";
+        map["token"] = mx_hash(password, login);
     } else {
         map["message"] = "User successfully created";
     }
@@ -145,37 +186,21 @@ DataBase::createUser(const QString &login,
 
 QVariantMap
 DataBase::createWorkflow(int owner_id, const QString &title, const QString &description) {
-    // set_two_string("WorkFlows", "title", title, "description", description);
-//    insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'");
-//     QSqlQuery query;
-//     query.prepare(
-//             "INSERT INTO WorkFlows (owner_id, title, description) "
-//             "VALUES (:owner_id, :title, :description)");
-//     query.bindValue(":owner_id", owner_id);
-//     query.bindValue(":title", title);
-//     query.bindValue(":description", description);
-//     query.exec();
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
     if (insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'")) {
-        map["message"] = "Заебісь зайшло в create Workflow";
+        map["message"] = "Workflow successfully created";
+        //map["workflowId"] = Даша, витягни будь ласка workflowId яку тільки що створили;
     }
     else {
         map["error"] = 1;
-        map["message"] = "Huyova зайшло в UpdateProfile";
+        map["message"] = "Workflow hasn't been created";
     }
     return map;
 }
 
 QVariantMap
 DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &description) {
-    // update_two_string("WorkFlows",
-    //                   "title",
-    //                   title,
-    //                   "description",
-    //                   description,
-    //                   "id",
-    //                   QString(workflow_id));
     bool is_ok = false;
     if (!title.isEmpty() && !description.isEmpty()) {
         is_ok = update("WorkFlows", "title = '" + title + "', description = '" + description + "'", "id = " + QString::number(workflow_id));
@@ -187,10 +212,10 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
     if (is_ok)
-        map["message"] = "Заебісь зайшло в Update workflow";
+        map["message"] = "Workflow successfully updated";
     else {
         map["error"] = 1;
-        map["message"] = "User isn't in basadate";
+        map["message"] = "User isn't in database";
     }
     return map;
 }
@@ -200,11 +225,11 @@ DataBase::inviteToWorkflow(int user_id, int workflow_id) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
     if (insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(user_id))) {
-        map["message"] = "Заебісь зайшло в Invite to Workflow";
+        map["message"] = "User succesfully invited to Workflow";
     }
     else {
         map["error"] = 1;
-        map["message"] = "Huyova зайшло в Invite to Profile";
+        map["message"] = "Invite canceled";
     }
     return map;
 }
@@ -244,10 +269,10 @@ QVariantMap DataBase::getWorkflow(int workflow_id) {
         mapa["userId"] = query.value(0).toInt();
         mapa["title"] = query.value(1).toString();
         mapa["description"] = query.value(2).toString();
-        mapa["message"] = "Nazar";
+        mapa["message"] = "Single workflow sent";
     } else {
         mapa["error"] = 1;
-        mapa["message"] = "workflowId isn't in basadate";
+        mapa["message"] = "workflowId isn't in database";
     }
     return mapa;
 }
@@ -261,10 +286,10 @@ QVariantMap DataBase::getProfile(int user_id) {
         mapa["userId"] = query.value(0).toInt();
         mapa["title"] = query.value(1).toString();
         mapa["description"] = query.value(2).toString();
-        mapa["message"] = "Nazar";
+        mapa["message"] = "Profile sent";
     } else {
         mapa["error"] = 1;
-        mapa["message"] = "User isn't in basadate";
+        mapa["message"] = "User isn't in database";
     }
     //    QString email
     //    QString password
@@ -282,28 +307,138 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
     // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
     if (update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id))) {
-        map["message"] = "Заебісь зайшло в UpdateProfile";
+        map["message"] = "Profile was succesfully updated";
     }
     else {
         map["error"] = 1;
-        map["message"] = "Huyova зайшло в UpdateProfile";
+        map["message"] = "Profile hasn't beed updated";
     }
     return map;
 }
 
-    bool DataBase::insert(const QString &table, const QString &insert, const QString &values) {
-        QSqlQuery query;
-        return query.exec("INSERT INTO " + table + " (" + insert + ") VALUES (" + values + ");");
-    }
-    bool DataBase::update(const QString &table, const QString &update, const QString &where) {
-        QSqlQuery query;
-        return query.exec("UPDATE " + table + " SET " + update + " WHERE " + where + ";");
-    }
-    QSqlQuery DataBase::select(const QString &table, const QString &select, const QString &where) {
-        QSqlQuery query;
-        query.exec("SELECT " + select + " FROM " + table + " WHERE " + where + ";");
-        return query;
-    }
+QVariantMap DataBase::createList(const QString& title, int workflowId) {
+    Q_UNUSED(workflowId);
+    Q_UNUSED(title);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::CREATE_LIST);
+    map["message"] = "List created";
+    //додать до бд і поставить перевірки типу
+    //if(додалось == тру)
+    //map["message"] = "List created";
+    //else {
+    //map["message"] = "List wasn't created";
+    //map["error"] = 1;
+    return map;
+}
+
+QVariantMap DataBase::removeList(int listId) {
+    Q_UNUSED(listId);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::REMOVE_LIST);
+    map["message"] = "List removed";
+    //додать до бд і поставить перевірки типу
+    //if(видалилось == тру)
+    //map["message"] = "List removed";
+    //else {
+    //map["message"] = "List wasn't removed";
+    //map["error"] = 1;
+    //}
+    return map;
+}
+
+QVariantMap DataBase::createTask(const QString& title, int listId) {
+    Q_UNUSED(listId);
+    Q_UNUSED(title);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::CREATE_TASK);
+    map["message"] = "Task created";
+    //додать до бд і поставить перевірки типу
+    //if(створилось == тру)
+    //map["message"] = "Task created";
+    //else {
+    //map["message"] = "Task wasn't created";
+    //map["error"] = 1;
+    //}
+    return map;
+}
+
+QVariantMap DataBase::updateTask(int taskId, const QString& description, const QStringList& checkList) {
+    Q_UNUSED(taskId);Q_UNUSED(description);Q_UNUSED(checkList);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::UPDATE_TASK);
+    map["message"] = "Task updated";
+    //додать до бд // поки що я ебу як додать чек лист( там має бути типа масив даних в парі (булевське значення і інфа(стрінг))) тому поки що передаю чисто стрінгліст із інфою і буль поки не даю
+    //поставить перевірки типу
+    //if(оновились дані  == тру)
+    //map["message"] = "Task updated";
+    //else {
+    //map["message"] = "Task wasn't updated";
+    //map["error"] = 1;
+    //}
+    return map;
+}
+
+QVariantMap DataBase::moveTask(int taskId, int listId) {
+    Q_UNUSED(taskId);
+    Q_UNUSED(listId);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::MOVE_TASK);
+    map["message"] = "Task moved";
+    //додать до бд і поставить перевірки типу
+    //if(змінила приналежність таски з листа попередньго айді на нове лістІд  == тру)
+    //map["message"] = "Task moved";
+    //else {
+    //map["message"] = "Task wasn't moved";
+    //map["error"] = 1;
+    //}
+    return map;
+}
+
+QVariantMap DataBase::removeTask(int taskId) {
+    Q_UNUSED(taskId);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::REMOVE_TASK);
+    map["message"] = "Task removed";
+    //додать до бд і поставить перевірки типу
+    //if(видалила таску  == тру)
+    //map["message"] = "Task removed";
+    //else {
+    //map["message"] = "Task wasn't removed";
+    //map["error"] = 1;
+    //}
+    return map;
+}
+
+QVariantMap DataBase::getTaskData(int taskId) {
+    Q_UNUSED(taskId);
+    QVariantMap map;
+    map["type"] = static_cast<int>(RequestType::GET_TASK_DATA);
+    map["message"] = "Take your task data bitch";
+    //витягнуть дані з бд і поставить перевірки типу
+    //if(видалила таску  == тру) {
+    //map["description"] = //витягни з бд, якщо пусто то відправляй пусте;
+    //map["checkList"] = //витягни з бд, якщо пусто то відправляй пусте;
+    //}
+    //else {
+    //map["message"] = "i dont now wtf";
+    //map["error"] = 1;
+    //}
+    return map;
+}
+
+bool DataBase::insert(const QString &table, const QString &insert, const QString &values) {
+    QSqlQuery query;
+    return query.exec("INSERT INTO " + table + " (" + insert + ") VALUES (" + values + ");");
+}
+bool DataBase::update(const QString &table, const QString &update, const QString &where) {
+    QSqlQuery query;
+    return query.exec("UPDATE " + table + " SET " + update + " WHERE " + where + ";");
+}
+QSqlQuery DataBase::select(const QString &table, const QString &select, const QString &where) {
+    QSqlQuery query;
+    query.exec("SELECT " + select + " FROM " + table + " WHERE " + where + ";");
+    return query;
+}
 
 // //QJsonArray npcArray;
 // //QVector<int> vitya = {1, 2, 3, 4, 5};
@@ -313,3 +448,9 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
 // //};
 // //npcArray.append(npcObject);
 // //}
+
+//QJsonArray array = itemObject["checkList"].toArray();
+//qDebug() << "CHECK_LIST :\n";
+//for(int i = 0; i < array.count(); i++)
+//qDebug() << array.at(i).toString();
+//qDebug() << "\n";

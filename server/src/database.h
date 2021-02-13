@@ -21,6 +21,7 @@ class DataBase : public QObject {
     std::mutex g_i_mutex;
 
 public:
+
     bool insert(const QString &table, const QString &insert, const QString &values);
     bool update(const QString &table, const QString &update, const QString &where);
     QSqlQuery select(const QString &table, const QString &select, const QString &where);
@@ -35,19 +36,19 @@ public:
     QVariantMap getProfile(int user_id);
     QVariantMap updateProfile(int user_id, const QString &name, const QString &surname);
 
+    QVariantMap createList(const QString& title, int workflowId);
+    QVariantMap removeList(int listId);
+    QVariantMap createTask(const QString& title, int listId);
+    QVariantMap updateTask(int taskId, const QString& description, const QStringList& checkList);
+    QVariantMap moveTask(int taskId, int listId);
+    QVariantMap removeTask(int taskId);
+    QVariantMap getTaskData(int taskId);
+
 public:
     static DataBase *getInstance();
     void create_tables();
+    bool isValidToken(QJsonObject itemObject);
 
-    //    int get_int_from_bd(const QString &table, const QString &column, const QString &namestring, const QString &string);
-    //    QString get_qstring_from_bd(const QString &table, const QString &column, const QString &namestring, const QString &string);
-    //
-    //    void set_string(const QString &table, const QString &column, const QString &string);
-    //    void update_string(const QString &table, const QString &column, const QString &string, const QString &columnchanged, const QString &newstring);
-    //
-    //    void set_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2);
-    // void update_two_string(const QString &table, const QString &namestr1, const QString &str1, const QString &namestr2, const QString &str2, const QString &column, const QString &string);
-    // void set_two_int(const QString &table, const QString &namestr1, int str1, const QString &namestr2, int str2);
 
     void sendData(Connection *m_connection, int type, const QMap<QString, QVariant> &map);
 
