@@ -107,8 +107,8 @@ Item {
                 RoundButton {
                     width: 40
                     height: 40
-                    visible: flowModel.hidden()
-                    text: qsTr("+%1").arg(flowModel.hidden())
+                    visible: flowColaborants.hidden()
+                    text: qsTr("+%1").arg(flowColaborants.hidden())
                     font.pointSize: 10
 
                     Material.background: Material.Grey
@@ -118,7 +118,7 @@ Item {
                 Rectangle {
                     id: tag
 
-                    visible: !flowModel.hidden()
+                    visible: !flowColaborants.hidden()
                     width: txt.width + 10
                     height: txt.height + 10
                     Text {

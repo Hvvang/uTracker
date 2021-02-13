@@ -28,11 +28,16 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
+        qDebug() << rootObject;
+
         auto token = rootObject.value("token").toString();
+        auto id = rootObject.value("userId").toInt();
 
         m_client->saveToken("auth_token", token);
+        m_client->setId(id);
         m_client->notification(handleMessage(data));
         m_client->getProfileData();
+        m_client->getWorkflows();
         emit m_client->switchWindow(UI_MainWindow);
     }
 }

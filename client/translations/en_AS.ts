@@ -197,7 +197,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="165"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="166"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>

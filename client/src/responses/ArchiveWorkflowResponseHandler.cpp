@@ -5,7 +5,7 @@
 
 ArchiveWorkflowResponseHandler::ArchiveWorkflowResponseHandler(QObject *parent)
         : AbstractResponseHandler(parent) {
-    connect(this, &AbstractResponseHandler::newWorkflow, this,  &ArchiveWorkflowResponseHandler::processResponse);
+    connect(this, &AbstractResponseHandler::archiveWorkflow, this,  &ArchiveWorkflowResponseHandler::processResponse);
 }
 
 void ArchiveWorkflowResponseHandler::processResponse(const QByteArray &data) {

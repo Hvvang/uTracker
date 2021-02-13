@@ -34,7 +34,7 @@ void DataBase::create_tables() {
         "photo blob,"
         "google_token varchar,"
         "github_token varchar)");
-    query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, description varchar)");
+    query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, deadline datetime)");
     query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
     query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, panel_id int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist json, files blob)");
     query.exec("create table IF NOT EXISTS T_connector (id integer primary key AUTOINCREMENT, task_id int, worker_id int)");
@@ -62,9 +62,9 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
         case RequestType::LOG_OUT:
             break;
         case RequestType::CREATE_WORKFLOW:
-            result = createWorkflow(map.value("ownerId").toInt(),
+            result = createWorkflow(map.value("userId").toInt(),
                                     map.value("title").toString(),
-                                    map.value("description").toString());
+                                    map.value("deadline").toString());
             break;
         case RequestType::UPDATE_WORKFLOW:
             result = updateWorkflow(map.value("workflowId").toInt(),
@@ -91,6 +91,8 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                           map.value("name").toString(),
                           map.value("surname").toString());
             break;
+        case RequestType::ARCHIVE_WORKFLOW:
+            break;
     }
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
@@ -101,16 +103,15 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
 
 QVariantMap DataBase::containsUser(const QString &login, const QString &password) {
     QSqlQuery query;
-    query.exec("SELECT password FROM UsersCredential where login = \"" + login + "\";");
+    query.exec("SELECT id, password FROM UsersCredential where login = \"" + login + "\";");
 
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::SIGN_IN);
 
-    qDebug() << "Try to authorize" << login << password;
-
     if (query.first())
         qDebug() << "userFound";
-    if (query.first() && (query.value(0).toString() == password)) {
+    if (query.first() && (query.value(1).toString() == password)) {
+        map["userId"] = query.value(0);
         map["message"] = "Successfully authorized";
     } else {
         map["error"] = 1;
@@ -139,13 +140,14 @@ DataBase::createUser(const QString &login,
         map["error"] = 1;
         map["message"] = "User with such login already exist";
     } else {
+        map["userId"] = query.lastInsertId().toInt();
         map["message"] = "User successfully created";
     }
     return map;
 }
 
 QVariantMap
-DataBase::createWorkflow(int owner_id, const QString &title, const QString &description) {
+DataBase::createWorkflow(int owner_id, const QString &title, const QString &deadline) {
     // set_two_string("WorkFlows", "title", title, "description", description);
 //    insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'");
 //     QSqlQuery query;
@@ -156,14 +158,23 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &desc
 //     query.bindValue(":title", title);
 //     query.bindValue(":description", description);
 //     query.exec();
+    QSqlQuery query;
+    auto res = query.exec(    QString( "INSERT INTO WorkFlows (owner_id, title, deadline) VALUES(%1, '%2',  '%3');")
+                           .arg(owner_id)
+                           .arg(title)
+                           .arg(deadline));
+
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
-    if (insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'")) {
-        map["message"] = "Заебісь зайшло в create Workflow";
+    if (res) {
+        map["workflowId"] = query.lastInsertId().toInt();
+        map["title"] = title;
+        map["deadline"] = deadline;
+        map["message"] = "Workflow has been created";
     }
     else {
         map["error"] = 1;
-        map["message"] = "Huyova зайшло в UpdateProfile";
+        map["message"] = "Unfortunately, workflow hasn't been created";
     }
     return map;
 }

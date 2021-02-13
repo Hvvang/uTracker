@@ -16,8 +16,11 @@ enum class ResponseType {
     CREATE_WORKFLOW = 5,
     ARICHIVE_WORKFLOW = 6,
 
+
+    GET_WORKFLOWS = 9,
+
     PROFILE = 11,
-    ERROR = 5,
+    ERROR = 250,
 };
 
 class AbstractResponseHandler : public QObject {

@@ -56,6 +56,8 @@ public:
 
         INVITE_CONTACT = 8,
 
+        GET_WORKFLOWS = 9,
+
         GET_PROFILE = 11,
     };
 
@@ -68,6 +70,7 @@ public:
     static Client* singleton();
 
     void getProfileData();
+    void getWorkflows();
     void setProfile(const QString &login, const QString &name, const QString &surname);
     void setId(quint64 m_id);
 

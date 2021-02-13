@@ -60,10 +60,14 @@ bool ToLogOut::isValid(QJsonObject itemObject) {
 ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
-    if (!itemObject["title"].toString().isEmpty()
-        && !itemObject["description"].toString().isEmpty()
-        && itemObject["ownerId"].toInt())
-        return true;
+    if (itemObject.contains("title")
+        && itemObject.contains("deadline")
+        && itemObject.contains("userId")) {
+        if (!itemObject["title"].toString().isEmpty()
+            && !itemObject["deadline"].toString().isEmpty()
+            && itemObject["userId"].toInt())
+            return true;
+    }
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

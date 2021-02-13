@@ -145,6 +145,7 @@ Item {
 
                         print("Create new button pressed!");
                         client.createWorkflow(title.text, deadline.text);
+//                        WorkflowsModel.append(title.text, deadline.text);
                         popup.close();
                     }
                     else {

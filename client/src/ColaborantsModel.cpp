@@ -18,7 +18,7 @@ QVariant ColaborantsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     switch(role) {
-        case IconRole: qDebug() << "m_data[index.row()].icon is " << m_data[index.row()].icon; return m_data[index.row()].icon;
+        case IconRole: return m_data[index.row()].icon;
         case NameRole: return m_data[index.row()].name;
         case SurnameRole: return m_data[index.row()].surname;
         case StatusRole: return m_data[index.row()].status;

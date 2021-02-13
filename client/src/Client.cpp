@@ -69,6 +69,7 @@ void Client::readyRead() {
             } else {
                 return;
             }
+            qDebug() << data;
             emit handled(data);
         }
     }
@@ -82,7 +83,7 @@ void Client::initResponseHandlers() {
     auto profileHandler = new ProfileDataResponseHandler(this);
     auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
     auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
-    auto addColaborantHandler = new InviteContactResponseHandler(this);
+    auto inviteContactResponseHandler = new InviteContactResponseHandler(this);
     // memory leak hear
 }
 
@@ -202,8 +203,6 @@ void Client::registrate(const QString &email, const QString &password,
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
-
-
 void Client::openWorkflow(int index) {
 //    KanbanModel kanban(this);
 //
@@ -267,6 +266,10 @@ void Client::removeWorkflow(int index) {
 
 void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
     m_workflows->addColaborant(flowIndex, contact);
+}
+
+void Client::getWorkflows() {
+
 }
 
 

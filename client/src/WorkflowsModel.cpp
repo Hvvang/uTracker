@@ -1,14 +1,16 @@
 #include "WorkflowsModel.h"
 
+#include "qdebug.h"
+
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
-    Workflow w1;
-    w1.deadline = "A";
-    w1.title = "What is Lorem Ipsum?\n"
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-    w1.progress = 34;
-    w1.colaborants = new ColaborantsModel(this);
-    m_data.push_back(w1);
+//    Workflow w1;
+//    w1.deadline = "A";
+//    w1.title = "What is Lorem Ipsum?\n"
+//            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
+//    w1.progress = 34;
+//    w1.colaborants = new ColaborantsModel(this);
+//    m_data.push_back(w1);
 }
 
 int WorkflowsModel::rowCount(const QModelIndex &parent) const
@@ -51,8 +53,10 @@ Qt::ItemFlags WorkflowsModel::flags(const QModelIndex &index) const
 }
 
 bool WorkflowsModel::insertRows(int row, int count, const QModelIndex &parent) {
+
+
     beginInsertRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
+
     endInsertRows();
     return true;
 }
@@ -62,7 +66,7 @@ bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
     delete m_data.at(row).colaborants;
     m_data.removeAt(row);
     endRemoveRows();
-    return true;
+//    return true;
 }
 
 QHash<int, QByteArray> WorkflowsModel::roleNames() const {
@@ -76,6 +80,7 @@ QHash<int, QByteArray> WorkflowsModel::roleNames() const {
 
 void WorkflowsModel::append(const QString &title, const QString &deadline) {
     Workflow w1;
+    w1.id = 0;
     w1.deadline = deadline;
     w1.title = title;
     w1.progress = 100;

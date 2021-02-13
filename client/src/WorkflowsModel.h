@@ -7,10 +7,10 @@
 
 
 struct Workflow {
-    quint64 id;
-    QString title;
-    QString deadline;
-    unsigned progress;
+    quint64 id = -1;
+    QString title = "Untitled";
+    QString deadline = "Inf";
+    unsigned progress = 100;
     ColaborantsModel *colaborants;
 };
 
@@ -47,7 +47,7 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
-    void append(const QString &title, const QString &deadline);
+    Q_INVOKABLE void append(const QString &title, const QString &deadline);
 
     Q_INVOKABLE void archive(int index);
 
