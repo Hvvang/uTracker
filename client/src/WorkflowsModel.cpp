@@ -2,13 +2,6 @@
 
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
-    Workflow w1;
-    w1.deadline = "A";
-    w1.title = "What is Lorem Ipsum?\n"
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-    w1.progress = 34;
-    w1.colaborants = new ColaborantsModel(this);
-    m_data.push_back(w1);
 }
 
 int WorkflowsModel::rowCount(const QModelIndex &parent) const

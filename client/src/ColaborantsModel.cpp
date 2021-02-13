@@ -3,23 +3,7 @@
 #include "qdebug.h"
 
 ColaborantsModel::ColaborantsModel(QObject *parent)
-    : QAbstractListModel(parent)
-{
-    Colaborant c1;
-    c1.icon = 'A';
-    m_data.push_back(c1);
-    Colaborant c2;
-    c2.icon = 'A' + m_data.size();
-    m_data.push_back(c2);
-    Colaborant c3;
-    c3.icon = 'A' + m_data.size();
-    m_data.push_back(c3);
-    Colaborant c4;
-    c4.icon = 'A' + m_data.size();
-    m_data.push_back(c4);
-    Colaborant c5;
-    c5.icon = 'A' + m_data.size();
-    m_data.push_back(c5);
+    : QAbstractListModel(parent) {
 
 }
 

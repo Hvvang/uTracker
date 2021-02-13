@@ -10,6 +10,7 @@
 
 #include "googleauth.h"
 #include "kanbanmodel.h"
+
 #include "AuthorisationResponseHandler.h"
 #include "ProfileDataResponseHandler.h"
 #include "CreateWorkflowResponseHandler.h"
@@ -80,12 +81,6 @@ void Client::initResponseHandlers() {
     auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
     auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
     // memory leak hear
-
-//    connect(this, &Client::signUpResponse, authHandler, &AuthorisationResponseHandler::processResponse);
-//    connect(this, &Client::signInResponse, authHandler, &AuthorisationResponseHandler::processResponse);
-//    connect(this, &Client::profileDataRespone, profileHandler, &ProfileDataResponseHandler::processResponse);
-//    connect(this, &Client::createWorkflowResponse, createWorkflowHandler, &CreateWorkflowResponseHandler::processResponse);
-//    connect(this, &Client::deleteWorkflowResponse, archiveWorkflowHandler, &ArchiveWorkflowResponseHandler::processResponse);
 }
 
 void Client::send(const QString &data) {
