@@ -1,4 +1,4 @@
-#include "taskpanelmodel.h"
+#include "TaskpanelModel.h"
 
 #include <qdebug.h>
 
