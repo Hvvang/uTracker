@@ -45,6 +45,7 @@ void Server::deleteConnection(qintptr id)
 
 void Server::setNewTask(Connection* ptr)
 {
+    qDebug(logDebug()) << "Server::setNewTask";
     Runnable* task = new Runnable(ptr);
 
     task->setAutoDelete(true);
@@ -52,6 +53,7 @@ void Server::setNewTask(Connection* ptr)
     task->setTask(ptr->getTask());
     m_pool->start(task);
 }
+
 bool Server::setSsslConfig()
 {
     qDebug(logDebug()) << " setConfig";

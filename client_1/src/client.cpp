@@ -27,6 +27,19 @@ Client::Client(QObject* parent) :QObject(parent)
     connect(m_ssl_socket.get(), &QSslSocket::disconnected, this, &Client::disconnected);
     connect(m_ssl_socket.get(), SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
     configSSL();
+
+    QFile keyFile("./CA/client.key");
+    keyFile.open(QIODevice::ReadOnly);
+    QSslKey key = QSslKey(keyFile.readAll(), QSsl::Rsa);
+    keyFile.close();
+    QFile certFile("./CA/client.pem");
+    certFile.open(QIODevice::ReadOnly);
+    QSslCertificate cer = QSslCertificate(certFile.readAll());
+    certFile.close();
+//    m_ssl_socket->setPrivateKey(key);
+//    m_ssl_socket->setLocalCertificate(cer);
+//    m_ssl_socket->setPeerVerifyMode(QSslSocket::VerifyNone);
+    qDebug(logDebug()) << "clien constructor end";
 }
 
 Client::~Client()
@@ -115,15 +128,20 @@ void Client::testRequestLoop()
     m_request->updateProfile(1, "Nazar", "Dykyy");
 }
 
-void Client::parseJSON(QJsonDocument itemDoc)
-{
+
+
+
+void Client::parseJSON(QJsonDocument itemDoc) {
     QJsonObject itemObject = itemDoc.object();
 
     QVector<std::shared_ptr<AbstractResponseHandler>> funcList;
 
     funcList.append({m_signIn, m_signUp, m_autoSignIn, m_googleSignIn, m_logOut, m_createdWorkflow});
     funcList.append({m_updateWorkflow, m_inviteToWorkflow, m_allWorkflow, m_singleWorkflow});
-    funcList.append({m_sendStat, m_sendProfile, m_updateProfile});
+    funcList.append({m_sendStat, m_sendProfile, m_updateProfile, m_createListResponse});
+    funcList.append({m_removeListResponse, m_createTaskResponse, m_updateTaskResponse});
+    funcList.append({m_moveTaskResponse, m_removeTaskResponse, m_sendTaskDataResponse});
+
     QVector<RequestType> types;
     types.append(RequestType::SIGN_UP);
     types.append(RequestType::SIGN_IN);
@@ -138,6 +156,13 @@ void Client::parseJSON(QJsonDocument itemDoc)
     types.append(RequestType::GET_STATISTICS);
     types.append(RequestType::GET_PROFILE);
     types.append(RequestType::UPDATE_PROFILE);
+    types.append(RequestType::CREATE_LIST);
+    types.append(RequestType::REMOVE_LIST);
+    types.append(RequestType::CREATE_TASK);
+    types.append(RequestType::UPDATE_TASK);
+    types.append(RequestType::MOVE_TASK);
+    types.append(RequestType::REMOVE_TASK);
+    types.append(RequestType::GET_TASK_DATA);
     for (auto i : types)
         if (static_cast<int>(i) == itemObject["type"].toInt())
                 emit funcList[types.indexOf(i)]->handleInited(itemObject);

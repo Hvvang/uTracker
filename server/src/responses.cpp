@@ -8,8 +8,10 @@ AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_conne
 void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
     qDebug() << " =========================== TYPE "<< itemObject["type"].toInt() << "=========================\n";
     if (isValid(itemObject))
-        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
+            emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
+
+////auth sector//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
@@ -56,6 +58,7 @@ bool ToLogOut::isValid(QJsonObject itemObject) {
         return true;
     return false;
 }
+////workflow (desk) sector//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
@@ -101,6 +104,7 @@ bool SendSingleWorkflowData::isValid(QJsonObject itemObject) {
         return true;
     return false;
 }
+////statistic sector//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendStatistics::SendStatistics(Connection *socket) : AbstractRequestHandler(socket){}
 
@@ -108,6 +112,7 @@ bool SendStatistics::isValid(QJsonObject itemObject) {
     Q_UNUSED(itemObject);
     return true;
 }
+////profile sector//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
@@ -124,6 +129,69 @@ bool ToUpdateProfile::isValid(QJsonObject itemObject) {
     if (!itemObject["name"].toString().isEmpty()
             && !itemObject["surname"].toString().isEmpty()
             && itemObject["userId"].toInt())
+        return true;
+    return false;
+}
+////list sector//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToCreateList::ToCreateList(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToCreateList::isValid(QJsonObject itemObject) {
+    if (!itemObject["title"].toString().isEmpty()
+            && itemObject["workflowId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToRemoveList::ToRemoveList(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToRemoveList::isValid(QJsonObject itemObject) {
+    if (itemObject["listId"].toInt())
+        return true;
+    return false;
+}
+////task sector//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToCreateTask::ToCreateTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToCreateTask::isValid(QJsonObject itemObject) {
+    if (!itemObject["title"].toString().isEmpty()
+            && itemObject["listId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToUpdateTask::ToUpdateTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToUpdateTask::isValid(QJsonObject itemObject) {
+    if (!itemObject["checkList"].toArray().empty()
+            && !itemObject["description"].toString().isEmpty()
+            && itemObject["taskId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToMoveTask::ToMoveTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToMoveTask::isValid(QJsonObject itemObject) {
+    if (itemObject["listId"].toInt()
+            && itemObject["taskId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToRemoveTask::ToRemoveTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToRemoveTask::isValid(QJsonObject itemObject) {
+    if (itemObject["taskId"].toInt())
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+SendTaskData::SendTaskData(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool SendTaskData::isValid(QJsonObject itemObject) {
+    if (itemObject["taskId"].toInt())
         return true;
     return false;
 }

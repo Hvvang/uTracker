@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include <QMutex>
 #include <QSslSocket>
+#include <QSslKey>
 
 class Connection : public QObject {
 Q_OBJECT
@@ -15,13 +16,6 @@ public:
     std::shared_ptr<QSslSocket> getSocket() const { return m_ssl_socket; }
 
     QByteArray getTask() const;
-
-public slots:
-
-signals:
-    void sendResponse(const QByteArray& data);
-//    void newCon(QTcpSocket *socket);
-
 
 public slots:
     void writeToSocket(const QByteArray& data);
@@ -34,11 +28,17 @@ public slots:
 
 signals:
     void disconnectSocket(qintptr id);
+    void sendResponse(const QByteArray &data);
+
 private:
     std::shared_ptr<QSslSocket> m_ssl_socket;
     qintptr m_socket_id;  // TCP socket descriptor
     QByteArray m_task;
     QObject* m_parent;
     std::shared_ptr<QSslConfiguration> m_config;
+
+    QSslKey key;
+    QSslCertificate cert;
+
     bool setSocket();
 };

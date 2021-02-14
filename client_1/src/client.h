@@ -15,10 +15,9 @@ class Client: public QObject {
     Q_OBJECT
 public:
     explicit Client(QObject *parent = nullptr);
-    ~Client();
+    ~Client() override;
 
     void doConnect(char *host, int port);
-
     void testConnect() const;
     void testRequestLoop();
     void parseJSON(QJsonDocument itemDoc);
@@ -32,7 +31,6 @@ public slots:
 //    void connected();
 //    void socketError(QAbstractSocket::SocketError error);
 //    void socketSslErrors(const QList &list);
-
 
 private:
     std::shared_ptr<QSslSocket> m_ssl_socket;
@@ -50,8 +48,13 @@ private:
     std::shared_ptr<AbstractResponseHandler> m_sendStat;
     std::shared_ptr<AbstractResponseHandler> m_sendProfile;
     std::shared_ptr<AbstractResponseHandler> m_updateProfile;
-
+    std::shared_ptr<AbstractResponseHandler> m_createListResponse;
+    std::shared_ptr<AbstractResponseHandler> m_removeListResponse;
+    std::shared_ptr<AbstractResponseHandler> m_createTaskResponse;
+    std::shared_ptr<AbstractResponseHandler> m_updateTaskResponse;
+    std::shared_ptr<AbstractResponseHandler> m_moveTaskResponse;
+    std::shared_ptr<AbstractResponseHandler> m_removeTaskResponse;
+    std::shared_ptr<AbstractResponseHandler> m_sendTaskDataResponse;
     bool configSSL();
-
     void reconnect();  // implement reconnection when break
 };

@@ -1,5 +1,5 @@
 #include "server.h"
-
+#include "database.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
@@ -11,6 +11,7 @@ QScopedPointer<QFile>   m_logFile;
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
+    DataBase::getInstance();
 
     QFile::remove("./server_log.txt");
     m_logFile.reset(new QFile("./server_log.txt"));  // run from Clion

@@ -10,7 +10,8 @@
 
 #include <QObject>
 
-class AbstractResponseHandler : public QObject {
+
+class AbstractResponseHandler : public QObject{
 Q_OBJECT
 public:
     AbstractResponseHandler(std::shared_ptr<QSslSocket> socket);
@@ -22,16 +23,14 @@ public slots:
     virtual void responseHandle(QJsonObject itemObject) = 0;
 
 protected:
-    std::shared_ptr<QSslSocket>  m_socket;
+    std::shared_ptr<QSslSocket> m_socket;
     QByteArray m_json;
 };
 
 class SignUpResponse : public AbstractResponseHandler {
 Q_OBJECT
-
 public:
     SignUpResponse(std::shared_ptr<QSslSocket> socket);
-
 public slots:
     void responseHandle(QJsonObject itemObject);
 };
@@ -76,7 +75,7 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class UpdateWorkflowResponse : public AbstractResponseHandler {
+class UpdateWorkflowResponse : public AbstractResponseHandler{
 Q_OBJECT
 public:
     UpdateWorkflowResponse(std::shared_ptr<QSslSocket> socket);
@@ -84,7 +83,7 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class InvitedToWorkflowResponse : public AbstractResponseHandler {
+class InvitedToWorkflowResponse : public AbstractResponseHandler{
 Q_OBJECT
 public:
     InvitedToWorkflowResponse(std::shared_ptr<QSslSocket> socket);
@@ -92,7 +91,7 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class AllWorkflowsResponse : public AbstractResponseHandler {
+class AllWorkflowsResponse : public AbstractResponseHandler{
 Q_OBJECT
 public:
     AllWorkflowsResponse(std::shared_ptr<QSslSocket> socket);
@@ -100,7 +99,7 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class SingleWorkflowDataResponse : public AbstractResponseHandler {
+class SingleWorkflowDataResponse : public AbstractResponseHandler{
 Q_OBJECT
 public:
     SingleWorkflowDataResponse(std::shared_ptr<QSslSocket> socket);
@@ -108,7 +107,7 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class SendStatistics : public AbstractResponseHandler {
+class SendStatistics : public AbstractResponseHandler{
 Q_OBJECT
 public:
     SendStatistics(std::shared_ptr<QSslSocket> socket);
@@ -116,7 +115,7 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class SendProfileResponse : public AbstractResponseHandler {
+class SendProfileResponse : public AbstractResponseHandler{
 Q_OBJECT
 public:
     SendProfileResponse(std::shared_ptr<QSslSocket> socket);
@@ -124,10 +123,70 @@ public slots:
     void responseHandle(QJsonObject itemObject);
 };
 
-class ToUpdateProfileResponse : public AbstractResponseHandler {
+class ToUpdateProfileResponse : public AbstractResponseHandler{
 Q_OBJECT
 public:
     ToUpdateProfileResponse(std::shared_ptr<QSslSocket> socket);
 public slots:
     void responseHandle(QJsonObject itemObject);
 };
+
+////list sector//////////////////////////////////////////
+class ToCreateListResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    ToCreateListResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+class ToRemoveListResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    ToRemoveListResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+////task sector//////////////////////////////////////////
+class ToCreateTaskResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    ToCreateTaskResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+class ToUpdateTaskResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    ToUpdateTaskResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+class ToMoveTaskResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    ToMoveTaskResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+class ToRemoveTaskResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    ToRemoveTaskResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+class SendTaskDataResponse : public AbstractResponseHandler  {
+Q_OBJECT
+public:
+    SendTaskDataResponse(std::shared_ptr<QSslSocket> socket);
+public slots:
+    void responseHandle(QJsonObject itemObject);
+};
+
+

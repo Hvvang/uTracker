@@ -12,19 +12,27 @@
 #include <iostream>
 
 enum class RequestType {
-    SIGN_UP,
-    SIGN_IN,
-    AUTO_AUTH,
-    AUTO_OAUTH,
-    LOG_OUT,
-    CREATE_WORKFLOW,
-    UPDATE_WORKFLOW,
-    INVITE_TO_WORKFLOW,
-    GET_ALL_WORKFLOWS,
-    GET_SINGLE_WORKFLOW_DATA,
-    GET_STATISTICS,
-    GET_PROFILE,
-    UPDATE_PROFILE
+    SIGN_UP = 0,
+    SIGN_IN = 1,
+    AUTO_AUTH = 2,
+    AUTO_OAUTH = 3,
+    LOG_OUT = 4,
+    CREATE_WORKFLOW = 5,
+//    ARCHIVE_WORKFLOW = 6,
+    UPDATE_WORKFLOW = 7,
+    INVITE_TO_WORKFLOW = 8,
+    GET_ALL_WORKFLOWS = 9,
+    GET_SINGLE_WORKFLOW_DATA = 10,
+    GET_STATISTICS = 11,
+    GET_PROFILE = 12,
+    UPDATE_PROFILE = 13,
+    CREATE_LIST = 14,
+    REMOVE_LIST = 15,
+    CREATE_TASK = 16,
+    UPDATE_TASK = 17,
+    MOVE_TASK = 18,
+    REMOVE_TASK = 19,
+    GET_TASK_DATA = 20
 };
 
 class AbstractRequest {
@@ -33,27 +41,45 @@ public:
     AbstractRequest(std::shared_ptr<QSslSocket> socket);
 
     void createJSON(QMap<QString, QVariant> map);
-    void signUp(QString login, QString pass, QString name, QString surname, QString email);
-    void signIn(QString email, QString  login, QString pass);
-    void autoSignInWithGoogle(QString token);
-    void autoSignIn(QString token);
+
+    //auth sector
+    void signUp(const QString& login, const QString& pass, const QString& name, const QString& surname, const QString& email);
+    void signIn(const QString& email, const QString&  login, const QString& pass);
+    void autoSignInWithGoogle();
+    void autoSignIn();
     void logOut(int userId);
 
-    void createWorkflow(QString title, QString description, int ownerId);
-    void updateWorkflow(QString title, QString description, int workflowId);
+    //workdflow (desk) sector
+    void createWorkflow(const QString& title, const QString& deadline, int ownerId);
+    void updateWorkflow(const QString& title, const QString& deadline, int workflowId);
     void inviteToWorkflow(int userId, int workflowId);
     void getAllWorkflows(int userId);
-    void getAllWorkflows();
     void getSingleWorkflowData(int workflowId);
 
     void getStatistics();
 
+    //profile sector
     void getProfile(int userId);
-    void updateProfile(int userId, QString name, QString surname);
+    void updateProfile(int userId, const QString& name, const QString& surname);
+
+    //list sector
+    void createList(const QString& title, int workflowId);
+    void removeList(int listId);
+    //task sector
+    void createTask(const QString& title, int listId);
+    void updateTask(int taskId, const QString& description, const QStringList& checkList);
+    void moveTask(int taskId, int listId);
+    void removeTask(int taskId);
+    void getTaskData(int taskId);
+
+    QString m_token;
 protected:
     std::shared_ptr<QSslSocket> m_socket;
 };
 
+
 class JsonFormat {
 
 };
+
+

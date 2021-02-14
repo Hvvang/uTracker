@@ -17,6 +17,13 @@ Runnable::Runnable(Connection *socket) {
     m_sendStatistics = std::make_shared<SendStatistics>(socket);
     m_sendProfile = std::make_shared<SendProfile>(socket);
     m_updateProfile = std::make_shared<ToUpdateProfile>(socket);
+    m_createList = std::make_shared<ToCreateList>(socket);
+    m_removeList = std::make_shared<ToRemoveList>(socket);
+    m_createTask = std::make_shared<ToCreateTask>(socket);
+    m_updateTask = std::make_shared<ToUpdateTask>(socket);
+    m_moveTask = std::make_shared<ToMoveTask>(socket);
+    m_removeTask = std::make_shared<ToRemoveTask>(socket);
+    m_sendTaskData = std::make_shared<SendTaskData>(socket);
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
@@ -33,7 +40,9 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     QVector<std::shared_ptr<AbstractRequestHandler>> funcList;
     funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow});
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow, m_sendAllWorkFlows, m_sendSingleWorkFlow});
-    funcList.append({m_sendStatistics, m_sendProfile, m_updateProfile});
+    funcList.append({m_sendStatistics, m_sendProfile, m_updateProfile, m_createList});
+    funcList.append({m_removeList, m_createTask, m_updateTask});
+    funcList.append({m_moveTask, m_removeTask, m_sendTaskData});
     QVector<RequestType> types;
     types.append(RequestType::SIGN_UP);
     types.append(RequestType::SIGN_IN);
@@ -48,9 +57,16 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::GET_STATISTICS);
     types.append(RequestType::GET_PROFILE);
     types.append(RequestType::UPDATE_PROFILE);
+    types.append(RequestType::CREATE_LIST);
+    types.append(RequestType::REMOVE_LIST);
+    types.append(RequestType::CREATE_TASK);
+    types.append(RequestType::UPDATE_TASK);
+    types.append(RequestType::MOVE_TASK);
+    types.append(RequestType::REMOVE_TASK);
+    types.append(RequestType::GET_TASK_DATA);
     for (auto i : types)
         if (static_cast<int>(i) == itemObject["type"].toInt())
-            emit funcList[types.indexOf(i)]->responseInited(itemObject);
+                emit funcList[types.indexOf(i)]->responseInited(itemObject);
 }
 
 Runnable::~Runnable() {}

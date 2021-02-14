@@ -1,14 +1,5 @@
 #include "hash.h"
 
-//QByteArray mx_hash2(const QString& pass )
-//{
-//    QByteArray hash = QCryptographicHash::hash(
-//            QByteArray::fromRawData((const char*) pass.utf16(), pass.length() * 2),
-//            QCryptographicHash::Md5
-//    );
-//    return hash;
-//}
-
 static std::string to_hex(unsigned char s) {
     std::stringstream ss;
     ss << std::hex << (int) s;
@@ -35,4 +26,3 @@ QString mx_hash(const QString& pass, const QString& salt) {
     }
     return QString::fromStdString(output);
 }
-
