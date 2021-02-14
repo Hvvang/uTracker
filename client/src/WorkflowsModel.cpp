@@ -78,16 +78,9 @@ QHash<int, QByteArray> WorkflowsModel::roleNames() const {
     return roles;
 }
 
-void WorkflowsModel::append(const QString &title, const QString &deadline) {
-    Workflow w1;
-    w1.id = 0;
-    w1.deadline = deadline;
-    w1.title = title;
-    w1.progress = 100;
-    w1.colaborants = new ColaborantsModel(this);
-
+void WorkflowsModel::add(const Workflow &flow) {
     beginInsertRows(QModelIndex(), 0, 0);
-    m_data.prepend(w1);
+    m_data.prepend(flow);
     endInsertRows();
 }
 

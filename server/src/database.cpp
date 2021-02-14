@@ -37,8 +37,18 @@ void DataBase::create_tables() {
     query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, deadline datetime)");
     query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
     query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, panel_id int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist json, files blob)");
-    query.exec("create table IF NOT EXISTS T_connector (id integer primary key AUTOINCREMENT, task_id int, worker_id int)");
-    query.exec("create table IF NOT EXISTS WF_connector (id integer primary key AUTOINCREMENT,workflow_id int, user_id int, UNIQUE (workflow_id, user_id))");
+    query.exec("create table IF NOT EXISTS T_connector ("
+               "id integer primary key AUTOINCREMENT,"
+               "task_id int,"
+               "worker_id int"
+               "FOREIGN KEY(task_id) REFERENCES Tasks(id),"
+               "FOREIGN KEY(worker_id) REFERENCES UsersCredential(id)\")");
+    query.exec("create table IF NOT EXISTS WF_connector ("
+               "id integer primary key AUTOINCREMENT,"
+               "workflow_id int,"
+               "user_id int,"
+               "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id),"
+               "FOREIGN KEY(user_id) REFERENCES UsersCredential(id))");
 }
 
 void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &map) {
@@ -159,23 +169,29 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &dead
 //     query.bindValue(":description", description);
 //     query.exec();
     QSqlQuery query;
-    auto res = query.exec(    QString( "INSERT INTO WorkFlows (owner_id, title, deadline) VALUES(%1, '%2',  '%3');")
+    auto res = query.exec(QString( "INSERT INTO WorkFlows (owner_id, title, deadline) VALUES(%1, '%2',  '%3');")
                            .arg(owner_id)
                            .arg(title)
                            .arg(deadline));
 
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
+
     if (res) {
-        map["workflowId"] = query.lastInsertId().toInt();
+        auto workflowId = query.lastInsertId().toInt();
+        map["workflowId"] = workflowId;
         map["title"] = title;
         map["deadline"] = deadline;
         map["message"] = "Workflow has been created";
+        query.exec(QString( "INSERT INTO WF_connector (workflow_id, user_id) VALUES(%1, '%2');")
+                           .arg(workflowId)
+                           .arg(owner_id));
     }
     else {
         map["error"] = 1;
         map["message"] = "Unfortunately, workflow hasn't been created";
     }
+
     return map;
 }
 
@@ -222,44 +238,49 @@ DataBase::inviteToWorkflow(int user_id, int workflow_id) {
 }
 
 QVariantMap DataBase::getWorkflows(int user_id) { // треба норм дописать мапу яку повертаю з ерорами
-    QJsonArray npcArray;
+    QJsonArray workflows;
     QSqlQuery query;
-    query.prepare("select workflow_id from WF_connector where user_id = :user_id;");
-    query.bindValue(":user_id", user_id);
-    query.exec();
-    QMap<QString, QVariant> maxi_map;
+    query.exec(QString("select workflow_id from WF_connector where user_id = %1;").arg(user_id));
+    QMap<QString, QVariant> map;
+
+    qDebug() << "user_id is " << user_id;
+    qDebug() << query.value(0).toInt();
+    map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     if (query.first()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
-        npcArray.append(jsonObject);
+        workflows.append(jsonObject);
     } else {
-        maxi_map["error"] = 1;
+        map["error"] = 1;
+        map["message"] = "Workflows don't exist";
     }
     while (query.next()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
-        npcArray.append(jsonObject);
+        workflows.append(jsonObject);
     }
-    maxi_map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
-    maxi_map["array"] = npcArray;
-    maxi_map["message"] = "Заебісь зайшло в getWorkflows";
 
-    return maxi_map;
+    if (!map.contains("error")) {
+        map["workflows"] = workflows;
+        map["message"] = "Workflows successfully have gotten";
+    }
+    return map;
 }
 
 QVariantMap DataBase::getWorkflow(int workflow_id) {
-    QSqlQuery query = select("WorkFlows", "*", "id = " + QString::number(workflow_id));
+    QSqlQuery query = select("WorkFlows", "owner_id, title, deadline", "id = " + QString::number(workflow_id));
     // query.prepare("select * from WorkFlows where id = :workflow_id;");
     // query.bindValue(":workflow_id", workflow_id);
     // query.exec();
     QMap<QString, QVariant> map;
     if (query.first()) {
         map["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
-        map["userId"] = query.value(0).toInt();
+        map["workflowId"] = workflow_id;
+        map["owner_id"] = query.value(0).toInt();
         map["title"] = query.value(1).toString();
-        map["description"] = query.value(2).toString();
-        map["message"] = "Nazar";
+        map["deadline"] = query.value(2).toString();
+        map["message"] = "Workflow successfully has gotten";
     } else {
         map["error"] = 1;
-        map["message"] = "workflowId isn't in basadate";
+        map["message"] = "External error";
     }
     return map;
 }

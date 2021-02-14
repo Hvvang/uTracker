@@ -11,7 +11,7 @@ struct Workflow {
     QString title = "Untitled";
     QString deadline = "Inf";
     unsigned progress = 100;
-    ColaborantsModel *colaborants;
+    ColaborantsModel *colaborants = new ColaborantsModel;
 };
 
 class WorkflowsModel : public QAbstractListModel
@@ -47,10 +47,9 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void append(const QString &title, const QString &deadline);
-
     Q_INVOKABLE void archive(int index);
 
+    void add(const Workflow &flow);
     void addColaborant(quint64 index, const Colaborant &contact);
 
 private:

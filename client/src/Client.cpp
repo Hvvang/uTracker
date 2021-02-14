@@ -16,7 +16,7 @@
 #include "CreateWorkflowResponseHandler.h"
 #include "ArchiveWorkflowResponseHandler.h"
 #include "InviteContactResponseHandler.h"
-
+#include "GetWorkflowsResponseHandler.h"
 
 Client* Client::m_instance = nullptr;
 
@@ -84,6 +84,7 @@ void Client::initResponseHandlers() {
     auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
     auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
     auto inviteContactResponseHandler = new InviteContactResponseHandler(this);
+    auto getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
     // memory leak hear
 }
 
@@ -256,12 +257,12 @@ void Client::inviteContact(const QString &contact, int index) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
-void Client::newWorkflow(const QString &title, const QString &deadline) {
-    m_workflows->append(title, deadline);
+void Client::newWorkflow(const Workflow &flow) {
+    m_workflows->add(flow);
 }
 
-void Client::removeWorkflow(int index) {
-    m_workflows->archive(index);
+void Client::removeWorkflow(int id) {
+    m_workflows->archive(id);
 }
 
 void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
@@ -269,7 +270,15 @@ void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
 }
 
 void Client::getWorkflows() {
+    QJsonObject json;
 
+    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOWS);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
 }
 
 

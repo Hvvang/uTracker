@@ -77,7 +77,7 @@ public:
     void autoSignIn();
 
     QChar nameFirstLetter();
-    void newWorkflow(const QString &title, const QString &deadline);
+    void newWorkflow(const Workflow &flow);
     void removeWorkflow(int index);
     void addColaborant(quint64 flowIndex, const Colaborant &contact);
 

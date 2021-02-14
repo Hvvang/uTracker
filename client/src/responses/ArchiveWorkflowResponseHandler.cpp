@@ -19,7 +19,7 @@ void ArchiveWorkflowResponseHandler::processResponse(const QByteArray &data) {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
-        auto index = rootObject.value("workflowIndex").toInt();
+        auto index = rootObject.value("workflowId").toInt();
         m_client->removeWorkflow(index);
         emit m_client->notification(handleMessage(data));
     }
