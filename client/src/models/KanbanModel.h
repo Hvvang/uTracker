@@ -4,7 +4,7 @@
 #include <QAbstractListModel>
 #include <QList>
 
-#include "taskpanelmodel.h"
+#include "TaskpanelModel.h"
 
 struct Kanban {
     int index;

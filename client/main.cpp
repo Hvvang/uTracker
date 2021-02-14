@@ -4,7 +4,7 @@
 #include <QQmlContext>
 
 #include "Client.h"
-#include "kanbanmodel.h"
+#include "src/models/KanbanModel.h"
 
 void init_fontBase() {
     QFontDatabase fontDatabase;

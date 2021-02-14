@@ -35,19 +35,6 @@ void GetWorkflowsResponseHandler::processResponse(const QByteArray &data) {
             w.deadline = obj.value("deadline").toString();
             w.progress = obj.value("progress").toInt();
 
-//            auto colaborants = rootObject["colaborants"].toArray();
-//
-//            foreach(const QJsonValue &colaborant, colaborants) {
-//                QJsonObject obj = colaborant.toObject();
-//
-//                Colaborant c;
-//                c.id = obj["userId"].toInt();
-//                c.status = obj["status"].toString();
-//                c.name = obj["first_name"].toString();
-//                c.surname = obj["last_name"].toString();
-//                c.icon = c.name.front();
-//                w.colaborants->add(c);
-//            }
             m_client->newWorkflow(w);
 
         }

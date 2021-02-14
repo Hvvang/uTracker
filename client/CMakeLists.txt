@@ -19,18 +19,15 @@ set(TS_FILES
 
 include_directories(src)
 include_directories(src/responses)
-
+include_directories(src/models)
 
 add_subdirectory(src)
 add_subdirectory(src/responses)
+add_subdirectory(src/models)
 
 add_executable(utracker
   main.cpp
   src/qml.qrc
-  src/kanbanmodel.cpp
-  src/kanbanmodel.h
-  src/taskpanelmodel.h
-  src/taskpanelmodel.cpp
   ${TS_FILES}
 )
 
@@ -38,6 +35,6 @@ add_executable(utracker
 target_compile_definitions(utracker
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(utracker
-  PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth source ResponsesLib)
+  PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth source ResponsesLib ModelsLib)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

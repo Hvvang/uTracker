@@ -17,7 +17,7 @@
 
 #include "googleauth.h"
 #include "WorkflowsModel.h"
-#include "kanbanmodel.h"
+#include "KanbanModel.h"
 
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
@@ -57,6 +57,7 @@ public:
         INVITE_CONTACT = 8,
 
         GET_WORKFLOWS = 9,
+        GET_WORKFLOW_COLABORANT = 10,
 
         GET_PROFILE = 11,
     };
@@ -82,7 +83,7 @@ public:
     void removeWorkflow(int index);
     void addColaborant(quint64 flowIndex, const Colaborant &contact);
     void updateWorkflow(const Workflow &flow);
-
+    void getWorkflowColaborants(int workflowId);
 
     Q_INVOKABLE void googleAuthorize();
     Q_INVOKABLE void authorize(const QString &email, const QString &password);
@@ -105,8 +106,6 @@ signals:
     void request(const QString &);
     void handled(const QByteArray &);
 
-    void errorResponse(const QByteArray &);
-
     void profileNameChanged();
 
 public slots:
@@ -118,9 +117,10 @@ private:
     QTcpSocket m_socket;
     QQmlApplicationEngine *m_engine{nullptr};
     GoogleAuth *m_googleInstance{nullptr};
+
     Profile m_profile;
     QString m_accessesToken;
-    qint64 m_id = 1;
+    qint64 m_id;
 
     WorkflowsModel *m_workflows;
     KanbanModel *m_kanban;

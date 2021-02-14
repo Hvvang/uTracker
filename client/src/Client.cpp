@@ -9,7 +9,7 @@
 #include <QJsonDocument>
 
 #include "googleauth.h"
-#include "kanbanmodel.h"
+#include "models/KanbanModel.h"
 
 #include "AuthorisationResponseHandler.h"
 #include "ProfileDataResponseHandler.h"
@@ -18,6 +18,8 @@
 #include "InviteContactResponseHandler.h"
 #include "GetWorkflowsResponseHandler.h"
 #include "EditWorkflowResponseHandler.h"
+#include "GetWorkflowColaborantsResponseHandler.h"
+
 
 Client* Client::m_instance = nullptr;
 
@@ -87,6 +89,7 @@ void Client::initResponseHandlers() {
     auto inviteContactResponseHandler = new InviteContactResponseHandler(this);
     auto getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
     auto editWorkflowResponseHandler = new EditWorkflowResponseHandler(this);
+    auto getWorkflowColaborantsResponseHandler = new GetWorkflowColaborantsResponseHandler(this);
     // memory leak hear
 }
 
@@ -271,15 +274,28 @@ void Client::getWorkflows() {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
-void Client::editWorkflow(int index, const QString &title, const QString &date) {
+void Client::editWorkflow(int id, const QString &title, const QString &date) {
     QJsonObject json;
 
     json["type"] = static_cast<int>(Client::RequestType::UPDATE_WORKFLOW);
     json["token"] = m_accessesToken;
     json["userId"] = m_id;
-    json["workflowId"] = index;
+    json["workflowId"] = id;
     json["title"] = title;
     json["deadline"] = date;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::getWorkflowColaborants(int workflowId) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOW_COLABORANT);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+    json["workflowId"] = workflowId;
 
     QJsonDocument document;
     document.setObject(json);
@@ -301,6 +317,8 @@ void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
 void Client::updateWorkflow(const Workflow &flow) {
     m_workflows->updateWorkflow(flow);
 }
+
+
 
 
 

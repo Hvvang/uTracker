@@ -56,6 +56,10 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit inviteContact(data); break;
         case ResponseType::GET_WORKFLOWS:
             emit getWorkflows(data); break;
+        case ResponseType::UPDATE_WORKFLOW:
+            emit updateWorkflow(data); break;
+        case ResponseType::GET_WORKFLOW_COLABORANTS:
+            emit getWorkflowColaborants(data); break;
         default:
             qDebug() << "Emit some error in response!";
     }

@@ -18,6 +18,7 @@ enum class ResponseType {
     INVITE_CONTACT = 7,
     UPDATE_WORKFLOW = 8,
     GET_WORKFLOWS = 9,
+    GET_WORKFLOW_COLABORANTS = 10,
 
     PROFILE = 11,
     ERROR = 250,
@@ -51,6 +52,7 @@ signals:
     void inviteContact(const QByteArray &);
     void getWorkflows(const QByteArray &);
     void updateWorkflow(const QByteArray &);
+    void getWorkflowColaborants(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);

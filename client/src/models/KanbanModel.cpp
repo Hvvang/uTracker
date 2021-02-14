@@ -1,4 +1,4 @@
-#include "kanbanmodel.h"
+#include "KanbanModel.h"
 
 #include <qdebug.h>
 

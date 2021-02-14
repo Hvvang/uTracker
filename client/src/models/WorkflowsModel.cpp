@@ -1,6 +1,7 @@
 #include "WorkflowsModel.h"
 
 #include "qdebug.h"
+#include "Client.h"
 
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
@@ -83,6 +84,7 @@ QHash<int, QByteArray> WorkflowsModel::roleNames() const {
 void WorkflowsModel::add(const Workflow &flow) {
     beginInsertRows(QModelIndex(), 0, 0);
     m_data.prepend(flow);
+    m_client->getWorkflowColaborants(flow.id);
     endInsertRows();
 }
 

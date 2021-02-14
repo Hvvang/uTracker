@@ -8,6 +8,7 @@ set(SOURCES
         InviteContactResponseHandler.cpp
         GetWorkflowsResponseHandler.cpp
         EditWorkflowResponseHandler.cpp
+        GetWorkflowColaborantsResponseHandler.cpp
         )
 set(HEADERS
         AbstractResponseHandler.h
@@ -18,6 +19,7 @@ set(HEADERS
         InviteContactResponseHandler.h
         GetWorkflowsResponseHandler.h
         EditWorkflowResponseHandler.h
+        GetWorkflowColaborantsResponseHandler.h
         )
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
