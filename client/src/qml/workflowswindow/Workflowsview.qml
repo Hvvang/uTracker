@@ -10,16 +10,15 @@ Item {
     property var workflowmodel: WorkflowsModel
 
     anchors.fill: parent
-    width: parent.width
-    height: parent.height
 
     Flickable {
+        id: flick
         anchors.fill: parent
         width: parent.width
         height: parent.height
 
         contentHeight: workflowmodel.rowCount() / grid.columns * 210
-        contentWidth: workflowmodel.rowCount() / grid.columns * 210
+        contentWidth: 1 / grid.columns * 210
 
         clip: true
 
@@ -29,13 +28,16 @@ Item {
             rowSpacing: 5
 
             anchors.fill: parent
-
-            columns: root.width / 200
+            onColumnsChanged: print("root.width is ", root.width)
+            columns: root.width / 210
             rows: -1
 
             Repeater {
                 model: workflowmodel
 
+                onCountChanged: {
+                    flick.contentHeight =  workflowmodel.rowCount() / grid.columns * 210
+                }
                 Workflowpane {
                     flowModel: flowColaborants
                 }

@@ -15,4 +15,4 @@ set(HEADERS
 add_library(ModelsLib ${SOURCES} ${HEADERS})
 
 target_link_libraries(ModelsLib
-        PRIVATE Qt5::Core Qt5::Quick)
+        PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth)
