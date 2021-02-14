@@ -53,7 +53,7 @@ public:
 
         CREATE_WORKFLOW = 5,
         ARCHIVE_WORKFLOW = 6,
-
+        UPDATE_WORKFLOW = 7,
         INVITE_CONTACT = 8,
 
         GET_WORKFLOWS = 9,
@@ -78,8 +78,10 @@ public:
 
     QChar nameFirstLetter();
     void newWorkflow(const Workflow &flow);
+
     void removeWorkflow(int index);
     void addColaborant(quint64 flowIndex, const Colaborant &contact);
+    void updateWorkflow(const Workflow &flow);
 
 
     Q_INVOKABLE void googleAuthorize();
@@ -89,7 +91,7 @@ public:
     Q_INVOKABLE void createWorkflow(const QString &title, const QString &date);
     Q_INVOKABLE void archiveWorkflow(int index);
     Q_INVOKABLE void inviteContact(const QString &contact, int index);
-
+    Q_INVOKABLE void editWorkflow(int index, const QString &title, const QString &date);
 
 protected:
     static Client* m_instance;

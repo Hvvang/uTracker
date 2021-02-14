@@ -10,15 +10,30 @@ import "../components"
 Item {
     id: root
 
-    function open() {
-        title.text = "";
-//        deadline.text = Qt.formatDate(datepicker.selectedDate, "dd-MM-yyyy")
+    function open(flowId, flowTitle, flowDeadline) {
+        if (flowId && flowTitle && flowDeadline) {
+            m_flowId = flowId
+            m_header = "Edit a workflow";
+            m_title = flowTitle
+            m_deadline = flowDeadline
+            datepicker.selectedDate = Date.fromLocaleString(Qt.locale(), flowDeadline, "dd-MM-yyyy")
+            m_footer = "Edit a workflow"
+        } else {
+            m_flowId = 0
+            m_header = "Create a new workflow"
+            m_title = ""
+            title.text = ""
+            m_deadline = Qt.formatDate(datepicker.selectedDate, "dd-MM-yyyy")
+            m_footer = "Create a workflow"
+        }
         popup.open();
     }
-
-    property string m_header: "Create a new workflow"
+    property var m_flowId;
+    property string m_header;
     property string m_icon: ""
-    property string m_title: ""
+    property string m_title;
+    property string m_deadline;
+    property string m_footer;
     property var m_colaborants: []
 
     height: layout.childrenRect.height + 40
@@ -79,7 +94,7 @@ Item {
                 font.pointSize: 15
                 placeholderText: qsTr("Chose deadline")
 
-                text: Qt.formatDate(datepicker.selectedDate, "dd-MM-yyyy")
+                text: m_deadline
 
                 KeyNavigation.tab: createBtn
 
@@ -123,12 +138,13 @@ Item {
                 Component.onCompleted: set(new Date()) // today
                 onClicked:  {
                     datepicker.visible = false
+                    deadline.text = Qt.formatDate(datepicker.selectedDate, "dd-MM-yyyy")
                 }
 
             }
             Button {
                 id: createBtn
-                text: qsTr("Create a workflow")
+                text: qsTr(m_footer)
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
@@ -139,13 +155,13 @@ Item {
                 KeyNavigation.tab: discardBtn
 
                 onClicked: {
-                    print("Create new workflow clicked!")
                     var error = title.titleError || deadline.deadlineError;
                     if (!error) {
-
-                        print("Create new button pressed!");
-                        client.createWorkflow(title.text, deadline.text);
-//                        WorkflowsModel.append(title.text, deadline.text);
+                        if (m_flowId) {
+                            client.editWorkflow(m_flowId, title.text, deadline.text);
+                        } else {
+                            client.createWorkflow(title.text, deadline.text);
+                        }
                         popup.close();
                     }
                     else {
