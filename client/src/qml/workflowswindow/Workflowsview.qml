@@ -11,14 +11,15 @@ Item {
 
     anchors.fill: parent
 
+    onWidthChanged: {
+        flick.contentHeight =  Math.round(workflowmodel.rowCount() / grid.columns) * 210
+        flick.contentWidth =  grid.columns * 210
+    }
     Flickable {
         id: flick
         anchors.fill: parent
         width: parent.width
         height: parent.height
-
-        contentHeight: workflowmodel.rowCount() / grid.columns * 210
-        contentWidth: 1 / grid.columns * 210
 
         clip: true
 
@@ -28,7 +29,6 @@ Item {
             rowSpacing: 5
 
             anchors.fill: parent
-            onColumnsChanged: print("root.width is ", root.width)
             columns: root.width / 210
             rows: -1
 
@@ -36,7 +36,8 @@ Item {
                 model: workflowmodel
 
                 onCountChanged: {
-                    flick.contentHeight =  workflowmodel.rowCount() / grid.columns * 210
+                    flick.contentHeight = Math.round(workflowmodel.rowCount() / grid.columns) * 210
+                    flick.contentWidth =  grid.columns * 210
                 }
                 Workflowpane {
                     flowModel: flowColaborants

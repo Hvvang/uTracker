@@ -20,9 +20,18 @@
 #include "KanbanModel.h"
 
 
+#include "AuthorisationResponseHandler.h"
+#include "ProfileDataResponseHandler.h"
+#include "CreateWorkflowResponseHandler.h"
+#include "ArchiveWorkflowResponseHandler.h"
+#include "InviteContactResponseHandler.h"
+#include "GetWorkflowsResponseHandler.h"
+#include "EditWorkflowResponseHandler.h"
+#include "GetWorkflowColaborantsResponseHandler.h"
+
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
-#define UI_AuthWindow "qrc:/qml/Authorization.qml"
+#define UI_AuthWindow "qrc:/qml/authwindow/Authorization.qml"
 #define UI_MainWindow "qrc:/qml/mainwindow/Mainwindowview.qml"
 
 struct Profile {
@@ -50,7 +59,7 @@ public:
         AUTO_AUTH = 1,
         SIGN_UP = 2,
         SIGN_IN = 3,
-
+        LOGOUT = 4,
         CREATE_WORKFLOW = 5,
         ARCHIVE_WORKFLOW = 6,
         UPDATE_WORKFLOW = 7,
@@ -70,6 +79,7 @@ public:
     QString getToken(const QString &type);
     static Client* singleton();
 
+    void initWorkflowsModel();
     void getProfileData();
     void getWorkflows();
     void setProfile(const QString &login, const QString &name, const QString &surname);
@@ -84,6 +94,7 @@ public:
     void addColaborant(quint64 flowIndex, const Colaborant &contact);
     void updateWorkflow(const Workflow &flow);
     void getWorkflowColaborants(int workflowId);
+    void reject();
 
     Q_INVOKABLE void googleAuthorize();
     Q_INVOKABLE void authorize(const QString &email, const QString &password);
@@ -93,6 +104,7 @@ public:
     Q_INVOKABLE void archiveWorkflow(int index);
     Q_INVOKABLE void inviteContact(const QString &contact, int index);
     Q_INVOKABLE void editWorkflow(int index, const QString &title, const QString &date);
+    Q_INVOKABLE void logout();
 
 protected:
     static Client* m_instance;
@@ -122,8 +134,18 @@ private:
     QString m_accessesToken;
     qint64 m_id;
 
-    WorkflowsModel *m_workflows;
-    KanbanModel *m_kanban;
+    WorkflowsModel *m_workflows{nullptr};
+    KanbanModel *m_kanban{nullptr};
+
+    AuthorisationResponseHandler *m_authHandler;
+    ProfileDataResponseHandler *m_profileHandler;
+    CreateWorkflowResponseHandler *m_createWorkflowHandler;
+    ArchiveWorkflowResponseHandler *m_archiveWorkflowHandler;
+    InviteContactResponseHandler *m_inviteContactResponseHandler;
+    GetWorkflowsResponseHandler *m_getWorkflowsResponseHandler;
+    EditWorkflowResponseHandler *m_editWorkflowResponseHandler;
+    GetWorkflowColaborantsResponseHandler *m_getWorkflowColaborantsResponseHandler;
+
 };
 
 #define m_client Client::singleton()

@@ -11,27 +11,13 @@
 #include "googleauth.h"
 #include "models/KanbanModel.h"
 
-#include "AuthorisationResponseHandler.h"
-#include "ProfileDataResponseHandler.h"
-#include "CreateWorkflowResponseHandler.h"
-#include "ArchiveWorkflowResponseHandler.h"
-#include "InviteContactResponseHandler.h"
-#include "GetWorkflowsResponseHandler.h"
-#include "EditWorkflowResponseHandler.h"
-#include "GetWorkflowColaborantsResponseHandler.h"
-
-
 Client* Client::m_instance = nullptr;
 
 Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
     : QObject(parent)
-    , m_engine(engine)
-    , m_workflows(new WorkflowsModel(this)) {
-
-    m_engine->rootContext()->setContextProperty("WorkflowsModel", m_workflows);
+    , m_engine(engine) {
 
     m_socket.connectToHost(host, port);
-
     connect(&m_socket, &QTcpSocket::connected, this, [=]{
         qDebug() << "Client successfully connected to server.";
 
@@ -41,7 +27,9 @@ Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const qu
 
         connect(&m_socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
         connect(&m_socket, &QTcpSocket::readyRead, this, &Client::readyRead);
-        connect(&m_socket, &QTcpSocket::disconnected, this, []{
+        connect(&m_socket, &QTcpSocket::disconnected, this, [=] {
+            reject();
+            deinitResponseHandlers();
             qDebug() << "disconnected...";
         });
 
@@ -68,29 +56,34 @@ void Client::readyRead() {
 
             int responseType;
             if (rootObject.contains("type")) {
-                responseType = rootObject.value("type").toInt();
+                emit handled(data);
             } else {
                 return;
             }
-            qDebug() << data;
-            emit handled(data);
         }
     }
 }
 
 void Client::deinitResponseHandlers() {
+    delete m_authHandler;
+    delete m_profileHandler;
+    delete m_createWorkflowHandler;
+    delete m_archiveWorkflowHandler;
+    delete m_inviteContactResponseHandler;
+    delete m_getWorkflowsResponseHandler;
+    delete m_editWorkflowResponseHandler;
+    delete m_getWorkflowColaborantsResponseHandler;
 }
 
 void Client::initResponseHandlers() {
-    auto authHandler = new AuthorisationResponseHandler(this);
-    auto profileHandler = new ProfileDataResponseHandler(this);
-    auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
-    auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
-    auto inviteContactResponseHandler = new InviteContactResponseHandler(this);
-    auto getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
-    auto editWorkflowResponseHandler = new EditWorkflowResponseHandler(this);
-    auto getWorkflowColaborantsResponseHandler = new GetWorkflowColaborantsResponseHandler(this);
-    // memory leak hear
+    m_authHandler = new AuthorisationResponseHandler(this);
+    m_profileHandler = new ProfileDataResponseHandler(this);
+    m_createWorkflowHandler = new CreateWorkflowResponseHandler(this);
+    m_archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
+    m_inviteContactResponseHandler = new InviteContactResponseHandler(this);
+    m_getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
+    m_editWorkflowResponseHandler = new EditWorkflowResponseHandler(this);
+    m_getWorkflowColaborantsResponseHandler = new GetWorkflowColaborantsResponseHandler(this);
 }
 
 void Client::send(const QString &data) {
@@ -302,6 +295,18 @@ void Client::getWorkflowColaborants(int workflowId) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::logout() {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::LOGOUT);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::newWorkflow(const Workflow &flow) {
     m_workflows->add(flow);
 }
@@ -317,6 +322,28 @@ void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
 void Client::updateWorkflow(const Workflow &flow) {
     m_workflows->updateWorkflow(flow);
 }
+
+void Client::reject() {
+    if (m_workflows) {
+        delete m_workflows;
+        m_workflows = nullptr;
+    }
+    if (m_kanban) {
+        delete m_kanban;
+        m_kanban = nullptr;
+    }
+
+//    deinitResponseHandlers();
+}
+
+void Client::initWorkflowsModel() {
+    if (!m_workflows) {
+        m_workflows = new WorkflowsModel(this);
+        m_engine->rootContext()->setContextProperty("WorkflowsModel", m_workflows);
+    }
+}
+
+
 
 
 

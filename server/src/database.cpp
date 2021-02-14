@@ -343,6 +343,8 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
         return query;
     }
 
+
+
 // //QJsonArray npcArray;
 // //QVector<int> vitya = {1, 2, 3, 4, 5};
 // //for (auto item : vitya) {

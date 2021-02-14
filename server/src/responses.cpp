@@ -7,8 +7,20 @@ AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_conne
 
 void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
     qDebug() << " =========================== TYPE "<< itemObject["type"].toInt() << "=========================\n";
-    if (isValid(itemObject))
-        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
+    if (isValid(itemObject)) {
+        qDebug() << "qwerty";
+        if (static_cast<RequestType>(itemObject["type"].toInt()) == RequestType::LOG_OUT) {
+            QVariantMap map;
+
+            map["type"] = itemObject["type"].toInt();
+            map["message"] = "Successfully logout";
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            qDebug() << "qwerty";
+            emit m_connection->sendResponse(jsonDoc.toJson());
+        }
+        else emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
@@ -52,7 +64,9 @@ bool ToAutoSignIn::isValid(QJsonObject itemObject) {
 ToLogOut::ToLogOut(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToLogOut::isValid(QJsonObject itemObject) {
-    if (!itemObject["userId"].toInt())
+    if (itemObject.contains("userId")
+        && itemObject["userId"].isDouble()
+        && itemObject["userId"].toInt() > 0)
         return true;
     return false;
 }

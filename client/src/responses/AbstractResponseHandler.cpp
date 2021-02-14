@@ -40,12 +40,16 @@ ResponseType AbstractResponseHandler::type(const QByteArray &data) {
 
 void AbstractResponseHandler::mediator(const QByteArray &data) {
     switch (type(data)) {
+        case ResponseType::AUTO_OAUTH:
+            emit auth(data); break;
+        case ResponseType::AUTO_AUTH:
+            emit auth(data); break;
         case ResponseType::SIGN_UP:
-            emit signUp(data); break;
+            emit auth(data); break;
         case ResponseType::SIGN_IN:
-            emit signIn(data); break;
+            emit auth(data); break;
         case ResponseType::LOG_OUT:
-            emit logOut(data); break;
+            emit auth(data); break;
         case ResponseType::PROFILE:
             emit profile(data); break;
         case ResponseType::CREATE_WORKFLOW:
@@ -60,6 +64,8 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit updateWorkflow(data); break;
         case ResponseType::GET_WORKFLOW_COLABORANTS:
             emit getWorkflowColaborants(data); break;
+
+
         default:
             qDebug() << "Emit some error in response!";
     }

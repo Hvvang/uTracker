@@ -43,9 +43,7 @@ public:
     virtual void processResponse(const QByteArray &data) = 0;
 
 signals:
-    void signUp(const QByteArray &);
-    void signIn(const QByteArray &);
-    void logOut(const QByteArray &);
+    void auth(const QByteArray &);
     void profile(const QByteArray &);
     void newWorkflow(const QByteArray &);
     void archiveWorkflow(const QByteArray &);

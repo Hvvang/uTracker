@@ -51,8 +51,9 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::GET_PROFILE);
     types.append(RequestType::UPDATE_PROFILE);
     for (auto i : types)
-        if (static_cast<int>(i) == itemObject["type"].toInt())
+        if (static_cast<int>(i) == itemObject["type"].toInt()) {
             emit funcList[types.indexOf(i)]->responseInited(itemObject);
+        }
 }
 
 Runnable::~Runnable() {}
