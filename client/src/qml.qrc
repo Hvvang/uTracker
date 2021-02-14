@@ -2,8 +2,24 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>fonts/fontello.ttf</file>
-    </qresource>
-    <qresource prefix="/auth">
-        <file alias="Authorization.qml">qml/authorization.qml</file>
+        <file>qml/components/Contolbutton.qml</file>
+        <file>qml/components/Menubutton.qml</file>
+        <file>qml/components/Taskview.qml</file>
+        <file>qml/mainwindow/Maincontrolpanel.qml</file>
+        <file>qml/mainwindow/Mainwindowview.qml</file>
+        <file>qml/mainwindow/Headerpanel.qml</file>
+        <file>qml/authwindow/Authwindow.qml</file>
+        <file>qml/authwindow/RegisterWidow.qml</file>
+        <file>qml/authwindow/Authorization.qml</file>
+        <file>qml/workflowswindow/Workflowsview.qml</file>
+        <file>qml/workflowswindow/Workflowpane.qml</file>
+        <file>qml/workflowswindow/Kanbanview.qml</file>
+        <file>qml/calendarwindow/Calendarview.qml</file>
+        <file>qml/contactswindow/Contactsview.qml</file>
+        <file>qml/dailyplanwindow/Dailyplaneview.qml</file>
+        <file>qml/statisticwindow/Statisticview.qml</file>
+        <file>qml/workflowswindow/WorkflowDialog.qml</file>
+        <file>qml/components/DatePicker.qml</file>
+        <file>qml/workflowswindow/InviteColaborantDialog.qml</file>
     </qresource>
 </RCC>

@@ -27,8 +27,8 @@ public:
     QSqlQuery select(const QString &table, const QString &select, const QString &where);
     QVariantMap createUser(const QString &login, const QString &password, const QString &name, const QString &surname);
     QVariantMap containsUser(const QString &user, const QString &password);
-    QVariantMap createWorkflow(int owner_id, const QString &title, const QString &description);
-    QVariantMap updateWorkflow(int workflow_id, const QString &title, const QString &description);
+    QVariantMap createWorkflow(int owner_id, const QString &title, const QString &deadline);
+    QVariantMap updateWorkflow(int workflow_id, const QString &title, const QString &deadline);
     QVariantMap inviteToWorkflow(int user_id, int workflow_id);
 
     QVariantMap getWorkflows(int user_id);

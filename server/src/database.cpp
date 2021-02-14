@@ -36,11 +36,21 @@ void DataBase::create_tables() {
         "photo blob,"
         "google_token varchar,"
         "github_token varchar)");
-    query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, description varchar)");
+    query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, deadline datetime)");
     query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
     query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, panel_id int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist json, files blob)");
-    query.exec("create table IF NOT EXISTS T_connector (id integer primary key AUTOINCREMENT, task_id int, worker_id int)");
-    query.exec("create table IF NOT EXISTS WF_connector (id integer primary key AUTOINCREMENT,workflow_id int, user_id int, UNIQUE (workflow_id, user_id))");
+    query.exec("create table IF NOT EXISTS T_connector ("
+               "id integer primary key AUTOINCREMENT,"
+               "task_id int,"
+               "worker_id int"
+               "FOREIGN KEY(task_id) REFERENCES Tasks(id),"
+               "FOREIGN KEY(worker_id) REFERENCES UsersCredential(id)\")");
+    query.exec("create table IF NOT EXISTS WF_connector ("
+               "id integer primary key AUTOINCREMENT,"
+               "workflow_id int,"
+               "user_id int,"
+               "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id),"
+               "FOREIGN KEY(user_id) REFERENCES UsersCredential(id))");
 }
 
 bool DataBase::isValidToken(QJsonObject itemObject) {
@@ -52,6 +62,7 @@ bool DataBase::isValidToken(QJsonObject itemObject) {
 
 void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &map) {
     QVariantMap result;
+    qDebug() << "type is: " << type;
     switch (static_cast<RequestType>(type)) {
         case RequestType::AUTO_AUTH:
             break;
@@ -70,9 +81,11 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
         case RequestType::LOG_OUT:
             break;
         case RequestType::CREATE_WORKFLOW:
-            result = createWorkflow(map.value("ownerId").toInt(),
+            result = createWorkflow(map.value("userId").toInt(),
                                     map.value("title").toString(),
-                                    map.value("description").toString());
+                                    map.value("deadline").toString());
+            break;
+        case RequestType::ARCHIVE_WORKFLOW:
             break;
         case RequestType::UPDATE_WORKFLOW:
             result = updateWorkflow(map.value("workflowId").toInt(),
@@ -124,7 +137,6 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             break;
         case RequestType::GET_TASK_DATA :
             result = getTaskData(map.value("taskId").toInt());
-            break;
     }
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
@@ -139,16 +151,15 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
 
 QVariantMap DataBase::containsUser(const QString &login, const QString &password) {
     QSqlQuery query;
-    query.exec("SELECT password FROM UsersCredential where login = \"" + login + "\";");
+    query.exec("SELECT id, password FROM UsersCredential where login = \"" + login + "\";");
 
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::SIGN_IN);
 
-    qDebug() << "Try to authorize" << login << password;
-
     if (query.first())
         qDebug() << "userFound";
-    if (query.first() && (query.value(0).toString() == password)) {
+    if (query.first() && (query.value(1).toString() == password)) {
+        map["userId"] = query.value(0);
         map["message"] = "Successfully authorized";
     } else {
         map["error"] = 1;
@@ -179,35 +190,50 @@ DataBase::createUser(const QString &login,
         map["message"] = "User with such login already exist";
         map["token"] = mx_hash(password, login);
     } else {
+        map["userId"] = query.lastInsertId().toInt();
         map["message"] = "User successfully created";
     }
     return map;
 }
 
 QVariantMap
-DataBase::createWorkflow(int owner_id, const QString &title, const QString &description) {
+DataBase::createWorkflow(int owner_id, const QString &title, const QString &deadline) {
+    QSqlQuery query;
+    auto res = query.exec(QString( "INSERT INTO WorkFlows (owner_id, title, deadline) VALUES(%1, '%2',  '%3');")
+                           .arg(owner_id)
+                           .arg(title)
+                           .arg(deadline));
+
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
-    if (insert("WorkFlows", "owner_id, title, description", QString::number(owner_id) + ", '" + title + "', '" + description + "'")) {
-        map["message"] = "Workflow successfully created";
-        //map["workflowId"] = Даша, витягни будь ласка workflowId яку тільки що створили;
+
+    if (res) {
+        auto workflowId = query.lastInsertId().toInt();
+        map["workflowId"] = workflowId;
+        map["title"] = title;
+        map["deadline"] = deadline;
+        map["message"] = "Workflow has been created";
+        query.exec(QString( "INSERT INTO WF_connector (workflow_id, user_id) VALUES(%1, '%2');")
+                           .arg(workflowId)
+                           .arg(owner_id));
     }
     else {
         map["error"] = 1;
-        map["message"] = "Workflow hasn't been created";
+        map["message"] = "Unfortunately, workflow hasn't been created";
     }
+
     return map;
 }
 
 QVariantMap
-DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &description) {
+DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &deadline) {
     bool is_ok = false;
-    if (!title.isEmpty() && !description.isEmpty()) {
-        is_ok = update("WorkFlows", "title = '" + title + "', description = '" + description + "'", "id = " + QString::number(workflow_id));
-    } else if (description.isEmpty()) {
+    if (!title.isEmpty() && !deadline.isEmpty()) {
+        is_ok = update("WorkFlows", "title = '" + title + "', description = '" + deadline + "'", "id = " + QString::number(workflow_id));
+    } else if (deadline.isEmpty()) {
         is_ok = update("WorkFlows", "title = '" + title, "id = " + QString::number(workflow_id));
     } else if (title.isEmpty()) {
-        is_ok = update("WorkFlows", "description = '" + description + "'", "id = " + QString::number(workflow_id));
+        is_ok = update("WorkFlows", "description = '" + deadline + "'", "id = " + QString::number(workflow_id));
     }
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
@@ -235,61 +261,70 @@ DataBase::inviteToWorkflow(int user_id, int workflow_id) {
 }
 
 QVariantMap DataBase::getWorkflows(int user_id) { // треба норм дописать мапу яку повертаю з ерорами
-    QJsonArray npcArray;
+    QJsonArray workflows;
     QSqlQuery query;
-    query.prepare("select workflow_id from WF_connector where user_id = :user_id;");
-    query.bindValue(":user_id", user_id);
-    query.exec();
-    QMap<QString, QVariant> maxi_mapa;
+    query.exec(QString("select workflow_id from WF_connector where user_id = %1;").arg(user_id));
+    QMap<QString, QVariant> map;
+
+    qDebug() << "user_id is " << user_id;
+    qDebug() << query.value(0).toInt();
+    map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     if (query.first()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
-        npcArray.append(jsonObject);
+        workflows.append(jsonObject);
     } else {
-        maxi_mapa["error"] = 1;
+        map["error"] = 1;
+        map["message"] = "Workflows don't exist";
     }
     while (query.next()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
-        npcArray.append(jsonObject);
+        workflows.append(jsonObject);
     }
-    maxi_mapa["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
-    maxi_mapa["array"] = npcArray;
-    maxi_mapa["message"] = "Заебісь зайшло в getWorkflows";
 
-    return maxi_mapa;
+    if (!map.contains("error")) {
+        map["workflows"] = workflows;
+        map["message"] = "Workflows successfully have gotten";
+    }
+    return map;
 }
 
 QVariantMap DataBase::getWorkflow(int workflow_id) {
-    QSqlQuery query = select("WorkFlows", "*", "id = " + QString::number(workflow_id));
+    QSqlQuery query = select("WorkFlows", "owner_id, title, deadline", "id = " + QString::number(workflow_id));
     // query.prepare("select * from WorkFlows where id = :workflow_id;");
     // query.bindValue(":workflow_id", workflow_id);
     // query.exec();
-    QMap<QString, QVariant> mapa;
+    QMap<QString, QVariant> map;
     if (query.first()) {
-        mapa["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
-        mapa["userId"] = query.value(0).toInt();
-        mapa["title"] = query.value(1).toString();
-        mapa["description"] = query.value(2).toString();
-        mapa["message"] = "Single workflow sent";
+        map["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
+        map["workflowId"] = workflow_id;
+        map["owner_id"] = query.value(0).toInt();
+        map["title"] = query.value(1).toString();
+        map["deadline"] = query.value(2).toString();
+        map["message"] = "Workflow successfully has gotten";
     } else {
-        mapa["error"] = 1;
-        mapa["message"] = "workflowId isn't in database";
+        map["error"] = 1;
+        map["message"] = "External error";
     }
-    return mapa;
+    return map;
 }
 
 QVariantMap DataBase::getProfile(int user_id) {
-    QSqlQuery query = select("WorkFlows", "first_name, last_name", "id = " + QString::number(user_id) + ";");
+    QSqlQuery query;
+    query.exec("SELECT login, first_name, last_name FROM usersCredential where id = \"" + QString::number(user_id) + "\";");
+//    QSqlQuery query = select("usersCredential", "login, first_name, last_name", "id = " + QString::number(user_id) + ";");
     // query.exec("select first_name, last_name from WorkFlows where id = " + QString::number(user_id) + ";");
-    QMap<QString, QVariant> mapa;
+    QMap<QString, QVariant> map;
+
+    qDebug() << "login : " <<  query.value(0).toString();
     if (query.first()) {
-        mapa["type"] = static_cast<int>(RequestType::GET_PROFILE);
-        mapa["userId"] = query.value(0).toInt();
-        mapa["title"] = query.value(1).toString();
-        mapa["description"] = query.value(2).toString();
-        mapa["message"] = "Profile sent";
+        map["type"] = static_cast<int>(RequestType::GET_PROFILE);
+        map["login"] = query.value(0).toString();
+        map["first_name"] = query.value(1).toString();
+        map["last_name"] = query.value(2).toString();
+        map["message"] = "Profile data has successfully gotten";
     } else {
-        mapa["error"] = 1;
-        mapa["message"] = "User isn't in database";
+        map["error"] = 1;
+        map["message"] = "User doesn't exist in database";
     }
     //    QString email
     //    QString password
@@ -299,13 +334,13 @@ QVariantMap DataBase::getProfile(int user_id) {
     //    byte photo
     //    QString google_token
     //    QString github_token varchar
-    return mapa;
+    qDebug() << "map is " << map;
+    return map;
 }
 
 QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QString &surname) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
-    // update_two_string("UsersCredential", "first_name", name, "last_name", surname, "id", QString(user_id));
     if (update("UsersCredential", "first_name = '" + name + "', last_name = '" + surname + "'", "id = " + QString::number(user_id))) {
         map["message"] = "Profile was succesfully updated";
     }

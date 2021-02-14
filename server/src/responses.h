@@ -19,7 +19,7 @@ enum class RequestType {
     AUTO_OAUTH = 3,
     LOG_OUT = 4,
     CREATE_WORKFLOW = 5,
-//    ARCHIVE_WORKFLOW = 6,
+    ARCHIVE_WORKFLOW = 6,
     UPDATE_WORKFLOW = 7,
     INVITE_TO_WORKFLOW = 8,
     GET_ALL_WORKFLOWS = 9,
