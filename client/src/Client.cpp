@@ -17,6 +17,7 @@
 #include "ArchiveWorkflowResponseHandler.h"
 #include "InviteContactResponseHandler.h"
 #include "GetWorkflowsResponseHandler.h"
+#include "EditWorkflowResponseHandler.h"
 
 Client* Client::m_instance = nullptr;
 
@@ -85,6 +86,7 @@ void Client::initResponseHandlers() {
     auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
     auto inviteContactResponseHandler = new InviteContactResponseHandler(this);
     auto getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
+    auto editWorkflowResponseHandler = new EditWorkflowResponseHandler(this);
     // memory leak hear
 }
 
@@ -257,6 +259,33 @@ void Client::inviteContact(const QString &contact, int index) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::getWorkflows() {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOWS);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::editWorkflow(int index, const QString &title, const QString &date) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::UPDATE_WORKFLOW);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+    json["workflowId"] = index;
+    json["title"] = title;
+    json["deadline"] = date;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::newWorkflow(const Workflow &flow) {
     m_workflows->add(flow);
 }
@@ -269,16 +298,8 @@ void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
     m_workflows->addColaborant(flowIndex, contact);
 }
 
-void Client::getWorkflows() {
-    QJsonObject json;
-
-    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOWS);
-    json["token"] = m_accessesToken;
-    json["userId"] = m_id;
-
-    QJsonDocument document;
-    document.setObject(json);
-    emit request(document.toJson(QJsonDocument::Compact));
+void Client::updateWorkflow(const Workflow &flow) {
+    m_workflows->updateWorkflow(flow);
 }
 
 

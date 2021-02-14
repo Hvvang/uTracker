@@ -177,27 +177,22 @@
 <context>
     <name>WorkflowDialog</name>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="38"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="53"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="80"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="95"/>
         <source>Chose deadline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="101"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="116"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="131"/>
-        <source>Create a workflow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="166"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="182"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>

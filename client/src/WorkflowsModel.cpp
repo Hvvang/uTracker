@@ -27,6 +27,7 @@ QVariant WorkflowsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     switch(role) {
+        case IdRole: return m_data[index.row()].id;
         case DeadlineRole: return m_data[index.row()].deadline;
         case TitleRole: return m_data[index.row()].title;
         case ProgressRole: return m_data[index.row()].progress;
@@ -71,6 +72,7 @@ bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
 
 QHash<int, QByteArray> WorkflowsModel::roleNames() const {
     QHash<int, QByteArray> roles;
+    roles[IdRole] = "flowId";
     roles[DeadlineRole] = "flowDeadline";
     roles[TitleRole] = "flowTitle";
     roles[ProgressRole] = "flowProgress";
@@ -84,8 +86,13 @@ void WorkflowsModel::add(const Workflow &flow) {
     endInsertRows();
 }
 
-void WorkflowsModel::archive(int index) {
-    removeRows(index, 1);
+void WorkflowsModel::archive(int id) {
+    for (int index = 0; index < rowCount(); ++index) {
+        if (m_data[index].id == id) {
+            removeRows(index, 1);
+        }
+    }
+
 }
 
 void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
@@ -95,4 +102,18 @@ void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
             break;
         }
     }
+}
+
+void WorkflowsModel::updateWorkflow(const Workflow &workflow) {
+    for (int index = 0; index < rowCount(); ++index) {
+        if (m_data[index].id == workflow.id) {
+            m_data[index].title = workflow.title;
+            m_data[index].progress = workflow.progress;
+            m_data[index].deadline = workflow.deadline;
+
+            emit dataChanged(this->index(index, 0), this->index(index, 0));
+            break;
+        }
+    }
+
 }

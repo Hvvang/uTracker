@@ -1,19 +1,18 @@
 //
-// Created by Artem Shemidko on 13.02.2021.
+// Created by Artem Shemidko on 14.02.2021.
 //
 
-#include "CreateWorkflowResponseHandler.h"
-
+#include "EditWorkflowResponseHandler.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include "Client.h"
 
-CreateWorkflowResponseHandler::CreateWorkflowResponseHandler(QObject *parent)
+EditWorkflowResponseHandler::EditWorkflowResponseHandler(QObject *parent)
         : AbstractResponseHandler(parent) {
-    connect(this, &AbstractResponseHandler::newWorkflow, this,  &CreateWorkflowResponseHandler::processResponse);
+    connect(this, &AbstractResponseHandler::updateWorkflow, this,  &EditWorkflowResponseHandler::processResponse);
 }
 
-void CreateWorkflowResponseHandler::processResponse(const QByteArray &data) {
+void EditWorkflowResponseHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
 
@@ -26,9 +25,9 @@ void CreateWorkflowResponseHandler::processResponse(const QByteArray &data) {
 
         Workflow w;
         w.id = rootObject["workflowId"].toInt();
-        w.progress = 100;
+        w.progress = rootObject["progress"].toInt();
         w.deadline = rootObject["deadline"].toString();
         w.title = rootObject["title"].toString();
-        m_client->newWorkflow(w);
+        m_client->updateWorkflow(w);
     }
 }

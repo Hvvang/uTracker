@@ -182,7 +182,9 @@ Item {
         MenuItem {
             text: "\ue809  edit"
             font.family: "fontello"
-            onTriggered: back.Material.background = Material.Yellow
+            onTriggered: {
+                dialog.open(flowId, flowTitle, flowDeadline)
+            }
             height: 30
             width: parent.width
         }
