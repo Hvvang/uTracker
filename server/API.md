@@ -22,8 +22,7 @@ enum class RequestType {
 ```json
 {
     "type": LOG_OUT,
-    "userId": num,
-    "token": str SHA-256 hash
+    "userId": num
 }
 ```
 
@@ -50,8 +49,7 @@ enum class RequestType {
     "type": CREATE_WORKFLOW,
     "title": str,
     "description": str,
-    "ownerId" : num
-    "token": str SHA-256 hash
+    "userId" : num //
 }
 ```
 
@@ -79,8 +77,7 @@ enum class RequestType {
     "type": UPDATE_WORKFLOW,
     "workflowId": num,
     "title": str,
-    "description": str,
-    "token": str SHA-256 hash
+    "description": str
 }
 ```
 
