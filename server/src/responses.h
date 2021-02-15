@@ -13,10 +13,10 @@
 #include "connection.h"
 
 enum class RequestType {
-    AUTO_OAUTH = 0,
-    AUTO_AUTH = 1,
-    SIGN_UP = 2,
-    SIGN_IN = 3,
+    SIGN_UP = 0,
+    SIGN_IN = 1,
+    AUTO_AUTH = 2,
+    AUTO_OAUTH = 3,
     LOG_OUT = 4,
     CREATE_WORKFLOW = 5,
     ARCHIVE_WORKFLOW = 6,
@@ -24,9 +24,16 @@ enum class RequestType {
     INVITE_TO_WORKFLOW = 8,
     GET_ALL_WORKFLOWS = 9,
     GET_SINGLE_WORKFLOW_DATA = 10,
-    GET_PROFILE = 11,
-    GET_STATISTICS,
-    UPDATE_PROFILE,
+    GET_STATISTICS = 11,
+    GET_PROFILE = 12,
+    UPDATE_PROFILE = 13,
+    CREATE_LIST = 14,
+    REMOVE_LIST = 15,
+    CREATE_TASK = 16,
+    UPDATE_TASK = 17,
+    MOVE_TASK = 18,
+    REMOVE_TASK = 19,
+    GET_TASK_DATA = 20
 };
 
 class AbstractRequestHandler : public QObject{
@@ -47,6 +54,7 @@ protected:
     QByteArray m_json;
 };
 
+////auth sector/////////////////////////////////////
 class ToSignUp : public AbstractRequestHandler {
     Q_OBJECT
 public:
@@ -83,6 +91,7 @@ public:
     bool isValid(QJsonObject itemObject);
 };
 
+////workflow (desk) sector/////////////////////////////////////
 class ToCreatedWorkflow : public AbstractRequestHandler {
 Q_OBJECT
 public:
@@ -118,6 +127,7 @@ public:
     bool isValid(QJsonObject itemObject);
 };
 
+////statistic sector//////////////////////////////////////////
 class SendStatistics : public AbstractRequestHandler  {
 Q_OBJECT
 public:
@@ -125,6 +135,7 @@ public:
     bool isValid(QJsonObject itemObject);
 };
 
+////profile sector//////////////////////////////////////////
 class SendProfile : public AbstractRequestHandler  {
 Q_OBJECT
 public:
@@ -139,3 +150,53 @@ public:
     bool isValid(QJsonObject itemObject);
 };
 
+////list sector//////////////////////////////////////////
+class ToCreateList : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToCreateList(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class ToRemoveList : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToRemoveList(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+////task sector//////////////////////////////////////////
+class ToCreateTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToCreateTask(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class ToUpdateTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToUpdateTask(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class ToMoveTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToMoveTask(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class ToRemoveTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ToRemoveTask(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class SendTaskData : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    SendTaskData(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};

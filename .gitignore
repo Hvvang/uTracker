@@ -46,3 +46,6 @@ build
 
 # System cache
 .DS_Store
+
+#client_from_nd_server
+client_1
