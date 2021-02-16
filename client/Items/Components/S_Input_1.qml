@@ -1,100 +1,66 @@
-import QtQuick 2.4
-import QtQuick.Layouts 1.1
-import Material 0.3
-import Material.ListItems 0.1 as ListItem
-import Material.Extras 0.1
+import QtQuick 2.9
+//import QtQuick.Controls 1.4
+import Material 0.2
 
-//Rectangle {
-
-//}
-
-Item {
+Rectangle {
     id: root
-    property string formType: "StandartType"
-    property string formColor: "MainColor"
-    property string formContent: "value"
-    property int formWidth: 300
-    property int formHeight: 40
-    property bool formEnabled: true
+    enum ButtonType {
+        StandartType,
+        SquareType
+    }
+    enum ButtonColor {
+        MainColor,
+        ExtraColor
+    }
 
-    signal clicked
+    property string typeInput: "StandartType"
+    property string colorInput: "MainColor"
+    property string placeholderContent: "value"
+    property alias inputText: input.text
+    property int inputWidth: 200
+    property int inputHeight: 40
+    property alias input: input
 
-    width: formWidth
-    height: formHeight
+//    signal clicked
 
-    View {
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: formWidth - dp(20)
-        height: formHeight
-        radius: formType == "StandartType" ? height/2 : 10
-        elevation: 1
+    width: inputWidth
+    height: inputHeight
+    border.width: typeInput == "StandartType" ? 2 : 2
+    border.color: colorInput == "MainColor" ? "#f6a2bf" : "#ffb4b0"
+    radius: typeInput == "StandartType" ? height / 2 : 5
 
-        data: Rectangle {
-            width: parent.width
-            height: formHeight
-            border.width: formType == "StandartType" ? 2 : 2
-            border.color: formColor == "MainColor" ? "#f6a2bf" : "#ffb4b0"
-            radius: formType == "StandartType" ? height/2 : 10
+    Rectangle {
+        id:content
+        anchors.fill: parent
+        anchors.margins: parent.border.width
+        radius: parent.radius
+//        color:
+//        color: colorButton == "MainColor" ? (!mouseArea.containsMouse ? "#fad2e0" : "#ffdad8") : (!mouseArea.containsMouse ? "#ffdad8" : "#fad2e0")
+        Item {
+            id: shape
+            width: parent.width - parent.radius
+            height: parent.height
+//            height: parent.height - parent.radius
+//            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
 
-            Rectangle {
-                z:1
-                border.width: parent.border.width
-                border.color: parent.border.color
-                width: formHeight
-                height: formHeight
-                radius: formType == "StandartType" ? formHeight : parent.radius
-        //        color: formColor != "MainColor" ? "#fad2e0" : "#ffdad8"
-                color: formColor != "MainColor" ? "#7a163c" : "#7a163c"
-                Text {
-                    id: letterName
-                    text: formContent[0]
-                    anchors.fill: parent
-                    font.pixelSize: 20 * Units.dp
-                    color: formColor == "MainColor" ? "#fad2e0" : "#ffdad8"
-                    font.capitalization: Font.AllUppercase
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Rectangle {
+            TextField {
+                id: input
+                showBorder: false
                 anchors.fill: parent
-                anchors.margins: parent.border.width
-                id: form
-                radius: parent.radius
-                color: formColor == "MainColor" ? "#fad2e0" : "#ffdad8"
-                Text {
-                    id: text
-                    elide: Text.ElideRight
-                    anchors.fill: parent
-                    text: root.formContent
-                    font.pixelSize: 20 * Units.dp
-                    color: formColor == "MainColor" ? "#7a163c" : "#7a163c"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-        //            MouseArea {
-        //                id: mouseArea
-        //                anchors.fill: parent
-        //                onClicked: {
-        //                    root.clicked();
-        //                }
-
-        //                enabled: formEnabled
-        //                hoverEnabled: formEnabled
-        //            }
-                }
-                Rectangle {
-                    visible: !formEnabled
-                    anchors.fill: parent
-                    radius: parent.radius
-                    z: 1
-                    color: "#20000000"
-                }
-
-            //        onClick: {}
+                placeholderText: placeholderContent
+                anchors.horizontalCenter: parent.horizontalCenter
+//                style.fieldPlaceholder.font.pixelSize: 12*dp(1)
             }
-
         }
 
+//        MouseArea{
+//            id: mouseArea
+//            anchors.fill: parent
+//            hoverEnabled: true
+//        }
+    //        onClick: {}
     }
+
 }
