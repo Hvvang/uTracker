@@ -120,7 +120,7 @@ Item {
                         font.pixelSize: dp(24)
                         text: cardListTitle
                         font.bold: true
-//                        visible:
+                        visible: !name.visible
                     }
 //                    Item {
 //                        anchors.fill: parent
@@ -141,7 +141,6 @@ Item {
                             color: "#7a163c"
                             onFocusChanged:  {
                                 console.log(cardListTitle + ": " + focus)
-                                cardTitle.visible = !focus
                                 if (text.length > 0)
                                     cardTitle.text = text
                                 visible = focus
@@ -187,6 +186,7 @@ Item {
                         cardContent: model.text
                         cardWidth: layout.width
                         cardId: index
+                        modelOwner: cardsModel
                         states: [
                             State {
                                 name: "inDrag"

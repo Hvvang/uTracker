@@ -11,6 +11,7 @@ Item {
     property string cardContent: "value"
     property int cardWidth: dp(100)
     property int cardHeight: dp(80)
+    property QtObject modelOwner
 
     width: cardWidth
     height: cardHeight
@@ -20,6 +21,7 @@ Item {
         height: parent.height - dp(5)
         backgroundColor: "#fde8f5"
         Row {
+            id:lay
             anchors.fill: parent
             anchors.margins: dp(20)
             spacing: dp(10)
@@ -27,12 +29,26 @@ Item {
                 id: infoText
                 text: cardContent
                 height: parent.height
-                width: parent.width - (menuButton.width - parent.spacing / 2)
+                width: cardWidth - (menuButton.width - parent.spacing / 2)
                 color: "#7a163c"
                 font.pixelSize: dp(19)
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
+                visible: false
             }
+            TextField {
+                id: infoTextField
+                height: parent.height
+                width: lay.width - (menuButton.height + parent.spacing * 2)
+                visible: !infoText.visible
+                onAccepted: {
+                    infoText.text = text;
+                    focus = false
+                    infoText.visible = true
+                }
+
+            }
+
             ActionBar {
                 id: menuButton
                 height: parent.height
@@ -45,7 +61,7 @@ Item {
                     Action {
                         id: addPers
                         iconName: "navigation/chevron_right"
-                        text: "More..."
+                        text: "Details.."
                         hoverAnimation: true
                         onTriggered: {
 //                            var cardIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
@@ -66,9 +82,40 @@ Item {
                     Action {
                         id: delPers
                         iconName: "navigation/chevron_right"
-                        text: "Remove card"
+                        text: "Remove"
                         hoverAnimation: true
                         onTriggered: {
+                            // request
+                        }
+                    },
+                    Action {
+                        id: renamePers
+                        iconName: "navigation/chevron_right"
+                        text: "Rename"
+                        hoverAnimation: true
+                        onTriggered: {
+                            infoText.visible = false
+                            infoTextField.forceActiveFocus();
+                            infoTextField.focus = true
+                        }
+                    },
+                    Action {
+                        id: movePers
+                        iconName: "navigation/chevron_right"
+                        text: "Move to list.."
+                        hoverAnimation: true
+                        onTriggered: {
+//                            var cardIndex = layout.indexAt(mouseX, mouseY + control.globalPos)
+//                            var cardItem = cardModel.get(index)
+                            console.log("Request to server: Id of card: " + cardId)
+                            var componentMove;
+                            var spriteMove;
+                            componentMove = Qt.createComponent("MoveToDialog.qml");
+                            if (componentMove.status === Component.Ready){
+                                spriteMove = componentMove.createObject(card);
+                                console.log("Request to server: Id of card: " + componentMove)
+                            }
+                            spriteMove.show()
                         }
                     }
                 ]

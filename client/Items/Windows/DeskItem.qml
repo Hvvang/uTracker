@@ -54,6 +54,7 @@ Item {
 //        backgroundColor: Palette.colors["purple"]["50"]
         backgroundColor: "#ebc7d3"
         Row{
+            id: layout
             width: parent.width - dp(20)
             height: parent.height - dp(20)
             anchors.centerIn: parent
@@ -80,7 +81,7 @@ Item {
                     property real globalPos: control.position * deskListView.contentWidth
                     id: control
                     hoverEnabled: true
-                    active: deskListView.height < deskListView.contentWidth && (hovered || pressed)
+                    active: deskListView.contentWidth < layout.width - (barier.width + deskListView.spacing) && (hovered || pressed)
                     size: 0.3
                     contentItem: Rectangle {
                         implicitWidth: 3

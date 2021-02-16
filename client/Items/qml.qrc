@@ -12,5 +12,6 @@
         <file>Components/S_Button_1.qml</file>
         <file>Components/S_Input_1.qml</file>
         <file>Windows/CardView.qml</file>
+        <file>Windows/MoveToDialog.qml</file>
     </qresource>
 </RCC>
