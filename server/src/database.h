@@ -21,7 +21,7 @@ class DataBase : public QObject {
     std::mutex g_i_mutex;
 
 public:
-
+    bool insert(const QString &table, const QString &insert, const QString &values, int &lastInsert);
     bool insert(const QString &table, const QString &insert, const QString &values);
     bool update(const QString &table, const QString &update, const QString &where);
     QSqlQuery select(const QString &table, const QString &select, const QString &where);
@@ -39,7 +39,7 @@ public:
     QVariantMap createList(const QString& title, int workflowId);
     QVariantMap removeList(int listId);
     QVariantMap createTask(const QString& title, int listId);
-    QVariantMap updateTask(int taskId, const QString& description, const QStringList& checkList);
+    QVariantMap updateTask(int taskId, const QString& description, const QVariant& checkList);
     QVariantMap moveTask(int taskId, int listId);
     QVariantMap removeTask(int taskId);
     QVariantMap getTaskData(int taskId);
@@ -47,7 +47,7 @@ public:
 public:
     static DataBase *getInstance();
     void create_tables();
-    bool isValidToken(QJsonObject itemObject);
+    bool isValidToken(const QString &token, int type) ;
 
 
     void sendData(Connection *m_connection, int type, const QMap<QString, QVariant> &map);
