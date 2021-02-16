@@ -7,21 +7,11 @@ AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_conne
 
 void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
     qDebug() << " =========================== TYPE "<< itemObject["type"].toInt() << "=========================\n";
-    if (isValid(itemObject)) {
-        qDebug() << "qwerty";
-        if (static_cast<RequestType>(itemObject["type"].toInt()) == RequestType::LOG_OUT) {
-            QVariantMap map;
-
-            map["type"] = itemObject["type"].toInt();
-            map["message"] = "Successfully logout";
-            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
-            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
-            qDebug() << "qwerty";
-            emit m_connection->sendResponse(jsonDoc.toJson());
-        }
-        else emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
-    }
+    if (isValid(itemObject))
+        emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
 }
+
+////auth sector//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToSignUp::ToSignUp(Connection *socket) :  AbstractRequestHandler(socket){}
 
@@ -64,22 +54,18 @@ bool ToAutoSignIn::isValid(QJsonObject itemObject) {
 ToLogOut::ToLogOut(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToLogOut::isValid(QJsonObject itemObject) {
-    if (itemObject.contains("userId")
-        && itemObject["userId"].isDouble()
-        && itemObject["userId"].toInt() > 0)
+    if (!itemObject["userId"].toInt())
         return true;
     return false;
 }
+////workflow (desk) sector//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
         && itemObject.contains("deadline")
-        && itemObject.contains("userId")) {
-        if (!itemObject["title"].toString().isEmpty()
-            && !itemObject["deadline"].toString().isEmpty()
-            && itemObject["userId"].toInt())
+        && itemObject.contains("ownerId")) {
             return true;
     }
     return false;
@@ -88,9 +74,9 @@ bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
 ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
-    if (!itemObject["title"].toString().isEmpty()
-        && !itemObject["description"].toString().isEmpty()
-        && itemObject["workflowId"].toInt())
+    if (itemObject.contains("title")
+        && itemObject.contains("deadline")
+        && itemObject.contains("workflowId"))
         return true;
     return false;
 }
@@ -98,8 +84,8 @@ bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
 ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
-    if (itemObject["userId"].toInt()
-        && itemObject["workflowId"].toInt())
+    if (itemObject.contains("userId")
+        && itemObject.contains("workflowId"))
         return true;
     return false;
 }
@@ -107,7 +93,7 @@ bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
 SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendAllWorkflows::isValid(QJsonObject itemObject) {
-    if (itemObject["userId"].toInt())
+    if (itemObject.contains("userId"))
         return true;
     return false;
 }
@@ -115,10 +101,11 @@ bool SendAllWorkflows::isValid(QJsonObject itemObject) {
 SendSingleWorkflowData::SendSingleWorkflowData(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendSingleWorkflowData::isValid(QJsonObject itemObject) {
-    if (itemObject["workflowId"].toInt())
+    if (itemObject.contains("workflowId"))
         return true;
     return false;
 }
+////statistic sector//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendStatistics::SendStatistics(Connection *socket) : AbstractRequestHandler(socket){}
 
@@ -126,12 +113,13 @@ bool SendStatistics::isValid(QJsonObject itemObject) {
     Q_UNUSED(itemObject);
     return true;
 }
+////profile sector//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendProfile::isValid(QJsonObject itemObject) {
-    qDebug() << itemObject["userId"].toInt();
-    if (itemObject["userId"].toInt())
+//    qDebug() << itemObject["userId"].toInt();
+    if (itemObject.contains("userId"))
         return true;
     return false;
 }
@@ -140,9 +128,72 @@ bool SendProfile::isValid(QJsonObject itemObject) {
 ToUpdateProfile::ToUpdateProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToUpdateProfile::isValid(QJsonObject itemObject) {
-    if (!itemObject["name"].toString().isEmpty()
-        && !itemObject["surname"].toString().isEmpty()
-        && itemObject["userId"].toInt())
+    if (itemObject.contains("name")
+        && itemObject.contains("surname")
+        && itemObject.contains("userId"))
+        return true;
+    return false;
+}
+////list sector//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToCreateList::ToCreateList(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToCreateList::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("title")
+        && itemObject.contains("workflowId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToRemoveList::ToRemoveList(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToRemoveList::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("listId"))
+        return true;
+    return false;
+}
+////task sector//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToCreateTask::ToCreateTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToCreateTask::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("title")
+        && itemObject.contains("listId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToUpdateTask::ToUpdateTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToUpdateTask::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("checkList")
+        && itemObject.contains("description")
+        && itemObject.contains("taskId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToMoveTask::ToMoveTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToMoveTask::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("listId")
+        && itemObject.contains("taskId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToRemoveTask::ToRemoveTask(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToRemoveTask::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+SendTaskData::SendTaskData(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool SendTaskData::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId"))
         return true;
     return false;
 }
