@@ -8,10 +8,10 @@
 #include <QObject>
 
 enum class ResponseType {
-    AUTO_OAUTH = 0,
-    AUTO_AUTH = 1,
-    SIGN_UP = 2,
-    SIGN_IN = 3,
+    SIGN_UP = 0,
+    SIGN_IN = 1,
+    AUTO_OAUTH = 2,
+    AUTO_AUTH = 3,
     LOG_OUT = 4,
     CREATE_WORKFLOW = 5,
     ARICHIVE_WORKFLOW = 6,
@@ -20,7 +20,7 @@ enum class ResponseType {
     GET_WORKFLOWS = 9,
     GET_WORKFLOW_COLABORANTS = 10,
 
-    PROFILE = 11,
+    PROFILE = 12    ,
     ERROR = 250,
 };
 

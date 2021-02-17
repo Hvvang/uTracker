@@ -1,6 +1,4 @@
-#include "googleauth.h"
-#include "../../server/src/OAuth.h"
-
+#include "OAuth.h"
 
 #include <QString>
 #include <QDir>
@@ -56,12 +54,14 @@ GoogleAuth::GoogleAuth(QObject *parent) : QObject(parent) {
     });
 
 
-    QOAuthHttpServerReplyHandler* replyHandler = new QOAuthHttpServerReplyHandler(port, this);
+    QOAuthHttpServerReplyHandler* replyHandler = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, port, this);
     this->google->setReplyHandler(replyHandler);
+
+    connect(replyHandler, &QOAuthHttpServerReplyHandler::replyDataReceived, this, &GoogleAuth::response);
 
     connect(this->google, &QOAuth2AuthorizationCodeFlow::granted, [=](){
         const QString token = this->google->token();
-
+        qDebug() << "granted";
         emit gotToken("accesses_token", google->token());
         emit gotToken("refresh_token", google->refreshToken());
 
@@ -105,5 +105,6 @@ void GoogleAuth::refreshToken(const QString &token) {
     });
 }
 
-
-
+void GoogleAuth::response(const QByteArray &data) {
+    qDebug() << data;
+}

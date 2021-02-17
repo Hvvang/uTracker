@@ -55,20 +55,28 @@ public:
     };
 
     enum class RequestType {
-        AUTO_OAUTH = 0,
-        AUTO_AUTH = 1,
-        SIGN_UP = 2,
-        SIGN_IN = 3,
+        SIGN_UP = 0,
+        SIGN_IN = 1,
+        AUTO_AUTH = 2,
+        AUTO_OAUTH = 3,
         LOGOUT = 4,
         CREATE_WORKFLOW = 5,
         ARCHIVE_WORKFLOW = 6,
         UPDATE_WORKFLOW = 7,
         INVITE_CONTACT = 8,
-
         GET_WORKFLOWS = 9,
-        GET_WORKFLOW_COLABORANT = 10,
 
-        GET_PROFILE = 11,
+        GET_STATISTICS = 11,
+        GET_PROFILE = 12,
+        UPDATE_PROFILE = 13,
+        CREATE_LIST = 14,
+        REMOVE_LIST = 15,
+        CREATE_TASK = 16,
+        UPDATE_TASK = 17,
+        MOVE_TASK = 18,
+        REMOVE_TASK = 19,
+        GET_TASK_DATA = 20,
+        GET_WORKFLOW_COLABORANT = 21,
     };
 
     Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost, const quint16 port = 5000, QObject *parent = nullptr);

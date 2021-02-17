@@ -66,8 +66,9 @@ bool DataBase::isValidToken(const QString &token, int type) {
 
 void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &map) {
     QVariantMap result;
-    if (isValidToken(mx_hash("21453#gs8kFSdfD1F244iuSn1", "NazarDykyy@gmail.com"),
-                     map.value("type").toInt())) {
+
+//    if (isValidToken(mx_hash("21453#gs8kFSdfD1F244iuSn1", "NazarDykyy@gmail.com"),
+//                     map.value("type").toInt())) {
         switch (static_cast<RequestType>(type)) {
             case RequestType::AUTO_AUTH:
                 break;
@@ -143,11 +144,12 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             case RequestType::GET_TASK_DATA:
                 result = getTaskData(map.value("taskId").toInt());
         }
-    } else {
-        result["type"] = map.value("type").toInt();
-        result["error"] = 1;
-        result["message"] = "Invalid token";
-    }
+//    }
+//    else {
+//        result["type"] = map.value("type").toInt();
+//        result["error"] = 1;
+//        result["message"] = "Invalid token";
+//    }
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
@@ -378,7 +380,7 @@ QVariantMap DataBase::createList(const QString &title, int workflowId) {
 }
 
 QVariantMap DataBase::removeList(int listId) {
-    Q_UNUSED(listId);
+    Q_UNUSED(listId)    ;
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::REMOVE_LIST);
     // map["message"] = "List removed";
