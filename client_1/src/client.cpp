@@ -4,7 +4,7 @@
 #include "client.h"
 #include "loggingcategories.h"
 
-Client::Client(QObject* parent) :QObject(parent)
+Client::Client(char* host, int port, QObject* parent) :QObject(parent), m_host(host), m_port(port)
 {
     m_ssl_socket = std::make_shared<QSslSocket>();
     m_request = std::make_unique<AbstractRequest>(m_ssl_socket);
@@ -28,18 +28,18 @@ Client::Client(QObject* parent) :QObject(parent)
     connect(m_ssl_socket.get(), SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
     configSSL();
 
-    QFile keyFile("./CA/client.key");
-    keyFile.open(QIODevice::ReadOnly);
-    QSslKey key = QSslKey(keyFile.readAll(), QSsl::Rsa);
-    keyFile.close();
-    QFile certFile("./CA/client.pem");
-    certFile.open(QIODevice::ReadOnly);
-    QSslCertificate cer = QSslCertificate(certFile.readAll());
-    certFile.close();
+//    QFile keyFile("./CA/client.key");
+//    keyFile.open(QIODevice::ReadOnly);
+//    QSslKey key = QSslKey(keyFile.readAll(), QSsl::Rsa);
+//    keyFile.close();
+//    QFile certFile("./CA/client.pem");
+//    certFile.open(QIODevice::ReadOnly);
+//    QSslCertificate cer = QSslCertificate(certFile.readAll());
+//    certFile.close();
 //    m_ssl_socket->setPrivateKey(key);
 //    m_ssl_socket->setLocalCertificate(cer);
 //    m_ssl_socket->setPeerVerifyMode(QSslSocket::VerifyNone);
-    qDebug(logDebug()) << "clien constructor end";
+    qDebug(logDebug()) << "client constructor end";
 }
 
 Client::~Client()
@@ -48,15 +48,18 @@ Client::~Client()
     m_ssl_socket->abort();
 }
 
-void Client::doConnect(char* host, int port)
+void Client::doConnect()
 {
-    qDebug(logDebug()) << "doConnect to host " << host;
-    m_ssl_socket->connectToHostEncrypted(host, port);  // start a secure connection, starts an immediate SSL handshake
+    qDebug(logDebug()) << "doConnect to host " << m_host;
+    m_ssl_socket->connectToHostEncrypted(m_host, m_port);
+    // start a secure connection, starts an immediate SSL handshake
     // once the connection has been established.
 
+    //  which will block the calling thread until an encrypted connection has been established.
     if (m_ssl_socket->waitForEncrypted(50000)) {
-        m_ssl_socket->write("new client Suceeded");
-        qDebug() << " connected to server ";
+
+        m_ssl_socket->write("new client connected \n");
+        qDebug() << " connected to server mode =" << m_ssl_socket->mode();
     }
     else {
         qDebug(logDebug()) << "error connection to server :" << m_ssl_socket->errorString();
@@ -94,7 +97,7 @@ bool Client::configSSL()
     QSslCertificate ssl_cert(cert, QSsl::Pem);
     config.setLocalCertificate(ssl_cert);
     config.setPrivateKey(ssl_key);
-//    config.setProtocol(QSsl::TlsV1_2);
+    config.setProtocol(QSsl::TlsV1_2);
     config.setPeerVerifyMode(QSslSocket::VerifyNone);
     m_ssl_socket->setSslConfiguration(config);
     return true;
@@ -128,10 +131,8 @@ void Client::testRequestLoop()
     m_request->updateProfile(1, "Nazar", "Dykyy");
 }
 
-
-
-
-void Client::parseJSON(QJsonDocument itemDoc) {
+void Client::parseJSON(QJsonDocument itemDoc)
+{
     QJsonObject itemObject = itemDoc.object();
 
     QVector<std::shared_ptr<AbstractResponseHandler>> funcList;
@@ -172,11 +173,13 @@ void Client::disconnected()
 {
     qDebug(logDebug()) << "server::disconnected";
 //    reconnect();
-//    this->deleteLater();
+    this->deleteLater();
 }
 
 void Client::readyRead()
 {
+    qDebug(logDebug()) << "Client::readyRead";
+//    qDebug() << m_ssl_socket->readAll();
     while (!m_ssl_socket->atEnd()) {
         QByteArray size = m_ssl_socket->readLine();
         QJsonDocument itemDoc = QJsonDocument::fromJson(m_ssl_socket->read(size.toInt()));
@@ -187,7 +190,9 @@ void Client::readyRead()
 
 void Client::connectSuccess()
 {
-    qInfo(logInfo()) << "handshake success, state = " << m_ssl_socket->state();
+    qInfo(logInfo()) << " signal encrypted - handshake success, state = " << m_ssl_socket->state();
+//    qInfo(logInfo()) << m_ssl_socket->;
+
     m_ssl_socket->write("send from client !!!");
 }
 

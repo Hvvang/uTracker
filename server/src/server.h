@@ -21,15 +21,22 @@ protected:
 
 public slots:
     void deleteConnection(qintptr id);
-    void setNewTask(Connection* ptr);
+//    void setNewTask(Connection* ptr);
+    void link();
+    void connectSuccess();
+    void setNewTask2(Connection* ptr);
 
 private:
     quint16 m_port;
     QMutex* m_mutex;
+    QSslKey key;
+    QSslCertificate cert;
     QThreadPool* m_pool;
+
     QVector<Connection*> m_connections;
     QMap<quint16, Connection*> m_map_connections;
     std::shared_ptr<QSslConfiguration> m_config;
 
     bool setSsslConfig();
+    bool setSocket(std::shared_ptr<QSslSocket> m_ssl_socket);
 };

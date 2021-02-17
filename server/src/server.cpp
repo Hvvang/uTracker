@@ -8,7 +8,9 @@ Server::Server(quint16 _port, QObject* parent) :QTcpServer(parent), m_port(_port
     m_mutex = new QMutex();
     m_pool = new QThreadPool(this);
     m_pool->setMaxThreadCount(MAX_THREAD_COUNT);
-    setSsslConfig();
+    if (!setSsslConfig()) {
+        exit(1);
+    }
 }
 
 Server::~Server()
@@ -19,22 +21,34 @@ Server::~Server()
 
 bool Server::startServer()
 {
+    qInfo(logInfo()) << "Server::startServer";
     if (!listen(QHostAddress::LocalHost, m_port)) {
-//    if (!listen(QHostAddress("127.0.0.1"), m_port)) {
         qWarning(logWarning) << "Server did not start!";
         return false;
     }
-    qInfo(logInfo()) << "Server started!";
+    connect(this, &Server::newConnection, this, &Server::link);
     return true;
 }
 
 void Server::incomingConnection(qintptr socketDescriptor)
 {
     qInfo(logInfo()) << "new incomingConnection socketDescriptor = " << socketDescriptor;
-    Connection* newConnection = new Connection(socketDescriptor, m_config, this);
-    m_map_connections[socketDescriptor] = newConnection;
-    connect(newConnection, &Connection::disconnectSocket, this, &Server::deleteConnection);
-//    addPendingConnection(newConnection->getSocket().get());
+
+    std::shared_ptr<QSslSocket> sslSocket = std::make_shared<QSslSocket>();
+    if (sslSocket->setSocketDescriptor(socketDescriptor)) {
+        setSocket(sslSocket);
+
+        Connection* newConnection = new Connection(socketDescriptor, sslSocket);
+        connect(sslSocket.get(), &QSslSocket::encrypted, this, &Server::connectSuccess);
+        connect(newConnection, &Connection::disconnectSocket, this, &Server::deleteConnection);
+        connect(newConnection, &Connection::new_task, this, &Server::setNewTask2);
+        m_map_connections[socketDescriptor] = newConnection;
+        sslSocket->startServerEncryption();
+        addPendingConnection(sslSocket.get());
+    }
+    else {
+        qDebug(logDebug()) << "setSocketDescriptor  -  false";
+    }
 }
 
 void Server::deleteConnection(qintptr id)
@@ -43,20 +57,58 @@ void Server::deleteConnection(qintptr id)
     qDebug(logDebug()) << "remove id " << id;
 }
 
-void Server::setNewTask(Connection* ptr)
+void Server::link()
+{
+    qDebug(logDebug()) << "void Server::link";
+    QTcpSocket* clientSocket;
+
+    clientSocket = nextPendingConnection();
+    qDebug(logDebug()) << "nextPendingConnection = " << clientSocket->socketDescriptor();
+    auto connection = m_map_connections[clientSocket->socketDescriptor()];
+    connect(clientSocket, &QSslSocket::readyRead, connection, &Connection::read_from_socket);
+//    connect(clientSocket, &QTcpSocket::readyRead, clientSocket, &Connection::Read);
+//    connect(clientSocket, &QTcpSocket::disconnected, this, &SslServer::disconnected);
+}
+
+//void Server::setNewTask(Connection* ptr)
+//{
+//    qDebug(logDebug()) << "Server::setNewTask";
+//    Runnable* task = new Runnable(ptr);
+//    task->setAutoDelete(true);
+////    task->setMutex(m_mutex);
+//    task->setTask(ptr->getTask());
+//    m_pool->start(task);
+//}
+
+void Server::setNewTask2(Connection* ptr)
 {
     qDebug(logDebug()) << "Server::setNewTask";
     Runnable* task = new Runnable(ptr);
-
     task->setAutoDelete(true);
     task->setMutex(m_mutex);
     task->setTask(ptr->getTask());
     m_pool->start(task);
 }
 
+/*
+ * Apply config to income sockets
+ * */
+
+bool Server::setSocket(std::shared_ptr<QSslSocket> m_ssl_socket)
+{
+    m_ssl_socket->setSocketOption(QAbstractSocket::KeepAliveOption, true);
+    m_ssl_socket->setSslConfiguration(*m_config);
+    qDebug(logDebug) << "set setSslConfiguration true";
+    return true;
+}
+
+/*
+ * Create ssl config
+ * */
+
 bool Server::setSsslConfig()
 {
-    qDebug(logDebug()) << " setConfig";
+    qInfo(logInfo()) << " Server::setSsslConfig";
     QByteArray key;
     QByteArray cert;
     QByteArray root;
@@ -97,24 +149,14 @@ bool Server::setSsslConfig()
     config.setLocalCertificate(ssl_cert);
     config.setPrivateKey(ssl_key);
     config.addCaCertificate(root_cert);
-//        config.setProtocol(QSsl::TlsV1_2);
+    config.setProtocol(QSsl::TlsV1_2);
     config.setPeerVerifyMode(QSslSocket::VerifyPeer);
     m_config = std::make_shared<QSslConfiguration>(config);
     return true;
 }
 
-//
-//void Server::write()
-//{
-//    QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
-//    qDebug() << clientSocket->readAll();
-//    clientSocket->write("Server says Hello");
-//}
-//
-
-//void Server::disconnected()
-//{
-//    qDebug("Client Disconnected");
-//    QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
-//    clientSocket->deleteLater();
-//}
+void Server::connectSuccess()
+{
+    QSslSocket* clientSocket = qobject_cast<QSslSocket*>(sender());
+    qInfo(logInfo()) << " signal encrypted - handshake success, state = " << clientSocket->state();
+}

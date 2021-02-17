@@ -14,10 +14,10 @@
 class Client: public QObject {
     Q_OBJECT
 public:
-    explicit Client(QObject *parent = nullptr);
+    explicit Client(char* host, int port,QObject *parent = nullptr);
     ~Client() override;
 
-    void doConnect(char *host, int port);
+    void doConnect();
     void testConnect() const;
     void testRequestLoop();
     void parseJSON(QJsonDocument itemDoc);
@@ -33,6 +33,8 @@ public slots:
 //    void socketSslErrors(const QList &list);
 
 private:
+    char* m_host;
+    quint16 m_port;
     std::shared_ptr<QSslSocket> m_ssl_socket;
     std::unique_ptr<AbstractRequest> m_request;
     std::shared_ptr<AbstractResponseHandler> m_signUp;

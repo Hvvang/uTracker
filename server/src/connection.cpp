@@ -5,23 +5,21 @@
 #include "loggingcategories.h"
 #include "database.h"
 
-Connection::Connection(qintptr socket_id, std::shared_ptr<QSslConfiguration> config, QObject* parent) :QObject(
-        parent), m_socket_id(socket_id), m_config(config)
+Connection::Connection(qintptr socket_id, std::shared_ptr<QSslSocket> ssl_socket, QObject* parent) :QObject(
+        parent), m_socket_id(socket_id), m_ssl_socket(ssl_socket)
 {
-    qDebug(logDebug()) << "Connection ";
-    m_ssl_socket = std::make_shared<QSslSocket>(this);
-    m_ssl_socket->setSocketOption(QAbstractSocket::KeepAliveOption, true);
-    setSocket();
-
-    QFile keyFile("./CA/server.key");
-    keyFile.open(QIODevice::ReadOnly);
-    key = QSslKey(keyFile.readAll(), QSsl::Rsa);
-    keyFile.close();
-    QFile certFile("./CA/server.pem");
-    certFile.open(QIODevice::ReadOnly);
-    cert = QSslCertificate(certFile.readAll());
-    certFile.close();
-
+    qDebug(logDebug()) << "Connection constructor";
+    connect(m_ssl_socket.get(), &QSslSocket::encrypted, this, &Connection::read_from_socket);
+//        connect(m_ssl_socket.get(), &QSslSocket::modeChanged, this, &Connection::modeChanged);
+//        connect(m_ssl_socket.get(), &QSslSocket::peerVerifyError, this, &Connection::printError);
+    connect(m_ssl_socket.get(), QOverload<const QList<QSslError>&>::of(&QSslSocket::sslErrors),
+            [=](const QList<QSslError>& errors) {
+              for (auto err : errors) {
+                  qDebug(logDebug()) << err.errorString();
+              }
+            });
+    connect(m_ssl_socket.get(), &QSslSocket::disconnected, this, &Connection::disconnected);
+    connect(this, &Connection::sendResponse, this, &Connection::write_to_socket);
 }
 
 Connection::~Connection()
@@ -29,57 +27,10 @@ Connection::~Connection()
 //    qobject_cast<Server *>(m_parent)->deleteConnection(this);
 }
 
-bool Connection::setSocket()
+void Connection::write_to_socket(const QByteArray& data)
 {
-    if (m_ssl_socket->setSocketDescriptor(m_socket_id)) {
-        qDebug(logDebug) << "setSocketDescriptor true, ssl mode " << m_ssl_socket->mode();
-        connect(m_ssl_socket.get(), &QSslSocket::encrypted, this, &Connection::Read);
-//        connect(m_ssl_socket.get(), &QSslSocket::modeChanged, this, &Connection::modeChanged);
-//        connect(m_ssl_socket.get(), &QSslSocket::peerVerifyError, this, &Connection::printError);
-        connect(m_ssl_socket.get(), QOverload<const QList<QSslError>&>::of(&QSslSocket::sslErrors),
-                [=](const QList<QSslError>& errors) {
-                  for (auto err : errors) {
-                      qDebug(logDebug()) << err.errorString();
-                  }
-                });
-        connect(m_ssl_socket.get(), &QSslSocket::disconnected, this, &Connection::disconnected);
-        connect(this, &Connection::sendResponse, this, &Connection::writeToSocket);
-//        connect(m_ssl_socket.get(), &QSslSocket::sslErrors, this, &QSslSocket::sslHandshakeErrors);
+    qDebug(logDebug()) << "Connection::writeToSocket";
 
-//        m_ssl_socket->setSslConfiguration(*m_config);
-
-        m_ssl_socket->setPrivateKey(key);
-        m_ssl_socket->setLocalCertificate(cert);
-        m_ssl_socket->addCaCertificates("./CA/root.pem");
-        m_ssl_socket->setPeerVerifyMode(QSslSocket::VerifyPeer);
-        m_ssl_socket->startServerEncryption();  // initiates the SSL handshake
-        printErrors(m_ssl_socket->sslHandshakeErrors());
-
-        qDebug(logDebug()) << "setSocket end,  socket mode =" << m_ssl_socket->mode();
-        return true;
-    }
-    else {
-        qDebug(logDebug) << "set Socket false";
-//        m_ssl_socket->close();
-        return false;
-    }
-
-}
-
-void Connection::printData()
-{
-
-    QByteArray array = m_ssl_socket->read(m_ssl_socket->bytesAvailable());
-    qDebug() << array;
-}
-
-QByteArray Connection::getTask() const
-{
-    return m_task;
-}
-
-void Connection::writeToSocket(const QByteArray& data)
-{
     QByteArray buffer;
     m_ssl_socket->write(buffer.setNum(data.size()));
     m_ssl_socket->write("\n" + data);
@@ -93,38 +44,37 @@ void Connection::disconnected()
 //    clientSocket->deleteLater();
 }
 
-void Connection::Read()
+void Connection::read_from_socket()
 {
-    qInfo(logInfo()) << "Read  from client";
+    /*
+     * need read all json, parse and send to task
+     */
+    qInfo(logInfo()) << " Connection::Read -  from client";
+
     while (!m_ssl_socket->atEnd()) {
-        qInfo(logInfo()) << "Read  from client  while ";
-//        QByteArray size = m_ssl_socket->readLine();
-//        m_task = m_ssl_socket->read(size.toInt());
-
-        QByteArray data = m_ssl_socket->readAll().data();
-//        qobject_cast<Server *>(m_parent)->setNewTask(this);
-//        qDebug() << m_ssl_socket->readAll().data();
+        QByteArray size = m_ssl_socket->readLine();
+        m_task = m_ssl_socket->read(size.toInt());
+        if (!m_task.isNull()) {
+            qDebug(logDebug()) << "new line \t\n" << m_task.toStdString().data();
+        }
     }
+    qDebug(logDebug()) << "====================";
+//    qobject_cast<Server *>(m_parent)->setNewTask(this);
+    emit new_task(this);
 
-//    while (m_ssl_socket->waitForReadyRead()) {
-//        QByteArray size = m_ssl_socket->readLine();
-//        m_task = m_ssl_socket->read(size.toInt());
-//        qobject_cast<Server*>(m_parent)->setNewTask(this);
-//        qDebug() << m_ssl_socket->readAll().data();
-//    }
-//    /*
-//    while (!m_ssl_socket->atEnd()) {
-//        QByteArray size = m_ssl_socket->readLine();
-
-//        QByteArray read_task = m_ssl_socket->read(size.toInt());
-//        qDebug(logDebug()) << read_task.toStdString();
-//        m_task = m_ssl_socket->read(size.toInt());
-//        qobject_cast<Server*>(m_parent)->setNewTask(this);
-//    }
-//    * /
+/*
+ * +++
+    while (clientSocket->canReadLine()) {
+//        qDebug(logDebug) << "read while";
+        char buf[1024];
+        qint64 lineLength = clientSocket->readLine(buf, sizeof(buf));
+        if (lineLength != -1) {
+           qDebug(logDebug()) << buf;
+        }
+*/
 }
 
-void Connection::printErrors(QList<QSslError> errors) const
+void Connection::print_errors(QList<QSslError> errors) const
 {
     qDebug(logDebug()) << "printErrors" << m_ssl_socket->errorString();
 
@@ -132,15 +82,15 @@ void Connection::printErrors(QList<QSslError> errors) const
         qDebug(logDebug()) << error.errorString() << "\n";
     }
 }
-void Connection::printError(const QSslError& error) const
+void Connection::print_error(const QSslError& error) const
 {
     qDebug(logDebug()) << "error peer " << error;
 }
-void Connection::modeChanged(QSslSocket::SslMode mode)
+void Connection::mode_changed(QSslSocket::SslMode mode)
 {
     qDebug(logDebug()) << "ssl mode  " << mode;
     m_ssl_socket->startServerEncryption();  // initiates the SSL handshake
-    printErrors(m_ssl_socket->sslHandshakeErrors());
+    print_errors(m_ssl_socket->sslHandshakeErrors());
 }
 
 //void Connection::displayCertificateInfo()

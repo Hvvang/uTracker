@@ -22,9 +22,9 @@ int main(int argc, char *argv[]) {
         qWarning(logWarning()) << "usage ./uTracker [ip] [port]";
         return 1;
     }
-    Client client;
-    client.doConnect(argv[1], QString(argv[2]).toInt());
-    client.testConnect();
+    Client client(argv[1], QString(argv[2]).toInt());
+    client.doConnect();
+//    client.testConnect();
     client.testRequestLoop();
     return a.exec();
 }

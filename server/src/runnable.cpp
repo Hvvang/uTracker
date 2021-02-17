@@ -1,7 +1,11 @@
 #include "runnable.h"
 #include "database.h"
+#include "loggingcategories.h"
 
 Runnable::Runnable(Connection *socket) {
+
+    qDebug(logDebug()) << "Runnable";
+
     m_ptr = socket;
 
     m_signIn = std::make_shared<ToSignIn>(socket);
@@ -28,9 +32,9 @@ Runnable::Runnable(Connection *socket) {
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
     if (true) {
-        m_mutex->lock();
+//        m_mutex->lock();
         //qDebug() << "mutex locked";
-        m_mutex->unlock();
+//        m_mutex->unlock();
     }
     //else
     //    qDebug() << "mutex unlocked";
@@ -80,6 +84,7 @@ void Runnable::setTask(QByteArray task) {
 }
 
 void Runnable::run() {
+    qDebug(logDebug) << "Runnable::run";
     QJsonDocument itemDoc = QJsonDocument::fromJson(m_task);
     if (!itemDoc.isNull())
         parseJSON(itemDoc);
