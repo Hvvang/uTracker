@@ -24,8 +24,8 @@ void ProfileDataResponseHandler::processResponse(const QByteArray &data) {
         QJsonObject rootObject = itemDoc.object();
 
         auto login = rootObject.value("login").toString();
-        auto name = rootObject.value("first_name").toString();
-        auto surname = rootObject.value("last_name").toString();
+        auto name = rootObject.value("name").toString();
+        auto surname = rootObject.value("surname").toString();
         m_client->setProfile(login, name, surname);
     }
 }

@@ -7,6 +7,7 @@ AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_conne
 
 void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
     qDebug() << " =========================== TYPE "<< itemObject["type"].toInt() << "=========================\n";
+    qDebug() << "Request is " << itemObject;
     if (isValid(itemObject)) {
         emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
     }

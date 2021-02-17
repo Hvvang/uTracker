@@ -223,7 +223,7 @@ void Client::createWorkflow(const QString &title, const QString &date) {
     json["token"] = m_accessesToken;
     json["title"] = title;
     json["deadline"] = date;
-    json["userId"] = m_id;
+    json["ownerId"] = m_id;
 
     QJsonDocument document;
     document.setObject(json);

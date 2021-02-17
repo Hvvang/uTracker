@@ -87,7 +87,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             case RequestType::LOG_OUT:
                 break;
             case RequestType::CREATE_WORKFLOW:
-                result = createWorkflow(map.value("userId").toInt(),
+                result = createWorkflow(map.value("ownerId").toInt(),
                                         map.value("title").toString(),
                                         map.value("deadline").toString());
                 break;
@@ -221,10 +221,10 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &dead
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
     if (res) {
-        auto workflowId = query.lastInsertId().toInt();
+        const auto &workflowId = query.lastInsertId().toInt();
         map["workflowId"] = workflowId;
-        // map["title"] = title;
-        // map["deadline"] = deadline;
+        map["title"] = title;
+        map["deadline"] = deadline;
         map["message"] = "Workflow has been created";
         query.exec(QString("INSERT INTO WF_connector (workflow_id, user_id) VALUES(%1, '%2');")
                        .arg(workflowId)
@@ -233,7 +233,6 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &dead
         map["error"] = 1;
         map["message"] = "Unfortunately, workflow hasn't been created";
     }
-
     return map;
 }
 
@@ -277,8 +276,6 @@ QVariantMap DataBase::getWorkflows(int user_id) {  // треба норм доп
     query.exec(QString("select workflow_id from WF_connector where user_id = %1;").arg(user_id));
     QMap<QString, QVariant> map;
 
-    //    qDebug() << "user_id is " << user_id;
-    //    qDebug() << query.value(0).toInt();
     map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     if (query.first()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
@@ -291,7 +288,6 @@ QVariantMap DataBase::getWorkflows(int user_id) {  // треба норм доп
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
         workflows.append(jsonObject);
     }
-
     if (!map.contains("error")) {
         map["workflows"] = workflows;
         map["message"] = "Workflows successfully have gotten";
