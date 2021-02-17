@@ -15,4 +15,5 @@ public:
     void processResponse(const QByteArray &data) override;
 
 };
+
 #endif //CLIENT_GETWORKFLOWCOLABORANTSRESPONSEHANDLER_H

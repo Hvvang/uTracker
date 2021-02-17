@@ -38,7 +38,6 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
 
             m_client->saveToken("auth_token", token);
             m_client->setId(id);
-            m_client->initWorkflowsModel();
             m_client->notification(handleMessage(data));
             m_client->getProfileData();
             m_client->getWorkflows();

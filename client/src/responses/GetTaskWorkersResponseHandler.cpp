@@ -1,19 +1,19 @@
 //
-// Created by Artem Shemidko on 14.02.2021.
+// Created by Artem Shemidko on 17.02.2021.
 //
 
-#include "GetWorkflowColaborantsResponseHandler.h"
+#include "GetTaskWorkersResponseHandler.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include "Client.h"
 
-GetWorkflowColaborantsResponseHandler::GetWorkflowColaborantsResponseHandler(QObject *parent)
+GetTaskWorkersResponseHandler::GetTaskWorkersResponseHandler(QObject *parent)
         : AbstractResponseHandler(parent) {
-    connect(this, &AbstractResponseHandler::getWorkflowColaborants, this,  &GetWorkflowColaborantsResponseHandler::processResponse);
+    connect(this, &AbstractResponseHandler::getTaskWorkers, this,  &GetTaskWorkersResponseHandler::processResponse);
 }
 
-void GetWorkflowColaborantsResponseHandler::processResponse(const QByteArray &data) {
+void GetTaskWorkersResponseHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " << static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
 
@@ -23,8 +23,9 @@ void GetWorkflowColaborantsResponseHandler::processResponse(const QByteArray &da
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
-        auto workflowId = rootObject["workflowId"].toInt();
-        auto colaborants = rootObject["colaborants"].toArray();
+        const auto &panelId = rootObject["panelId"].toInt();
+        const auto &taskId = rootObject["taskId"].toInt();
+        const auto &colaborants = rootObject["colaborants"].toArray();
 
         foreach(const QJsonValue &colaborant, colaborants) {
             QJsonObject obj = colaborant.toObject();
@@ -34,7 +35,7 @@ void GetWorkflowColaborantsResponseHandler::processResponse(const QByteArray &da
             c.name = obj["name"].toString();
             c.surname = obj["surname"].toString();
             c.icon = c.name.front();
-            m_client->addColaborant(workflowId, c);
+            m_client->addWorker(panelId, taskId, c);
         }
     }
 }

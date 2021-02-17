@@ -95,7 +95,6 @@ void WorkflowsModel::archive(int id) {
             removeRows(index, 1);
         }
     }
-
 }
 
 void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {

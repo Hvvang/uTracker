@@ -64,9 +64,18 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit updateWorkflow(data); break;
         case ResponseType::GET_WORKFLOW_COLABORANTS:
             emit getWorkflowColaborants(data); break;
-
-
+        case ResponseType::GET_WORKFLOW_PANELS:
+            emit getWorkflowPanels(data); break;
+        case ResponseType::GET_PANEL_TASKS:
+            emit getPanelTasks(data); break;
+        case ResponseType::GET_TASKS_WORKERS:
+            emit getTaskWorkers(data); break;
+        case ResponseType::GET_TASK_TAGS:
+            emit getTaskTags(data); break;
+        case ResponseType::ERROR:
+            break;
         default:
             qDebug() << "Emit some error in response!";
+
     }
 }

@@ -26,7 +26,7 @@ void CreateWorkflowResponseHandler::processResponse(const QByteArray &data) {
 
         Workflow w;
         w.id = rootObject["workflowId"].toInt();
-        w.progress = 100;
+        w.progress = rootObject["progress"].toInt();
         w.deadline = rootObject["deadline"].toString();
         w.title = rootObject["title"].toString();
         m_client->newWorkflow(w);

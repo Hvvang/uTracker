@@ -9,7 +9,7 @@ Item {
     id: root
     width: 250
     height: view.childrenRect.height + 30
-//    implicitHeight: view.childrenRect.height + 30
+
     property int colabsCounter: 0
 
     ColumnLayout {
@@ -34,7 +34,7 @@ Item {
 
                 Text {
                     id: icon
-                    text: qsTr("😄")
+                    text: headerIcon
                     font.pointSize: 17
                 }
                 Text {
@@ -64,7 +64,7 @@ Item {
                 Repeater {
                     id: rep
 //                    model: ["common", "feature", "high priority", "important"]
-                    model: 0
+                    model: tagsModel
 
                     Item {
                         id: tag
@@ -76,14 +76,14 @@ Item {
                             id: name
                             anchors.centerIn: parent
                             text: qsTr(modelData)
-                            color: "white"
+                            color: fontColor
                         }
 
                         Rectangle {
                             id: tagBack
                             anchors.fill: parent
                             radius: 7
-                            color: Material.color(Material.Pink)
+                            color: backColor
                         }
                     }
                 }
@@ -101,7 +101,7 @@ Item {
 
                 Repeater {
                     id: colabsRepeater
-                    model: root.colabsCounter
+                    model: WorkersModel
 
                     Row {
                         id: row
@@ -114,11 +114,11 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: qsTr("A")
+                                text: colaborantIcon
                             }
                         }
                         Text {
-                            text: qsTr("FirstName LastName")
+                            text: colaborantName + colaborantSurname
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }

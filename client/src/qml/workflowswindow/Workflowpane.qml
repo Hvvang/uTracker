@@ -145,7 +145,7 @@ Item {
         radius: 7
 
         onClicked: {
-            client.openWorkflow(model.index)
+            client.openWorkflow(flowId)
         }
     }
 
