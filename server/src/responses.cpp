@@ -7,10 +7,8 @@ AbstractRequestHandler::AbstractRequestHandler(Connection *connection) : m_conne
 
 void AbstractRequestHandler::responseSend(QJsonObject itemObject) {
     qDebug() << " =========================== TYPE "<< itemObject["type"].toInt() << "=========================\n";
-    qDebug() << "Request is " << itemObject;
-    if (isValid(itemObject)) {
+    if (isValid(itemObject))
         emit DataBase::getInstance()->getData(m_connection, itemObject["type"].toInt(), itemObject.toVariantMap());
-    }
 }
 
 ////auth sector//////////////////////////////////////////
@@ -77,8 +75,16 @@ ToUpdateWorkflow::ToUpdateWorkflow(Connection *socket) : AbstractRequestHandler(
 
 bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
-        && itemObject.contains("deadline")
-        && itemObject.contains("workflowId"))
+     && itemObject.contains("deadline")
+     && itemObject.contains("workflowId"))
+        return true;
+    return false;
+}
+toArchieveWorkflow::toArchieveWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool toArchieveWorkflow::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("token")
+     && itemObject.contains("userId"))
         return true;
     return false;
 }
@@ -86,7 +92,7 @@ bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
 ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
-    if (itemObject.contains("userId")
+    if (itemObject.contains("login")
         && itemObject.contains("workflowId"))
         return true;
     return false;
