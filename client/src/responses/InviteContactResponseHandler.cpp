@@ -24,7 +24,7 @@ void InviteContactResponseHandler::processResponse(const QByteArray &data) {
         c.id = rootObject.value("contactId").toInt();
         c.name = rootObject.value("first_name").toString();
         c.surname = rootObject.value("last_name").toString();
-        c.status = "Pending invite";
+//        c.status = "Pending invite";
         c.icon = c.name.front();
         m_client->addColaborant(workflowIndex, c);
     }

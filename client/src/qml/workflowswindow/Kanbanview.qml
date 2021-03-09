@@ -4,16 +4,13 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 import QtQml.Models 2.14
+import QtQuick.Controls.Styles 1.4
 
 import "../components"
 
 Item {
     id: root
     anchors.fill: parent
-//    anchors.margins: 10
-
-//    height: parent.height
-//    width: parent.width
 
     property int currentPanelIndexOnDragging: 0
 
@@ -27,6 +24,7 @@ Item {
         anchors.right: parent.right
         contentWidth: rowView.childrenRect.width + 250
         clip: true
+        interactive: false
 
         onContentXChanged: {
             panelsFlick.contentX = contentX
@@ -36,7 +34,7 @@ Item {
             id: headerView
 
             Repeater {
-
+                id: panelHeaderRepeater
                 model: KanbanModel
 
                 Item {
@@ -45,16 +43,28 @@ Item {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
 
+
                     Item {
                         id: header
                         width: panel.width
                         height: 44
-                        Text {
+                        TextField {
+                            id: panelheaderTitle
+                            width: parent.width
                             text: qsTr(model.panelTitle)
+                            horizontalAlignment: Text.AlignHCenter
                             font.weight: Font.DemiBold
                             font.pointSize: 15
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.verticalCenter: parent.verticalCenter
+
+                            selectByMouse: true
+
+                            background: Rectangle { color: "transparent"; }
+                            onFocusChanged: {
+                                if (!focus)
+                                    client.updatePanelTitle(panelId, text);
+                            }
                         }
                     }
                 }
@@ -73,6 +83,10 @@ Item {
                 font.weight: Font.Medium
 
                 radius: 6
+
+                onClicked: {
+                    client.newPanel(workflowId, panelHeaderRepeater.count)
+                }
             }
         }
     }
@@ -97,7 +111,6 @@ Item {
             id: rowView
 
             Repeater {
-
                 model: KanbanModel
 
                 ColumnLayout {
@@ -110,9 +123,7 @@ Item {
                     Repeater {
                         id: rep
                         model: DelegateModel {
-
                             id: visualModel
-
                             model: panelModel
 
                             delegate: DropArea {
@@ -185,12 +196,13 @@ Item {
 
                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                                        onClicked: {
-                                           if(mouse.button & Qt.RightButton) {
-                                               task.realModel.removeRows(task.index, 1);
-                                           }
-                                           if(mouse.button & Qt.LeftButton) {
-                                               task.colabsCounter += 1;
-                                           }
+                                           forceActiveFocus()
+//                                           if(mouse.button & Qt.RightButton) {
+//                                               task.realModel.removeRows(task.index, 1);
+//                                           }
+//                                           if(mouse.button & Qt.LeftButton) {
+//                                               task.colabsCounter += 1;
+//                                           }
                                        }
                                        onPressed: KanbanModel.setHeight(drag.target.height)
                                        onReleased: {
@@ -237,6 +249,10 @@ Item {
                         font.weight: Font.Medium
                         Layout.fillWidth: true
                         radius: 6
+
+                        onClicked: {
+                            client.newTask(panelId, visualModel.count)
+                        }
                     }
                 }
 

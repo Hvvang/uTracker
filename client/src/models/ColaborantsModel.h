@@ -8,7 +8,6 @@ struct Colaborant {
     QString name;
     QString surname;
     QChar icon;
-    QString status;
 };
 
 class ColaborantsModel : public QAbstractListModel
@@ -20,7 +19,6 @@ public:
         IconRole = Qt::UserRole,
         NameRole,
         SurnameRole,
-        StatusRole,
     };
     explicit ColaborantsModel(QObject *parent = nullptr);
 

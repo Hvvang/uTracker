@@ -180,7 +180,7 @@ Item {
         MenuItem {
             text: "\ue80b  Log out"
             font.family: "fontello"
-            onTriggered: back.clicked()
+            onTriggered: client.logout();
             height: 30
             width: parent.width
         }

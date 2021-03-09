@@ -24,12 +24,9 @@ void CreateWorkflowResponseHandler::processResponse(const QByteArray &data) {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
-        auto title = rootObject.value("title").toString();
-        auto deadline = rootObject.value("deadline").toString();
-        auto id = rootObject.value("workflowId").toInt();
         Workflow w;
         w.id = rootObject["workflowId"].toInt();
-        w.progress = 100;
+        w.progress = rootObject["progress"].toInt();
         w.deadline = rootObject["deadline"].toString();
         w.title = rootObject["title"].toString();
         m_client->newWorkflow(w);

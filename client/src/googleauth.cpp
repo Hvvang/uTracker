@@ -1,4 +1,6 @@
 #include "googleauth.h"
+#include "../../server/src/OAuth.h"
+
 
 #include <QString>
 #include <QDir>
@@ -17,7 +19,7 @@
 //#define REDIRECT_URI "urn:ietf:wg:oauth:2.0:oob"
 //#define REDIRECT_URI "http://localhost"
 //#define REDIRECT_URI "http://localhost:1234/"
-#define REDIRECT_URI "http://127.0.0.1:5000/"
+#define REDIRECT_URI "http://127.0.0.1:5050/"
 
 GoogleAuth::GoogleAuth(QObject *parent) : QObject(parent) {
     this->google = new QOAuth2AuthorizationCodeFlow(this);
@@ -102,4 +104,6 @@ void GoogleAuth::refreshToken(const QString &token) {
         qDebug() << reply->readAll();
     });
 }
+
+
 

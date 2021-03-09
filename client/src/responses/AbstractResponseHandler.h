@@ -8,18 +8,27 @@
 #include <QObject>
 
 enum class ResponseType {
-    AUTO_OAUTH = 0,
-    AUTO_AUTH = 1,
-    SIGN_UP = 2,
-    SIGN_IN = 3,
+    SIGN_UP = 0,
+    SIGN_IN = 1,
+    AUTO_OAUTH = 2,
+    AUTO_AUTH = 3,
     LOG_OUT = 4,
     CREATE_WORKFLOW = 5,
-    ARICHIVE_WORKFLOW = 6,
+    ARCHIVE_WORKFLOW = 6,
     INVITE_CONTACT = 7,
-
+    UPDATE_WORKFLOW = 8,
     GET_WORKFLOWS = 9,
 
-    PROFILE = 11,
+    PROFILE = 12,
+    GET_PANEL = 14,
+    REMOVE_LIST = 15,
+    GET_TASK = 16,
+    UPDATE_TASK = 17,
+    GET_WORKFLOW_COLABORANTS = 21,
+    GET_WORKFLOW_PANELS = 22,
+    GET_PANEL_TASKS = 23,
+    GET_TASKS_WORKERS = 24,
+    GET_TASK_TAGS = 25,
     ERROR = 250,
 };
 
@@ -42,14 +51,20 @@ public:
     virtual void processResponse(const QByteArray &data) = 0;
 
 signals:
-    void signUp(const QByteArray &);
-    void signIn(const QByteArray &);
-    void logOut(const QByteArray &);
+    void auth(const QByteArray &);
     void profile(const QByteArray &);
     void newWorkflow(const QByteArray &);
     void archiveWorkflow(const QByteArray &);
     void inviteContact(const QByteArray &);
     void getWorkflows(const QByteArray &);
+    void updateWorkflow(const QByteArray &);
+    void getWorkflowColaborants(const QByteArray &);
+    void getWorkflowPanels(const QByteArray &);
+    void getPanelTasks(const QByteArray &);
+    void getTaskWorkers(const QByteArray &);
+    void getTaskTags(const QByteArray &);
+    void getTask(const QByteArray &);
+    void getPanel(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);

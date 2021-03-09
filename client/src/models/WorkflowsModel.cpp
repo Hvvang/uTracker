@@ -1,6 +1,7 @@
 #include "WorkflowsModel.h"
 
 #include "qdebug.h"
+#include "Client.h"
 
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
@@ -27,6 +28,7 @@ QVariant WorkflowsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     switch(role) {
+        case IdRole: return m_data[index.row()].id;
         case DeadlineRole: return m_data[index.row()].deadline;
         case TitleRole: return m_data[index.row()].title;
         case ProgressRole: return m_data[index.row()].progress;
@@ -65,12 +67,14 @@ bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
     beginRemoveRows(parent, row, row + count - 1);
     delete m_data.at(row).colaborants;
     m_data.removeAt(row);
+    qDebug() << "removing";
     endRemoveRows();
 //    return true;
 }
 
 QHash<int, QByteArray> WorkflowsModel::roleNames() const {
     QHash<int, QByteArray> roles;
+    roles[IdRole] = "flowId";
     roles[DeadlineRole] = "flowDeadline";
     roles[TitleRole] = "flowTitle";
     roles[ProgressRole] = "flowProgress";
@@ -81,11 +85,16 @@ QHash<int, QByteArray> WorkflowsModel::roleNames() const {
 void WorkflowsModel::add(const Workflow &flow) {
     beginInsertRows(QModelIndex(), 0, 0);
     m_data.prepend(flow);
+    m_client->getWorkflowColaborants(flow.id);
     endInsertRows();
 }
 
-void WorkflowsModel::archive(int index) {
-    removeRows(index, 1);
+void WorkflowsModel::archive(int id) {
+    for (int index = 0; index < rowCount(); ++index) {
+        if (m_data[index].id == id) {
+            removeRows(index, 1);
+        }
+    }
 }
 
 void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
@@ -95,4 +104,18 @@ void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
             break;
         }
     }
+}
+
+void WorkflowsModel::updateWorkflow(const Workflow &workflow) {
+    for (int index = 0; index < rowCount(); ++index) {
+        if (m_data[index].id == workflow.id) {
+            m_data[index].title = workflow.title;
+            m_data[index].progress = workflow.progress;
+            m_data[index].deadline = workflow.deadline;
+
+            emit dataChanged(this->index(index, 0), this->index(index, 0));
+            break;
+        }
+    }
+
 }

@@ -3,11 +3,15 @@
 
 #include <QAbstractListModel>
 #include <QList>
+#include "ColaborantsModel.h"
 
 struct Task {
-    QString m_title = "";
-    QStringList m_tags = {""};
-    QStringList m_colaborants = {""};
+    int id;
+    int index;
+    QString title = "Untitled";
+    QStringList tags = {};
+//    TagsModel *tags = new TagsModel;
+    ColaborantsModel *workers = new ColaborantsModel;
     bool blank = false;
 };
 
@@ -17,6 +21,9 @@ class TaskPanelModel : public QAbstractListModel
 
 public:
     explicit TaskPanelModel(QObject *parent = nullptr);
+
+    void insert(const int &index, const Task &task);
+    Task &at(const int &id);
 
     enum {
         TitleRole = Qt::UserRole,
@@ -56,8 +63,6 @@ public:
 
 private:
     QList<Task> m_model;
-
-private:
     int blank_index = -1;
 };
 

@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME server_src)
 set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
 
-find_package(Qt5 COMPONENTS Core Widgets Network Sql REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Network NetworkAuth Sql REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 add_compile_options(
@@ -26,5 +26,6 @@ target_link_libraries(
         Qt5::Widgets
         Qt5::Network
         Qt5::Sql
+        Qt5::NetworkAuth
         OpenSSL::SSL
 )

@@ -67,6 +67,11 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             columnContainer.currentPage = menuBtn
+                            if (index == 0) {
+                                client.getWorkflows();
+                            } else if (index == 1) {
+                                client.getDailyPlan();
+                            }
                         }
                     }
                 }

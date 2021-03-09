@@ -1,3 +1,7 @@
+//
+// Created by Artem Shemidko on 16.02.2021.
+//
+
 #include "hash.h"
 
 static std::string to_hex(unsigned char s) {

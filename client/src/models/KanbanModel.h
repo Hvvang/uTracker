@@ -4,12 +4,13 @@
 #include <QAbstractListModel>
 #include <QList>
 
-#include "taskpanelmodel.h"
+#include "TaskpanelModel.h"
 
 struct Kanban {
     int index;
+    int id;
     QString title;
-    TaskPanelModel *model;
+    TaskPanelModel *model = new TaskPanelModel;
 };
 
 class KanbanModel : public QAbstractListModel
@@ -17,10 +18,18 @@ class KanbanModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit KanbanModel(QObject *parent = nullptr);
+    explicit KanbanModel(const int &workflowId, QObject *parent = nullptr);
+
+    int getWorkflow() const;
+    void setWorkflow(int workflowId);
+    void reset();
+    void insertPanel(const Kanban &kanban);
+
+    Kanban &at(int panelId);
 
     enum {
         TitleRole = Qt::UserRole,
+        IDRole,
         PanelModelRole,
         DragHeight,
     };
@@ -50,9 +59,9 @@ public:
     Q_INVOKABLE void removeBlank(int panelIndex);
     Q_INVOKABLE void swap(int sourcePanelIndex, int sourceTaskIndex, int targetPanelIndex, int targetTaskIndex);
 
-
 private:
     QList<Kanban> m_model;
+    int m_workflowId;
     int m_height;
 };
 Q_DECLARE_METATYPE(QModelIndex)

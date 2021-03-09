@@ -1,10 +1,11 @@
-#include "kanbanmodel.h"
+#include "KanbanModel.h"
 
 #include <qdebug.h>
+#include <Client.h>
 
-KanbanModel::KanbanModel(QObject *parent)
+KanbanModel::KanbanModel(const int &workflowId, QObject *parent)
     : QAbstractListModel(parent)
-{
+    , m_workflowId(workflowId) {
     Kanban k1;
     k1.index = m_model.size();
     k1.title = "ToDo";
@@ -41,6 +42,7 @@ QVariant KanbanModel::data(const QModelIndex &index, int role) const
     switch(role) {
         case TitleRole: return m_model[index.row()].title;
         case PanelModelRole: return QVariant::fromValue(m_model[index.row()].model);
+        case IDRole: return m_workflowId;
     }
     // FIXME: Implement me!
     return QVariant();
@@ -49,7 +51,6 @@ QVariant KanbanModel::data(const QModelIndex &index, int role) const
 bool KanbanModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
-        // FIXME: Implement me!
         emit dataChanged(index, index, QVector<int>() << role);
         return true;
     }
@@ -74,7 +75,6 @@ bool KanbanModel::insertRows(int row, int count, const QModelIndex &parent)
 bool KanbanModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
-
     // FIXME: Implement me!
     endRemoveRows();
 }
@@ -83,6 +83,7 @@ QHash<int, QByteArray> KanbanModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[TitleRole] = "panelTitle";
     roles[PanelModelRole] = "panelModel";
+    roles[IDRole] = "workflowId";
     roles[DragHeight] = "dragHeight";
     return roles;
 }
@@ -111,4 +112,38 @@ void KanbanModel::swap(int sourcePanelIndex, int taskIndex, int targetPanelIndex
     auto sourceTask = m_model.at(sourcePanelIndex).model->getTask(taskIndex);
     m_model.at(targetPanelIndex).model->setTask(targetTaskIndex, sourceTask);
 
+}
+
+int KanbanModel::getWorkflow() const {
+    return m_workflowId;
+}
+
+void KanbanModel::setWorkflow(int workflowId) {
+    m_workflowId = workflowId;
+}
+
+void KanbanModel::reset() {
+    beginResetModel();
+    for (auto &it : m_model) {
+        delete it.model;
+    }
+    m_model.clear();
+    qDebug() << m_model.size();
+    endResetModel();
+}
+
+void KanbanModel::insertPanel(const Kanban &kanban) {
+    const auto &index = kanban.index;
+    beginInsertRows(QModelIndex(), index, index);
+    m_model.insert(index, kanban);
+    m_client->getPanelTasks(kanban.id);
+    endInsertRows();
+}
+
+Kanban &KanbanModel::at(int panelId) {
+    foreach(auto &panel, m_model) {
+        if (panel.id == panelId) {
+            return const_cast<Kanban &>(panel);
+        }
+    }
 }

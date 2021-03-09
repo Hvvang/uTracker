@@ -20,7 +20,8 @@ class WorkflowsModel : public QAbstractListModel
 
 public:
     enum {
-        DeadlineRole = Qt::UserRole,
+        IdRole = Qt::UserRole,
+        DeadlineRole,
         TitleRole,
         ProgressRole,
         ColaborantsRole,
@@ -50,6 +51,7 @@ public:
     Q_INVOKABLE void archive(int index);
 
     void add(const Workflow &flow);
+    void updateWorkflow(const Workflow &flow);
     void addColaborant(quint64 index, const Colaborant &contact);
 
 private:

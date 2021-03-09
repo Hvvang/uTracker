@@ -102,12 +102,12 @@
 <context>
     <name>Kanbanview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="71"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="81"/>
         <source>New Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="235"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="247"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>
@@ -159,45 +159,30 @@
 <context>
     <name>Taskview</name>
     <message>
-        <location filename="../src/qml/components/Taskview.qml" line="37"/>
-        <source>😄</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/Taskview.qml" line="117"/>
-        <source>A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/Taskview.qml" line="121"/>
-        <source>FirstName LastName</source>
+        <location filename="../src/qml/workflowswindow/Taskview.qml" line="112"/>
+        <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>WorkflowDialog</name>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="38"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="53"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="80"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="95"/>
         <source>Chose deadline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="101"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="116"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="131"/>
-        <source>Create a workflow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="166"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="182"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>

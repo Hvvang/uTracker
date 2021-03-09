@@ -4,12 +4,13 @@
 #include <QQmlContext>
 
 #include "Client.h"
-#include "kanbanmodel.h"
+#include "src/models/KanbanModel.h"
 
 void init_fontBase() {
     QFontDatabase fontDatabase;
     if (fontDatabase.addApplicationFont(":/fonts/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
+
 }
 
 int main(int argc, char *argv[])
@@ -28,12 +29,11 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
 
     Client client(&engine);
-//    KanbanModel kanban;
-//
-//    engine.rootContext()->setContextProperty("KanbanModel", &kanban);
     engine.rootContext()->setContextProperty("client", &client);
 
-    engine.load(url);
+//    KanbanModel *m_kanban = new KanbanModel(1);
+//    engine.rootContext()->setContextProperty("KanbanModel", m_kanban);
 
+    engine.load(url);
     return app.exec();
 }

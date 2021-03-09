@@ -9,26 +9,15 @@
 #include <QJsonDocument>
 
 #include "googleauth.h"
-#include "kanbanmodel.h"
-
-#include "AuthorisationResponseHandler.h"
-#include "ProfileDataResponseHandler.h"
-#include "CreateWorkflowResponseHandler.h"
-#include "ArchiveWorkflowResponseHandler.h"
-#include "InviteContactResponseHandler.h"
-#include "GetWorkflowsResponseHandler.h"
+#include "models/KanbanModel.h"
 
 Client* Client::m_instance = nullptr;
 
 Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
     : QObject(parent)
-    , m_engine(engine)
-    , m_workflows(new WorkflowsModel(this)) {
-
-    m_engine->rootContext()->setContextProperty("WorkflowsModel", m_workflows);
+    , m_engine(engine) {
 
     m_socket.connectToHost(host, port);
-
     connect(&m_socket, &QTcpSocket::connected, this, [=]{
         qDebug() << "Client successfully connected to server.";
 
@@ -38,7 +27,9 @@ Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const qu
 
         connect(&m_socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
         connect(&m_socket, &QTcpSocket::readyRead, this, &Client::readyRead);
-        connect(&m_socket, &QTcpSocket::disconnected, this, []{
+        connect(&m_socket, &QTcpSocket::disconnected, this, [=] {
+            reject();
+            deInitResponseHandlers();
             qDebug() << "disconnected...";
         });
 
@@ -65,27 +56,45 @@ void Client::readyRead() {
 
             int responseType;
             if (rootObject.contains("type")) {
-                responseType = rootObject.value("type").toInt();
+                emit handled(data);
             } else {
                 return;
             }
-            qDebug() << data;
-            emit handled(data);
         }
     }
 }
 
-void Client::deinitResponseHandlers() {
+void Client::deInitResponseHandlers() {
+    delete m_authHandler;
+    delete m_profileHandler;
+    delete m_createWorkflowHandler;
+    delete m_archiveWorkflowHandler;
+    delete m_inviteContactResponseHandler;
+    delete m_getWorkflowsResponseHandler;
+    delete m_editWorkflowResponseHandler;
+    delete m_getWorkflowColaborantsResponseHandler;
+    delete m_getWorkflowPanelsResponseHandler;
+    delete m_getPanelTasksResponseHandler;
+    delete m_getTaskWorkersResponseHandler;
+    delete m_getTagsResponseHandler;
+
 }
 
 void Client::initResponseHandlers() {
-    auto authHandler = new AuthorisationResponseHandler(this);
-    auto profileHandler = new ProfileDataResponseHandler(this);
-    auto createWorkflowHandler = new CreateWorkflowResponseHandler(this);
-    auto archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
-    auto inviteContactResponseHandler = new InviteContactResponseHandler(this);
-    auto getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
-    // memory leak hear
+    m_authHandler = new AuthorisationResponseHandler(this);
+    m_profileHandler = new ProfileDataResponseHandler(this);
+    m_createWorkflowHandler = new CreateWorkflowResponseHandler(this);
+    m_archiveWorkflowHandler = new ArchiveWorkflowResponseHandler(this);
+    m_inviteContactResponseHandler = new InviteContactResponseHandler(this);
+    m_getWorkflowsResponseHandler = new GetWorkflowsResponseHandler(this);
+    m_editWorkflowResponseHandler = new EditWorkflowResponseHandler(this);
+    m_getWorkflowColaborantsResponseHandler = new GetWorkflowColaborantsResponseHandler(this);
+    m_getWorkflowPanelsResponseHandler = new GetWorkflowPanelsResponseHandler(this);
+    m_getPanelTasksResponseHandler = new GetPanelTasksResponseHandler(this);
+    m_getTaskWorkersResponseHandler = new GetTaskWorkersResponseHandler(this);
+    m_getTagsResponseHandler = new GetTagsResponseHandler(this);
+    m_getTaskResponseHandler = new GetTaskResponseHandler(this);
+    m_getPanelResponseHandler = new GetPanelResponseHandler(this);
 }
 
 void Client::send(const QString &data) {
@@ -125,6 +134,13 @@ void Client::setProfile(const QString &login, const QString &name, const QString
 
 void Client::setId(quint64 id) {
     m_id = id;
+}
+
+QChar Client::nameFirstLetter() {
+    if (!m_profile.name.isEmpty()) {
+        return m_profile.name.front();
+    }
+    return QChar();
 }
 
 void Client::saveToken(const QString &type, const QString &value) {
@@ -204,18 +220,31 @@ void Client::registrate(const QString &email, const QString &password,
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
-void Client::openWorkflow(int index) {
-//    KanbanModel kanban(this);
-//
-//    m_engine->rootContext()->setContextProperty("KanbanModel", &kanban);
+void Client::openWorkflow(int workflowId) {
+    if (updateKanbanModelIfNeeded(workflowId)) {
+        QJsonObject json;
+
+        json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOW_PANELS);
+        json["token"] = m_accessesToken;
+        json["workflowId"] = workflowId;
+
+        QJsonDocument document;
+        document.setObject(json);
+        emit request(document.toJson(QJsonDocument::Compact));
+    }
     emit switchMenu("qrc:/qml/workflowswindow/Kanbanview.qml");
 }
 
-QChar Client::nameFirstLetter() {
-    if (!m_profile.name.isEmpty()) {
-        return m_profile.name.front();
-    }
-    return QChar();
+void Client::getPanelTasks(int panelId) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::GET_PANEL_TASKS);
+    json["token"] = m_accessesToken;
+    json["panelId"] = panelId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
 }
 
 void Client::createWorkflow(const QString &title, const QString &date) {
@@ -225,7 +254,37 @@ void Client::createWorkflow(const QString &title, const QString &date) {
     json["token"] = m_accessesToken;
     json["title"] = title;
     json["deadline"] = date;
-    json["userId"] = m_id;
+    json["ownerId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::newTask(const int &panelId, const int &taskIndex) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::CREATE_TASK);
+    json["token"] = m_accessesToken;
+    json["listId"] = panelId;
+    json["taskIndex"] = taskIndex;
+    json["taskTitle"] = "Untitled";
+    json["creatorId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::newPanel(const int &workflowId, const int &panelIndex) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::CREATE_LIST);
+    json["token"] = m_accessesToken;
+    json["workflowId"] = workflowId;
+    json["listIndex"] = panelIndex;
+    json["title"] = "Untitled";
+    json["creatorId"] = m_id;
 
     QJsonDocument document;
     document.setObject(json);
@@ -257,6 +316,75 @@ void Client::inviteContact(const QString &contact, int index) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::getWorkflows() {
+    if (!m_workflows) {
+        QJsonObject json;
+
+        json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOWS);
+        json["token"] = m_accessesToken;
+        json["userId"] = m_id;
+
+        QJsonDocument document;
+        document.setObject(json);
+        initWorkflowsModel();
+        emit request(document.toJson(QJsonDocument::Compact));
+    }
+    emit switchMenu("qrc:/qml/workflowswindow/Workflowsview.qml");
+}
+
+void Client::editWorkflow(int id, const QString &title, const QString &date) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::UPDATE_WORKFLOW);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+    json["workflowId"] = id;
+    json["title"] = title;
+    json["deadline"] = date;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::getWorkflowColaborants(int workflowId) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOW_COLABORANT);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+    json["workflowId"] = workflowId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::getTaskWorkers(const int &taskId) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::GET_TASK_WORKERS);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+    json["taskId"] = taskId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::logout() {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::LOGOUT);
+    json["token"] = m_accessesToken;
+    json["userId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::newWorkflow(const Workflow &flow) {
     m_workflows->add(flow);
 }
@@ -269,17 +397,65 @@ void Client::addColaborant(quint64 flowIndex, const Colaborant &contact) {
     m_workflows->addColaborant(flowIndex, contact);
 }
 
-void Client::getWorkflows() {
-    QJsonObject json;
-
-    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOWS);
-    json["token"] = m_accessesToken;
-    json["userId"] = m_id;
-
-    QJsonDocument document;
-    document.setObject(json);
-    emit request(document.toJson(QJsonDocument::Compact));
+void Client::updateWorkflow(const Workflow &flow) {
+    m_workflows->updateWorkflow(flow);
 }
+
+void Client::reject() {
+    if (m_workflows) {
+        delete m_workflows;
+        m_workflows = nullptr;
+    }
+    if (m_kanban) {
+        delete m_kanban;
+        m_kanban = nullptr;
+    }
+}
+
+void Client::initWorkflowsModel() {
+    if (!m_workflows) {
+        m_workflows = new WorkflowsModel(this);
+        m_engine->rootContext()->setContextProperty("WorkflowsModel", m_workflows);
+    }
+}
+
+void Client::addPanel(const int &workflowId, const Kanban &kanban) {
+    if (m_kanban && m_kanban->getWorkflow() == workflowId) {
+        m_kanban->insertPanel(kanban);
+    }
+}
+
+bool Client::updateKanbanModelIfNeeded(int workflowId) {
+    if (!m_kanban) {
+        m_kanban = new KanbanModel(workflowId, this);
+        m_engine->rootContext()->setContextProperty("KanbanModel", m_kanban);
+        return true;
+    }
+    if (m_kanban->getWorkflow() != workflowId) {
+        m_kanban->reset();
+        m_kanban->setWorkflow(workflowId);
+        return true;
+    }
+    return false;
+}
+
+void Client::addTask(const int &panelId, const Task &task) {
+    m_kanban->at(panelId).model->insert(task.index, task);
+}
+
+void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
+    m_kanban->at(panelId).model->at(taskId).workers->add(worker);
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

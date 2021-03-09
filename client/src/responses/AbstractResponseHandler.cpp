@@ -40,23 +40,47 @@ ResponseType AbstractResponseHandler::type(const QByteArray &data) {
 
 void AbstractResponseHandler::mediator(const QByteArray &data) {
     switch (type(data)) {
+        case ResponseType::AUTO_OAUTH:
+            emit auth(data); break;
+        case ResponseType::AUTO_AUTH:
+            emit auth(data); break;
         case ResponseType::SIGN_UP:
-            emit signUp(data); break;
+            emit auth(data); break;
         case ResponseType::SIGN_IN:
-            emit signIn(data); break;
+            emit auth(data); break;
         case ResponseType::LOG_OUT:
-            emit logOut(data); break;
+            emit auth(data); break;
         case ResponseType::PROFILE:
             emit profile(data); break;
         case ResponseType::CREATE_WORKFLOW:
             emit newWorkflow(data); break;
-        case ResponseType::ARICHIVE_WORKFLOW:
+        case ResponseType::ARCHIVE_WORKFLOW:
             emit archiveWorkflow(data); break;
         case ResponseType::INVITE_CONTACT:
             emit inviteContact(data); break;
         case ResponseType::GET_WORKFLOWS:
             emit getWorkflows(data); break;
+        case ResponseType::UPDATE_WORKFLOW:
+            emit updateWorkflow(data); break;
+        case ResponseType::GET_WORKFLOW_COLABORANTS:
+            emit getWorkflowColaborants(data); break;
+        case ResponseType::GET_WORKFLOW_PANELS:
+            emit getWorkflowPanels(data); break;
+        case ResponseType::GET_PANEL_TASKS:
+            emit getPanelTasks(data); break;
+        case ResponseType::GET_TASKS_WORKERS:
+            emit getTaskWorkers(data); break;
+        case ResponseType::GET_TASK_TAGS:
+            emit getTaskTags(data); break;
+        case ResponseType::GET_TASK:
+            emit getTask(data); break;
+        case ResponseType::GET_PANEL:
+            emit getPanel(data); break;
+        case ResponseType::ERROR:
+            break;
         default:
             qDebug() << "Emit some error in response!";
+
+
     }
 }

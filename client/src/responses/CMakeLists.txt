@@ -7,6 +7,15 @@ set(SOURCES
         ArchiveWorkflowResponseHandler.cpp
         InviteContactResponseHandler.cpp
         GetWorkflowsResponseHandler.cpp
+        EditWorkflowResponseHandler.cpp
+        GetWorkflowColaborantsResponseHandler.cpp
+        GetWorkflowPanelsResponseHandler.cpp
+        GetPanelTasksResponseHandler.cpp
+        GetTaskWorkersResponseHandler.cpp
+        GetTagsResponseHandler.cpp
+        EditPanelTitleResponseHandler.cpp
+        GetTaskResponseHandler.cpp
+        GetPanelResponseHandler.cpp
         )
 set(HEADERS
         AbstractResponseHandler.h
@@ -16,7 +25,15 @@ set(HEADERS
         ArchiveWorkflowResponseHandler.h
         InviteContactResponseHandler.h
         GetWorkflowsResponseHandler.h
-        )
+        EditWorkflowResponseHandler.h
+        GetWorkflowColaborantsResponseHandler.h
+        GetWorkflowPanelsResponseHandler.h
+        GetPanelTasksResponseHandler.h
+        GetTaskWorkersResponseHandler.h
+        GetTagsResponseHandler.h
+        EditPanelTitleResponseHandler.h
+        GetTaskResponseHandler.h
+        GetPanelResponseHandler.h)
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
 
