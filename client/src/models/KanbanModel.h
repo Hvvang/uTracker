@@ -29,6 +29,7 @@ public:
 
     enum {
         TitleRole = Qt::UserRole,
+        IDRole,
         PanelModelRole,
         DragHeight,
     };

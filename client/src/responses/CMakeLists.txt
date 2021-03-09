@@ -13,6 +13,9 @@ set(SOURCES
         GetPanelTasksResponseHandler.cpp
         GetTaskWorkersResponseHandler.cpp
         GetTagsResponseHandler.cpp
+        EditPanelTitleResponseHandler.cpp
+        GetTaskResponseHandler.cpp
+        GetPanelResponseHandler.cpp
         )
 set(HEADERS
         AbstractResponseHandler.h
@@ -28,7 +31,9 @@ set(HEADERS
         GetPanelTasksResponseHandler.h
         GetTaskWorkersResponseHandler.h
         GetTagsResponseHandler.h
-        )
+        EditPanelTitleResponseHandler.h
+        GetTaskResponseHandler.h
+        GetPanelResponseHandler.h)
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
 

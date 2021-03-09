@@ -14,12 +14,16 @@ enum class ResponseType {
     AUTO_AUTH = 3,
     LOG_OUT = 4,
     CREATE_WORKFLOW = 5,
-    ARICHIVE_WORKFLOW = 6,
+    ARCHIVE_WORKFLOW = 6,
     INVITE_CONTACT = 7,
     UPDATE_WORKFLOW = 8,
     GET_WORKFLOWS = 9,
 
     PROFILE = 12,
+    GET_PANEL = 14,
+    REMOVE_LIST = 15,
+    GET_TASK = 16,
+    UPDATE_TASK = 17,
     GET_WORKFLOW_COLABORANTS = 21,
     GET_WORKFLOW_PANELS = 22,
     GET_PANEL_TASKS = 23,
@@ -59,6 +63,8 @@ signals:
     void getPanelTasks(const QByteArray &);
     void getTaskWorkers(const QByteArray &);
     void getTaskTags(const QByteArray &);
+    void getTask(const QByteArray &);
+    void getPanel(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);

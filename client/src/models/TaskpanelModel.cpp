@@ -43,7 +43,7 @@ QVariant TaskPanelModel::data(const QModelIndex &index, int role) const
 //        case TagsRole: return QVariant::fromValue(m_model[index.row()].tags);
         case ColabsRole: return QVariant::fromValue(m_model[index.row()].workers);
         case BlankRole: return m_model[index.row()].blank;
-//        case IconRole: return m_model[index.row()].m_colaborants;
+        case IconRole: return "";
 //        case PanelModelRole: return m_model[index.row()].model;
     }
     // FIXME: Implement me!

@@ -32,7 +32,8 @@
 #include "GetPanelTasksResponseHandler.h"
 #include "GetTaskWorkersResponseHandler.h"
 #include "GetTagsResponseHandler.h"
-
+#include "GetTaskResponseHandler.h"
+#include "GetPanelResponseHandler.h"
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
@@ -85,6 +86,7 @@ public:
         GET_WORKFLOW_PANELS = 22,
         GET_PANEL_TASKS = 23,
         GET_TASK_WORKERS = 24,
+
     };
 
     Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost, const quint16 port = 5000, QObject *parent = nullptr);
@@ -113,6 +115,7 @@ public:
     void getTaskWorkers(const int &taskId);
     void getPanelTasks(int panelId);
     void addPanel(const int &workflowId, const Kanban &kanban);
+
     void addTask(const int &panelId, const Task &task);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
     void reject();
@@ -126,7 +129,10 @@ public:
     Q_INVOKABLE void archiveWorkflow(int index);
     Q_INVOKABLE void inviteContact(const QString &contact, int index);
     Q_INVOKABLE void editWorkflow(int index, const QString &title, const QString &date);
+    Q_INVOKABLE void newTask(const int &panelId, const int &taskIndex);
+    Q_INVOKABLE void newPanel(const int &workflowId, const int &panelIndex);
     Q_INVOKABLE void logout();
+
 
 protected:
     static Client* m_instance;
@@ -175,6 +181,8 @@ private:
     GetPanelTasksResponseHandler *m_getPanelTasksResponseHandler{nullptr};
     GetTaskWorkersResponseHandler *m_getTaskWorkersResponseHandler{nullptr};
     GetTagsResponseHandler *m_getTagsResponseHandler{nullptr};
+    GetTaskResponseHandler *m_getTaskResponseHandler{nullptr};
+    GetPanelResponseHandler *m_getPanelResponseHandler{nullptr};
 
 };
 

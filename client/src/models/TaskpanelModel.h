@@ -8,8 +8,8 @@
 struct Task {
     int id;
     int index;
-    QString title = "";
-    QStringList tags = {""};
+    QString title = "Untitled";
+    QStringList tags = {};
 //    TagsModel *tags = new TagsModel;
     ColaborantsModel *workers = new ColaborantsModel;
     bool blank = false;

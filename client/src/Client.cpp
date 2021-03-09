@@ -93,7 +93,8 @@ void Client::initResponseHandlers() {
     m_getPanelTasksResponseHandler = new GetPanelTasksResponseHandler(this);
     m_getTaskWorkersResponseHandler = new GetTaskWorkersResponseHandler(this);
     m_getTagsResponseHandler = new GetTagsResponseHandler(this);
-
+    m_getTaskResponseHandler = new GetTaskResponseHandler(this);
+    m_getPanelResponseHandler = new GetPanelResponseHandler(this);
 }
 
 void Client::send(const QString &data) {
@@ -260,6 +261,36 @@ void Client::createWorkflow(const QString &title, const QString &date) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::newTask(const int &panelId, const int &taskIndex) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::CREATE_TASK);
+    json["token"] = m_accessesToken;
+    json["listId"] = panelId;
+    json["taskIndex"] = taskIndex;
+    json["taskTitle"] = "Untitled";
+    json["creatorId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::newPanel(const int &workflowId, const int &panelIndex) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::CREATE_LIST);
+    json["token"] = m_accessesToken;
+    json["workflowId"] = workflowId;
+    json["listIndex"] = panelIndex;
+    json["title"] = "Untitled";
+    json["creatorId"] = m_id;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::archiveWorkflow(int index) {
     QJsonObject json;
 
@@ -415,6 +446,8 @@ void Client::addTask(const int &panelId, const Task &task) {
 void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
     m_kanban->at(panelId).model->at(taskId).workers->add(worker);
 }
+
+
 
 
 

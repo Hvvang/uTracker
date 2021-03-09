@@ -42,6 +42,7 @@ QVariant KanbanModel::data(const QModelIndex &index, int role) const
     switch(role) {
         case TitleRole: return m_model[index.row()].title;
         case PanelModelRole: return QVariant::fromValue(m_model[index.row()].model);
+        case IDRole: return m_workflowId;
     }
     // FIXME: Implement me!
     return QVariant();
@@ -82,6 +83,7 @@ QHash<int, QByteArray> KanbanModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[TitleRole] = "panelTitle";
     roles[PanelModelRole] = "panelModel";
+    roles[IDRole] = "workflowId";
     roles[DragHeight] = "dragHeight";
     return roles;
 }

@@ -12,6 +12,8 @@ Item {
 
     property int colabsCounter: 0
 
+    property var backColor: ["#4287f5", "#f5b042", "#f56042", "#f54242", "#b942f5", "#4257f5", "#f5429c"]
+
     ColumnLayout {
         id: view
         z: 2
@@ -21,36 +23,24 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Item {
-            id: header
+
+        TextField {
+            id: taskTxt
+
+            text: taskTitle
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            height: taskTxt.height
-            width: parent.width
+            Layout.fillWidth: true
 
-            Row {
-                id: row1
-
-                anchors.fill: header
-
-                Text {
-                    id: icon
-                    text: headerIcon
-                    font.pointSize: 17
-                }
-                Text {
-                    id: taskTxt
-
-//                    text: qsTr("Some task # %1 with some title".arg(model.index))
-                    text: taskTitle
-                    anchors.leftMargin: 5
-                    anchors.left: icon.right
-                    anchors.right: parent.right
-                    font.pointSize: 17
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                }
+            selectByMouse: true
+            background: Rectangle { color: "transparent"; }
+            onFocusChanged: {
+                if (!focus)
+                    cient.updateTaskTitle(taskId, text);
             }
         }
+
         ColumnLayout {
             id: tags
             width: parent.width
@@ -58,12 +48,12 @@ Item {
             Flow {
                 id: tagsFlow
 
-                anchors.fill: tags
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 spacing: 5
 
                 Repeater {
                     id: rep
-//                    model: ["common", "feature", "high priority", "important"]
                     model: tagsModel
 
                     Item {
@@ -74,16 +64,17 @@ Item {
                         Text {
                             z: 5
                             id: name
+
                             anchors.centerIn: parent
                             text: qsTr(modelData)
-                            color: fontColor
+                            color: "white"
                         }
 
                         Rectangle {
                             id: tagBack
                             anchors.fill: parent
                             radius: 7
-                            color: backColor
+                            color: backColor[Math.ceil(Math.random() * (backColor.length - 1))]
                         }
                     }
                 }
@@ -118,7 +109,7 @@ Item {
                             }
                         }
                         Text {
-                            text: colaborantName + colaborantSurname
+                            text: qsTr("%1 %2").arg(colaborantName).arg(colaborantSurname)
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -133,10 +124,6 @@ Item {
         anchors.fill: parent
         Material.background: "white"
         radius: 6
-        onClicked: {
-            print("emit open task signal")
-            root.colabsCounter += 1
-        }
     }
 }
 
