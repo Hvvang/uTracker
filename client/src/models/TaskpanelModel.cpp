@@ -1,26 +1,27 @@
 #include "TaskpanelModel.h"
 
 #include <qdebug.h>
+#include <Client.h>
 
 TaskPanelModel::TaskPanelModel(QObject *parent)
-    : QAbstractListModel(parent)
-{
+    : QAbstractListModel(parent) {
     Task t1;
-    t1.m_title = QString("task %1").arg(m_model.size());
-    t1.m_tags.append({"common", "feature", "high priority", "important"});
+    t1.title = QString("task %1").arg(m_model.size());
+    t1.tags.append({"common", "feature", "high priority", "important"});
     m_model.append(t1);
     Task t2;
-    t2.m_title = QString("task %1").arg(m_model.size());
-    t2.m_tags.append({"common", "high priority", "important"});
+    t2.title = QString("task %1").arg(m_model.size());
+    t2.tags.append({"common", "high priority", "important"});
     m_model.append(t2);
     Task t3;
-    t3.m_title = QString("task %1").arg(m_model.size());
-    t3.m_tags.append("important");
+    t3.title = QString("task %1").arg(m_model.size());
+    t3.tags.append("important");
     m_model.append(t3);
     Task t4;
-    t4.m_title = QString("task %1").arg(m_model.size());
-    t4.m_tags.append("important");
+    t4.title = QString("task %1").arg(m_model.size());
+    t4.tags.append("important");
     m_model.append(t4);
+
 }
 
 int TaskPanelModel::rowCount(const QModelIndex &parent) const
@@ -37,11 +38,12 @@ QVariant TaskPanelModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     switch(role) {
-        case TitleRole: return m_model[index.row()].m_title;
-        case TagsRole: return m_model[index.row()].m_tags;
-        case ColabsRole: return m_model[index.row()].m_colaborants;
+        case TitleRole: return m_model[index.row()].title;
+        case TagsRole: return m_model[index.row()].tags;
+//        case TagsRole: return QVariant::fromValue(m_model[index.row()].tags);
+        case ColabsRole: return QVariant::fromValue(m_model[index.row()].workers);
         case BlankRole: return m_model[index.row()].blank;
-//        case IconRole: return m_model[index.row()].m_colaborants;
+        case IconRole: return "";
 //        case PanelModelRole: return m_model[index.row()].model;
     }
     // FIXME: Implement me!
@@ -84,9 +86,9 @@ bool TaskPanelModel::removeRows(int row, int count, const QModelIndex &parent) {
 QHash<int, QByteArray> TaskPanelModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[TitleRole] = "taskTitle";
-    roles[TagsRole] = "tags";
-    roles[ColabsRole] = "colabs";
-    roles[IconRole] = "icon";
+    roles[TagsRole] = "tagsModel";
+    roles[ColabsRole] = "WorkersModel";
+    roles[IconRole] = "headerIcon";
     roles[BlankRole] = "isBlank";
     return roles;
 }
@@ -141,9 +143,7 @@ Task TaskPanelModel::getTask(int index) {
 void TaskPanelModel::setTask(int index, Task &task) {
     qDebug() << "blank while set up" << blank_index;
     removeBlank();
-    beginInsertRows(QModelIndex(), index, index);
-    m_model.insert(index, task);
-    endInsertRows();
+    insert(index, task);
 }
 
 void TaskPanelModel::reset() {
@@ -152,6 +152,21 @@ void TaskPanelModel::reset() {
 
     beginInsertRows(QModelIndex(), 0, m_model.size());
     endInsertRows();
+}
+
+void TaskPanelModel::insert(const int &index, const Task &task) {
+    beginInsertRows(QModelIndex(), index, index);
+    m_model.insert(index, task);
+    m_client->getTaskWorkers(task.id);
+    endInsertRows();
+}
+
+Task &TaskPanelModel::at(const int &id) {
+    foreach(auto &task, m_model) {
+        if (task.id == id) {
+            return const_cast<Task &>(task);
+        }
+    }
 }
 
 

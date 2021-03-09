@@ -21,7 +21,7 @@ QVariant ColaborantsModel::data(const QModelIndex &index, int role) const
         case IconRole: return m_data[index.row()].icon;
         case NameRole: return m_data[index.row()].name;
         case SurnameRole: return m_data[index.row()].surname;
-        case StatusRole: return m_data[index.row()].status;
+
     }
     return QVariant();
 }
@@ -66,7 +66,6 @@ QHash<int, QByteArray> ColaborantsModel::roleNames() const {
     roles[IconRole] = "colaborantIcon";
     roles[NameRole] = "colaborantName";
     roles[SurnameRole] = "colaborantSurname";
-    roles[StatusRole] = "colaborantStatus";
     return roles;
 }
 

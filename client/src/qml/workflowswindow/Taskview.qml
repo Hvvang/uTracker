@@ -9,8 +9,10 @@ Item {
     id: root
     width: 250
     height: view.childrenRect.height + 30
-//    implicitHeight: view.childrenRect.height + 30
+
     property int colabsCounter: 0
+
+    property var backColor: ["#4287f5", "#f5b042", "#f56042", "#f54242", "#b942f5", "#4257f5", "#f5429c"]
 
     ColumnLayout {
         id: view
@@ -21,36 +23,24 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Item {
-            id: header
+
+        TextField {
+            id: taskTxt
+
+            text: taskTitle
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            height: taskTxt.height
-            width: parent.width
+            Layout.fillWidth: true
 
-            Row {
-                id: row1
-
-                anchors.fill: header
-
-                Text {
-                    id: icon
-                    text: qsTr("😄")
-                    font.pointSize: 17
-                }
-                Text {
-                    id: taskTxt
-
-//                    text: qsTr("Some task # %1 with some title".arg(model.index))
-                    text: taskTitle
-                    anchors.leftMargin: 5
-                    anchors.left: icon.right
-                    anchors.right: parent.right
-                    font.pointSize: 17
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                }
+            selectByMouse: true
+            background: Rectangle { color: "transparent"; }
+            onFocusChanged: {
+                if (!focus)
+                    cient.updateTaskTitle(taskId, text);
             }
         }
+
         ColumnLayout {
             id: tags
             width: parent.width
@@ -58,13 +48,13 @@ Item {
             Flow {
                 id: tagsFlow
 
-                anchors.fill: tags
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 spacing: 5
 
                 Repeater {
                     id: rep
-//                    model: ["common", "feature", "high priority", "important"]
-                    model: 0
+                    model: tagsModel
 
                     Item {
                         id: tag
@@ -74,6 +64,7 @@ Item {
                         Text {
                             z: 5
                             id: name
+
                             anchors.centerIn: parent
                             text: qsTr(modelData)
                             color: "white"
@@ -83,7 +74,7 @@ Item {
                             id: tagBack
                             anchors.fill: parent
                             radius: 7
-                            color: Material.color(Material.Pink)
+                            color: backColor[Math.ceil(Math.random() * (backColor.length - 1))]
                         }
                     }
                 }
@@ -101,7 +92,7 @@ Item {
 
                 Repeater {
                     id: colabsRepeater
-                    model: root.colabsCounter
+                    model: WorkersModel
 
                     Row {
                         id: row
@@ -114,11 +105,11 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: qsTr("A")
+                                text: colaborantIcon
                             }
                         }
                         Text {
-                            text: qsTr("FirstName LastName")
+                            text: qsTr("%1 %2").arg(colaborantName).arg(colaborantSurname)
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -133,10 +124,6 @@ Item {
         anchors.fill: parent
         Material.background: "white"
         radius: 6
-        onClicked: {
-            print("emit open task signal")
-            root.colabsCounter += 1
-        }
     }
 }
 

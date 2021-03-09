@@ -10,6 +10,7 @@ void init_fontBase() {
     QFontDatabase fontDatabase;
     if (fontDatabase.addApplicationFont(":/fonts/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
+
 }
 
 int main(int argc, char *argv[])
@@ -28,8 +29,10 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
 
     Client client(&engine);
-
     engine.rootContext()->setContextProperty("client", &client);
+
+//    KanbanModel *m_kanban = new KanbanModel(1);
+//    engine.rootContext()->setContextProperty("KanbanModel", m_kanban);
 
     engine.load(url);
     return app.exec();

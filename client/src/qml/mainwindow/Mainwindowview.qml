@@ -53,7 +53,7 @@ Item {
                 SplitView.minimumWidth: 50
                 SplitView.fillWidth: true
 
-                source: "qrc:/qml/workflowswindow/Workflowsview.qml"
+                source: "qrc:/qml/workflowswindow/Kanbanview.qml"
 
                 Connections {
                     target: client

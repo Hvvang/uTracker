@@ -2,9 +2,10 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>fonts/fontello.ttf</file>
+        <file>fonts/task_font.ttf</file>
         <file>qml/components/Contolbutton.qml</file>
         <file>qml/components/Menubutton.qml</file>
-        <file>qml/components/Taskview.qml</file>
+        <file>qml/workflowswindow/Taskview.qml</file>
         <file>qml/mainwindow/Maincontrolpanel.qml</file>
         <file>qml/mainwindow/Mainwindowview.qml</file>
         <file>qml/mainwindow/Headerpanel.qml</file>

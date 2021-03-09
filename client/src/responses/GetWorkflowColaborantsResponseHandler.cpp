@@ -31,9 +31,8 @@ void GetWorkflowColaborantsResponseHandler::processResponse(const QByteArray &da
 
             Colaborant c;
             c.id = obj["userId"].toInt();
-            c.status = obj["status"].toString();
-            c.name = obj["first_name"].toString();
-            c.surname = obj["last_name"].toString();
+            c.name = obj["name"].toString();
+            c.surname = obj["surname"].toString();
             c.icon = c.name.front();
             m_client->addColaborant(workflowId, c);
         }

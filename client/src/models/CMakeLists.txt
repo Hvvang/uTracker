@@ -4,12 +4,16 @@ set(SOURCES
         KanbanModel.cpp
         TaskpanelModel.cpp
         WorkflowsModel.cpp
+        TaskDescriptionModel.cpp
+        CheckboxPropertyModel.cpp
         )
 set(HEADERS
         ColaborantsModel.h
         KanbanModel.h
         TaskpanelModel.h
         WorkflowsModel.h
+        TaskDescriptionModel.h
+        CheckboxPropertyModel.h
         )
 
 add_library(ModelsLib ${SOURCES} ${HEADERS})
