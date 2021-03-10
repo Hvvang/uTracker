@@ -72,6 +72,7 @@ Item {
             RoundButton {
                 id: newPanelBtn
 
+
                 width: 250
 
                 Material.background: Material.Blue
@@ -85,7 +86,7 @@ Item {
                 radius: 6
 
                 onClicked: {
-                    client.newPanel(workflowId, panelHeaderRepeater.count)
+                    client.newPanel(KanbanModel.flowId(), panelHeaderRepeater.count)
                 }
             }
         }

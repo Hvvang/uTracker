@@ -54,6 +54,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void test(int index);
+    Q_INVOKABLE int flowId();
     Q_INVOKABLE void setHeight(int height);
     Q_INVOKABLE int getHeight();
     Q_INVOKABLE void removeBlank(int panelIndex);

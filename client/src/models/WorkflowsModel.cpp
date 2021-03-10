@@ -6,12 +6,19 @@
 WorkflowsModel::WorkflowsModel(QObject *parent)
     : QAbstractListModel(parent) {
 //    Workflow w1;
-//    w1.deadline = "A";
+//    w1.deadline = "11-22-33";
 //    w1.title = "What is Lorem Ipsum?\n"
 //            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
 //    w1.progress = 34;
 //    w1.colaborants = new ColaborantsModel(this);
 //    m_data.push_back(w1);
+//    Workflow w2;
+//    w2.deadline = "11-22-22";
+//    w2.title = "What is Lorem Ipsum?\n"
+//            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
+//    w2.progress = 66;
+//    w2.colaborants = new ColaborantsModel(this);
+//    m_data.push_back(w2);
 }
 
 int WorkflowsModel::rowCount(const QModelIndex &parent) const
@@ -107,6 +114,7 @@ void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
 }
 
 void WorkflowsModel::updateWorkflow(const Workflow &workflow) {
+    qDebug() << workflow.id;
     for (int index = 0; index < rowCount(); ++index) {
         if (m_data[index].id == workflow.id) {
             m_data[index].title = workflow.title;

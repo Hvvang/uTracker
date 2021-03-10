@@ -5,22 +5,22 @@
 
 TaskPanelModel::TaskPanelModel(QObject *parent)
     : QAbstractListModel(parent) {
-    Task t1;
-    t1.title = QString("task %1").arg(m_model.size());
-    t1.tags.append({"common", "feature", "high priority", "important"});
-    m_model.append(t1);
-    Task t2;
-    t2.title = QString("task %1").arg(m_model.size());
-    t2.tags.append({"common", "high priority", "important"});
-    m_model.append(t2);
-    Task t3;
-    t3.title = QString("task %1").arg(m_model.size());
-    t3.tags.append("important");
-    m_model.append(t3);
-    Task t4;
-    t4.title = QString("task %1").arg(m_model.size());
-    t4.tags.append("important");
-    m_model.append(t4);
+//    Task t1;
+//    t1.title = QString("task %1").arg(m_model.size());
+//    t1.tags.append({"common", "feature", "high priority", "important"});
+//    m_model.append(t1);
+//    Task t2;
+//    t2.title = QString("task %1").arg(m_model.size());
+//    t2.tags.append({"common", "high priority", "important"});
+//    m_model.append(t2);
+//    Task t3;
+//    t3.title = QString("task %1").arg(m_model.size());
+//    t3.tags.append("important");
+//    m_model.append(t3);
+//    Task t4;
+//    t4.title = QString("task %1").arg(m_model.size());
+//    t4.tags.append("important");
+//    m_model.append(t4);
 
 }
 

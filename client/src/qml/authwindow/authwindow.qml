@@ -145,6 +145,7 @@ Item {
 
             onClicked: {
                 print("Continue with email clicked!")
+//                client.authorize("shemedvedd@gmail.com", "A112263a");
 
                 var error = email.emailError || password.passwordError
                 if (!error) {

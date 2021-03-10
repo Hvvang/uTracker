@@ -13,9 +13,7 @@ EditWorkflowResponseHandler::EditWorkflowResponseHandler(QObject *parent)
 }
 
 void EditWorkflowResponseHandler::processResponse(const QByteArray &data) {
-    qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
-
         qWarning() << "An error occurred: " << handleMessage(data);
         emit m_client->notification(handleMessage(data));
     }
@@ -24,7 +22,7 @@ void EditWorkflowResponseHandler::processResponse(const QByteArray &data) {
         QJsonObject rootObject = itemDoc.object();
 
         Workflow w;
-        w.id = rootObject["workflowId"].toInt();
+        w.id = rootObject["workflow_id"].toInt();
         w.progress = rootObject["progress"].toInt();
         w.deadline = rootObject["deadline"].toString();
         w.title = rootObject["title"].toString();

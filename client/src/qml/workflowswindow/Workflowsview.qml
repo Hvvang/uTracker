@@ -12,8 +12,10 @@ Item {
     anchors.fill: parent
 
     onWidthChanged: {
+
         flick.contentHeight =  Math.round(workflowmodel.rowCount() / grid.columns) * 210
         flick.contentWidth =  grid.columns * 210
+        grid.columns = root.width / 210 < WorkflowsModel.rowCount() ? root.width / 210 : WorkflowsModel.rowCount()
     }
     Flickable {
         id: flick
@@ -30,14 +32,13 @@ Item {
             rowSpacing: 5
 
             anchors.fill: parent
-            columns: root.width / 210
-            rows: -1
 
             Repeater {
-                model: workflowmodel
+                model: WorkflowsModel
 
                 onCountChanged: {
-                    flick.contentHeight = Math.round(workflowmodel.rowCount() / grid.columns) * 210
+                    grid.columns = root.width / 210 < WorkflowsModel.rowCount() ? root.width / 210 : WorkflowsModel.rowCount()
+                    flick.contentHeight = Math.round(WorkflowsModel.rowCount() / grid.columns) * 210
                     flick.contentWidth =  grid.columns * 210
                 }
                 Workflowpane {
@@ -47,7 +48,5 @@ Item {
 
         }
     }
-
-
 }
 

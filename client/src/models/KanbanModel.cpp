@@ -6,22 +6,22 @@
 KanbanModel::KanbanModel(const int &workflowId, QObject *parent)
     : QAbstractListModel(parent)
     , m_workflowId(workflowId) {
-    Kanban k1;
-    k1.index = m_model.size();
-    k1.title = "ToDo";
-    k1.model = new TaskPanelModel(this);
-    Kanban k2;
-    k2.index = m_model.size();
-    k2.title = "In Progress";
-    k2.model = new TaskPanelModel(this);
-    Kanban k3;
-    k3.index = m_model.size();
-    k3.title = "Done";
-    k3.model = new TaskPanelModel(this);
-
-    m_model.append(k1);
-    m_model.append(k2);
-    m_model.append(k3);
+//    Kanban k1;
+//    k1.index = m_model.size();
+//    k1.title = "ToDo";
+//    k1.model = new TaskPanelModel(this);
+//    Kanban k2;
+//    k2.index = m_model.size();
+//    k2.title = "In Progress";
+//    k2.model = new TaskPanelModel(this);
+//    Kanban k3;
+//    k3.index = m_model.size();
+//    k3.title = "Done";
+//    k3.model = new TaskPanelModel(this);
+//
+//    m_model.append(k1);
+//    m_model.append(k2);
+//    m_model.append(k3);
 
 }
 
@@ -31,7 +31,6 @@ int KanbanModel::rowCount(const QModelIndex &parent) const
     // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid())
         return 0;
-
     return m_model.size();
 }
 
@@ -42,9 +41,8 @@ QVariant KanbanModel::data(const QModelIndex &index, int role) const
     switch(role) {
         case TitleRole: return m_model[index.row()].title;
         case PanelModelRole: return QVariant::fromValue(m_model[index.row()].model);
-        case IDRole: return m_workflowId;
+        case IDRole: return m_model[index.row()].id;
     }
-    // FIXME: Implement me!
     return QVariant();
 }
 
@@ -83,7 +81,7 @@ QHash<int, QByteArray> KanbanModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[TitleRole] = "panelTitle";
     roles[PanelModelRole] = "panelModel";
-    roles[IDRole] = "workflowId";
+    roles[IDRole] = "panelId";
     roles[DragHeight] = "dragHeight";
     return roles;
 }
@@ -146,4 +144,8 @@ Kanban &KanbanModel::at(int panelId) {
             return const_cast<Kanban &>(panel);
         }
     }
+}
+
+int KanbanModel::flowId() {
+    return m_workflowId;
 }

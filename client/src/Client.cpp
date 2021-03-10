@@ -50,7 +50,6 @@ void Client::readyRead() {
         qDebug() << "response is " << data;
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
 
-
         if (!itemDoc.isNull()) {
             QJsonObject rootObject = itemDoc.object();
 
@@ -103,6 +102,7 @@ void Client::send(const QString &data) {
     QByteArray buffer;
     m_socket.write(buffer.setNum(json.size()));
     m_socket.write("\n" + json);
+    qDebug() << "request is: " << json;
 }
 
 
@@ -254,7 +254,7 @@ void Client::createWorkflow(const QString &title, const QString &date) {
     json["token"] = m_accessesToken;
     json["title"] = title;
     json["deadline"] = date;
-    json["ownerId"] = m_id;
+    json["userId"] = m_id;
 
     QJsonDocument document;
     document.setObject(json);
@@ -309,7 +309,7 @@ void Client::inviteContact(const QString &contact, int index) {
     json["type"] = static_cast<int>(Client::RequestType::INVITE_CONTACT);
     json["token"] = m_accessesToken;
     json["workflowId"] = index;
-    json["contact"] = contact;
+    json["email"] = contact;
 
     QJsonDocument document;
     document.setObject(json);
@@ -421,11 +421,13 @@ void Client::initWorkflowsModel() {
 
 void Client::addPanel(const int &workflowId, const Kanban &kanban) {
     if (m_kanban && m_kanban->getWorkflow() == workflowId) {
+        qDebug() << "qwertyyyyyy";
         m_kanban->insertPanel(kanban);
     }
 }
 
 bool Client::updateKanbanModelIfNeeded(int workflowId) {
+    qDebug() << "workflowId: " << workflowId;
     if (!m_kanban) {
         m_kanban = new KanbanModel(workflowId, this);
         m_engine->rootContext()->setContextProperty("KanbanModel", m_kanban);

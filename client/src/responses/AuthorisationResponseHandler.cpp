@@ -39,7 +39,9 @@ void AuthorisationResponseHandler::processResponse(const QByteArray &data) {
             m_client->saveToken("auth_token", token);
             m_client->setId(id);
             m_client->notification(handleMessage(data));
-            m_client->getProfileData();
+            m_client->setProfile(rootObject.value("email").toString(),
+                                 rootObject.value("name").toString(),
+                                 rootObject.value("surname").toString());
             m_client->getWorkflows();
             emit m_client->switchWindow(UI_MainWindow);
         }
