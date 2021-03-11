@@ -126,7 +126,6 @@ void KanbanModel::reset() {
         delete it.model;
     }
     m_model.clear();
-    qDebug() << m_model.size();
     endResetModel();
 }
 
@@ -148,4 +147,8 @@ Kanban &KanbanModel::at(int panelId) {
 
 int KanbanModel::flowId() {
     return m_workflowId;
+}
+
+void KanbanModel::rename(const int &panelIndex, const QString &title) {
+    m_model[panelIndex].title = title;
 }

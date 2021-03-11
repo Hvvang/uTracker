@@ -61,6 +61,11 @@ Item {
                             selectByMouse: true
 
                             background: Rectangle { color: "transparent"; }
+                            Keys.onReturnPressed: {
+                                print("qwe")
+                                focus = false
+                                forceActiveFocus();
+                            }
                             onFocusChanged: {
                                 if (!focus)
                                     client.updatePanelTitle(panelId, text);
@@ -130,7 +135,8 @@ Item {
                             delegate: DropArea {
                                 id: delegateRoot
 
-                                width: task.width; implicitHeight: (isBlank) ? KanbanModel.getHeight() : task.height
+                                width: task.width;
+                                implicitHeight: (isBlank) ? KanbanModel.getHeight() : task.height
 
                                 property int sourceIndex: index
                                 property int sourceModelIndex: columnView._sourceModelIndex
@@ -249,8 +255,8 @@ Item {
                         font.capitalization: Font.MixedCase
                         font.weight: Font.Medium
                         Layout.fillWidth: true
+                        implicitWidth: 250
                         radius: 6
-
                         onClicked: {
                             client.newTask(panelId, visualModel.count)
                         }

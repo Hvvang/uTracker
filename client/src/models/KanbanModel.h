@@ -60,6 +60,8 @@ public:
     Q_INVOKABLE void removeBlank(int panelIndex);
     Q_INVOKABLE void swap(int sourcePanelIndex, int sourceTaskIndex, int targetPanelIndex, int targetTaskIndex);
 
+    void rename(const int &panelIndex, const QString &title);
+
 private:
     QList<Kanban> m_model;
     int m_workflowId;

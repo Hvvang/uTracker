@@ -82,5 +82,11 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             qDebug() << "Emit some error in response!";
 
 
+        case ResponseType::RENAME_PANEL:
+            emit renamePanel(data); break;
+        case ResponseType::REMOVE_PANEL:
+            break;
+        case ResponseType::UPDATE_TASK:
+            break;
     }
 }

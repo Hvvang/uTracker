@@ -54,7 +54,12 @@ void DataBase::create_tables() {
         "user_id int,"
         "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id),"
         "FOREIGN KEY(user_id) REFERENCES UsersCredential(id))");
-    query.exec("create table IF NOT EXISTS Lists (id integer primary key AUTOINCREMENT, title varchar, workflow_id int)");
+    query.exec(
+            "create table IF NOT EXISTS Lists ("
+            "id integer primary key AUTOINCREMENT, "
+            "title varchar, "
+            "listIndex int, "
+            "workflow_id int)");
 }
 
 bool DataBase::isValidToken(const QString &token, int type) {
@@ -90,7 +95,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             case RequestType::LOG_OUT:
                 break;
             case RequestType::CREATE_WORKFLOW:
-                result = createWorkflow(map.value("ownerId").toInt(),
+                result = createWorkflow(map.value("userId").toInt(),
                                         map.value("title").toString(),
                                         map.value("deadline").toString());
                 break;
@@ -238,10 +243,10 @@ DataBase::createUser(const QString &login,
 }
 
 QVariantMap
-DataBase::createWorkflow(int owner_id, const QString &title, const QString &deadline) {
+DataBase::createWorkflow(int userId, const QString &title, const QString &deadline) {
     QSqlQuery query;
     auto res = query.exec(QString("INSERT INTO WorkFlows (owner_id, title, deadline) VALUES(%1, '%2', '%3');")
-                              .arg(owner_id)
+                              .arg(userId)
                               .arg(title)
                               .arg(deadline));
 
@@ -256,7 +261,7 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &dead
         map["message"] = "Workflow has been created";
         query.exec(QString("INSERT INTO WF_connector (workflow_id, user_id) VALUES(%1, '%2');")
                        .arg(workflowId)
-                       .arg(owner_id));
+                       .arg(userId));
     } else {
         map["error"] = 1;
         map["message"] = "Unfortunately, workflow hasn't been created";
@@ -430,15 +435,18 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
 
 QVariantMap DataBase::createList(const QString &title, const int &workflowId, const int &listIndex) {
     QVariantMap map;
-    int lastId;
+    QSqlQuery query;
+
     map["type"] = static_cast<int>(RequestType::CREATE_LIST);
-    if (insert("Lists", "workflow_id, title", QString::number(workflowId) + ", '" + title + "'", lastId)) {
+    if (query.exec(QString("INSERT INTO Lists (workflow_id, title, listIndex) VALUES(%1, '%2', %3);")
+                           .arg(workflowId)
+                           .arg(title)
+                           .arg(listIndex))) {
         map["message"] = "List created";
-        map["listId"] = lastId;
+        map["listId"] = query.lastInsertId().toInt();
         map["title"] = title;
         map["workflowId"] = workflowId;
         map["listIndex"] = listIndex;
-
     } else {
         map["message"] = "List wasn't created";
         map["error"] = 1;
@@ -452,10 +460,13 @@ QVariantMap DataBase::renameList(const QString &title, int listId) {
     QSqlQuery query;
     query.prepare("UPDATE Lists SET title = :title WHERE id = " + QString::number(listId) + ";");
     query.bindValue(":title", title);
-    if (query.exec() && query.first()) {
+    if (query.exec()) {
+        query.exec(QString("SELECT index, workflowId where listId = %1 ;").arg(listId));
         map["message"] = "List renamed";
         map["listId"] = listId;
         map["title"] = title;
+        map["listIndex"] = query.value(0).toInt();
+        map["workflowId"] = query.value(1).toInt();
     } else {
         map["message"] = "List wasn't renamed";
         map["error"] = 1;
@@ -480,21 +491,31 @@ QVariantMap DataBase::removeList(int listId) {
 
 QVariantMap DataBase::getLists(int workflowId) {
     QSqlQuery query;
-    QJsonArray lists;
+    QJsonArray panels;
     QVariantMap map;
+
     map["type"] = static_cast<int>(RequestType::GET_LISTS);
-    query.exec("select id from Lists where workflow_id = " + QString::number(workflowId));
+    query.exec("select id, title, listIndex from Lists where workflow_id = " + QString::number(workflowId));
     if (query.first()) {
-        lists.append(QJsonObject::fromVariantMap(getTasks(query.value(0).toInt())));
+        QVariantMap panel;
+        panel["listId"] = query.value(0).toInt();
+        panel["title"] = query.value(1).toString();
+        panel["index"] = query.value(2).toInt();
+        panels.append(QJsonObject::fromVariantMap(panel));
     } else {
         map["error"] = 1;
         map["message"] = "Lists don't exist";
     }
     while (query.next()) {
-        lists.append(QJsonObject::fromVariantMap(getTasks(query.value(0).toInt())));
+        QVariantMap panel;
+        panel["listId"] = query.value(0).toInt();
+        panel["title"] = query.value(1).toString();
+        panel["index"] = query.value(2).toInt();
+        panels.append(QJsonObject::fromVariantMap(panel));
     }
     if (!map.contains("error")) {
-        map["lists"] = lists;
+        map["panels"] = panels;
+        map["workflowId"] = workflowId;
         map["message"] = "Lists successfully have gotten";
     }
     return map;

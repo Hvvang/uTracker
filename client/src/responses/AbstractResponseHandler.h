@@ -70,6 +70,7 @@ signals:
     void getTaskTags(const QByteArray &);
     void getTask(const QByteArray &);
     void getPanel(const QByteArray &);
+    void renamePanel(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);

@@ -164,6 +164,8 @@ ToCreateList::ToCreateList(Connection *socket) : AbstractRequestHandler(socket){
 
 bool ToCreateList::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
+        && itemObject.contains("creatorId")
+        && itemObject.contains("listIndex")
         && itemObject.contains("workflowId"))
         return true;
     return false;

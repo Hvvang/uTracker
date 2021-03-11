@@ -34,6 +34,7 @@
 #include "GetTagsResponseHandler.h"
 #include "GetTaskResponseHandler.h"
 #include "GetPanelResponseHandler.h"
+#include "RenamePanelTitleResponseHandler.h"
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
@@ -80,7 +81,7 @@ public:
         UPDATE_PROFILE = 15,
 
 
-        CREATE_LIST = 16,
+        CREATE_PANEL = 16,
         RENAME_PANEL = 17,
         GET_WORKFLOW_PANELS = 18,
         REMOVE_PANEL = 19,
@@ -90,8 +91,6 @@ public:
         MOVE_TASK = 23,
         REMOVE_TASK = 24,
         GET_TASK_DATA = 25,
-
-
 
 
         GET_TASK_WORKERS = 26,
@@ -124,6 +123,7 @@ public:
     void getTaskWorkers(const int &taskId);
     void getPanelTasks(int panelId);
     void addPanel(const int &workflowId, const Kanban &kanban);
+    void renamePanel(const int &workflowId, const int &panelIndex, const QString &title);
 
     void addTask(const int &panelId, const Task &task);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
@@ -140,6 +140,7 @@ public:
     Q_INVOKABLE void editWorkflow(int index, const QString &title, const QString &date);
     Q_INVOKABLE void newTask(const int &panelId, const int &taskIndex);
     Q_INVOKABLE void newPanel(const int &workflowId, const int &panelIndex);
+    Q_INVOKABLE void updatePanelTitle(const int &panelId, const QString &title);
     Q_INVOKABLE void logout();
 
 
@@ -192,7 +193,7 @@ private:
     GetTagsResponseHandler *m_getTagsResponseHandler{nullptr};
     GetTaskResponseHandler *m_getTaskResponseHandler{nullptr};
     GetPanelResponseHandler *m_getPanelResponseHandler{nullptr};
-
+    RenamePanelTitleResponseHandler *m_renamePanelTitleResponseHandler{nullptr};
 };
 
 #define m_client Client::singleton()

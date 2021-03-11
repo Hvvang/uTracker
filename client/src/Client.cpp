@@ -76,6 +76,7 @@ void Client::deInitResponseHandlers() {
     delete m_getPanelTasksResponseHandler;
     delete m_getTaskWorkersResponseHandler;
     delete m_getTagsResponseHandler;
+    delete m_renamePanelTitleResponseHandler;
 
 }
 
@@ -94,6 +95,8 @@ void Client::initResponseHandlers() {
     m_getTagsResponseHandler = new GetTagsResponseHandler(this);
     m_getTaskResponseHandler = new GetTaskResponseHandler(this);
     m_getPanelResponseHandler = new GetPanelResponseHandler(this);
+    m_renamePanelTitleResponseHandler = new RenamePanelTitleResponseHandler(this);
+
 }
 
 void Client::send(const QString &data) {
@@ -279,7 +282,7 @@ void Client::newTask(const int &panelId, const int &taskIndex) {
 void Client::newPanel(const int &workflowId, const int &panelIndex) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::CREATE_LIST);
+    json["type"] = static_cast<int>(Client::RequestType::CREATE_PANEL);
     json["token"] = m_accessesToken;
     json["workflowId"] = workflowId;
     json["listIndex"] = panelIndex;
@@ -373,6 +376,19 @@ void Client::getTaskWorkers(const int &taskId) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::updatePanelTitle(const int &panelId, const QString &title) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::RENAME_PANEL);
+    json["token"] = m_accessesToken;
+    json["listId"] = panelId;
+    json["title"] = title;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::logout() {
     QJsonObject json;
 
@@ -384,6 +400,7 @@ void Client::logout() {
     document.setObject(json);
     emit request(document.toJson(QJsonDocument::Compact));
 }
+
 
 void Client::newWorkflow(const Workflow &flow) {
     m_workflows->add(flow);
@@ -421,13 +438,11 @@ void Client::initWorkflowsModel() {
 
 void Client::addPanel(const int &workflowId, const Kanban &kanban) {
     if (m_kanban && m_kanban->getWorkflow() == workflowId) {
-        qDebug() << "qwertyyyyyy";
         m_kanban->insertPanel(kanban);
     }
 }
 
 bool Client::updateKanbanModelIfNeeded(int workflowId) {
-    qDebug() << "workflowId: " << workflowId;
     if (!m_kanban) {
         m_kanban = new KanbanModel(workflowId, this);
         m_engine->rootContext()->setContextProperty("KanbanModel", m_kanban);
@@ -448,6 +463,14 @@ void Client::addTask(const int &panelId, const Task &task) {
 void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
     m_kanban->at(panelId).model->at(taskId).workers->add(worker);
 }
+
+void Client::renamePanel(const int &workflowId, const int &panelIndex, const QString &title) {
+    if (m_kanban && m_kanban->getWorkflow() == workflowId) {
+        m_kanban->rename(panelIndex, title);
+    }
+}
+
+
 
 
 
