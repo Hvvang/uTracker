@@ -103,7 +103,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                         map.value("deadline").toString());
                 break;
             case RequestType::INVITE_TO_WORKFLOW:
-                result = inviteToWorkflow(map.value("login").toString(),
+                result = inviteToWorkflow(map.value("email").toString(),
                                           map.value("workflowId").toInt());
                 break;
             case RequestType::REMOVE_FROM_WORKFLOW:
@@ -130,7 +130,8 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 break;
             case RequestType::CREATE_LIST:
                 result = createList(map.value("title").toString(),
-                                    map.value("workflowId").toInt());
+                                    map.value("workflowId").toInt(),
+                                    map.value("listIndex").toInt());
                 break;
             case RequestType::RENAME_LIST:
                 result = renameList(map.value("title").toString(),
@@ -187,18 +188,13 @@ QVariantMap DataBase::containsUser(const QString &login, const QString &password
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::SIGN_IN);
 
-    //    if (query.first())
-    //        qDebug() << "userFound";
     if (query.first() && (query.value(1).toString() == password)) {
-        // qDebug() << "userId " << query.value(0).toInt() << " " << password;
-        // map["userId"] = query.value(0).toInt();
         map["message"] = "Successfully authorized";
         QSqlQuery query1;
         query1.exec("select auth_token, first_name, last_name, email from UsersCredential where id = " + query.value(0).toString());
         if (query1.first()) {
-            map["userId"] = query.value(0).toInt();     //userId
-            map["token"] = query1.value(0).toString();  //token
-            map["login"] = login;
+            map["userId"] = query.value(0).toInt();
+            map["token"] = query1.value(0).toString();
             map["name"] = query1.value(1).toString();
             map["surname"] = query1.value(2).toString();
             map["email"] = query1.value(3).toString();
@@ -235,6 +231,9 @@ DataBase::createUser(const QString &login,
         map["message"] = "User with such login already exist";
     } else {
         map["token"] = hash;
+        map["email"] = email;
+        map["name"] = name;
+        map["surname"] = surname;
         map["userId"] = query.lastInsertId().toInt();
         map["message"] = "User successfully created";
     }
@@ -252,9 +251,11 @@ DataBase::createWorkflow(int owner_id, const QString &title, const QString &dead
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
     if (res) {
-        auto workflowId = query.lastInsertId().toInt();
+        const auto workflowId = query.lastInsertId().toInt();
         map["workflowId"] = workflowId;
         map["title"] = title;
+        map["deadline"] = deadline;
+//        map["progress"] = progress;
         map["message"] = "Workflow has been created";
         query.exec(QString("INSERT INTO WF_connector (workflow_id, user_id) VALUES(%1, '%2');")
                        .arg(workflowId)
@@ -273,6 +274,7 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
     bool is_ok = false;
     if (!title.isEmpty() && !deadline.isEmpty()) {
         is_ok = update("WorkFlows", "title = '" + title + "', deadline = '" + deadline + "'", "id = " + QString::number(workflow_id));
+        map["workflow_id"] = workflow_id;
         map["title"] = title;
         map["deadline"] = deadline;
     } else if (deadline.isEmpty()) {
@@ -294,14 +296,15 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
 }
 
 QVariantMap
-DataBase::inviteToWorkflow(const QString &login, int workflow_id) {
-    Q_UNUSED(login);
-    Q_UNUSED(workflow_id);
+DataBase::inviteToWorkflow(const QString &email, int workflow_id) {
     QVariantMap map;
-    map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
+    map["type"] = static_cast<int>(RequestType::INVITE_TO_WORKFLOW);
     QSqlQuery query;
-    query.exec(QString("select id from UsersCredential where login = '%1';").arg(login));
-    if (query.first() && insert("WF_connector", "workflow_id, login", QString::number(workflow_id) + ", " + query.value(0).toString())) {
+    qDebug() << email;
+    query.exec(QString("select id from UsersCredential where email = '%1';").arg(email));
+    if (query.first())
+        qDebug() << query.value(0).toString();
+    if (query.first() && insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + query.value(0).toString())) {
         map["message"] = "User succesfully invited to Workflow";
     } else {
         map["error"] = 1;
@@ -429,7 +432,7 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
     return map;
 }
 
-QVariantMap DataBase::createList(const QString &title, int workflowId) {
+QVariantMap DataBase::createList(const QString &title, const int &workflowId, const int &listIndex) {
     QVariantMap map;
     int lastId;
     map["type"] = static_cast<int>(RequestType::CREATE_LIST);
@@ -437,6 +440,9 @@ QVariantMap DataBase::createList(const QString &title, int workflowId) {
         map["message"] = "List created";
         map["listId"] = lastId;
         map["title"] = title;
+        map["workflowId"] = workflowId;
+        map["listIndex"] = listIndex;
+
     } else {
         map["message"] = "List wasn't created";
         map["error"] = 1;

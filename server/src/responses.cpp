@@ -65,7 +65,7 @@ ToCreatedWorkflow::ToCreatedWorkflow(Connection *socket) : AbstractRequestHandle
 bool ToCreatedWorkflow::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
         && itemObject.contains("deadline")
-        && itemObject.contains("ownerId")) {
+        && itemObject.contains("userId")) {
             return true;
     }
     return false;
@@ -92,7 +92,7 @@ bool toArchieveWorkflow::isValid(QJsonObject itemObject) {
 ToInvitedToWorkflow::ToInvitedToWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
-    if (itemObject.contains("login")
+    if (itemObject.contains("email")
         && itemObject.contains("workflowId"))
         return true;
     return false;

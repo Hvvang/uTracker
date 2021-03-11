@@ -175,7 +175,7 @@ Item {
         MenuItem {
             text: "\uf234  invite"
             font.family: "fontello"
-            onTriggered: inviteDialog.open(model.index)
+            onTriggered: inviteDialog.open(flowId)
             height: 30
             width: parent.width
         }

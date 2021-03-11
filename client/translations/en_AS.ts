@@ -19,7 +19,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/Authwindow.qml" line="168"/>
+        <location filename="../src/qml/authwindow/Authwindow.qml" line="169"/>
         <source>Create new account</source>
         <translation type="unfinished"></translation>
     </message>
@@ -233,7 +233,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/authwindow.qml" line="168"/>
+        <location filename="../src/qml/authwindow/authwindow.qml" line="169"/>
         <source>Create new account</source>
         <translation type="unfinished"></translation>
     </message>

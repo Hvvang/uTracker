@@ -39,8 +39,8 @@ public:
     QVariantMap updateProfile(int user_id, const QString &name, const QString &surname);
     QVariantMap removeWorkflow(int workflow_id);
 
-    QVariantMap createList(const QString& title, int workflowId);
     QVariantMap renameList(const QString &title, int listId);
+    QVariantMap createList(const QString& title, const int &workflowId, const int &listIndex);
     QVariantMap removeList(int listId);
     QVariantMap getLists(int workflowId);
 

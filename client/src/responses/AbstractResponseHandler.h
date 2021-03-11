@@ -15,8 +15,8 @@ enum class ResponseType {
     LOG_OUT = 4,
     CREATE_WORKFLOW = 5,
     ARCHIVE_WORKFLOW = 6,
-    INVITE_CONTACT = 7,
-    UPDATE_WORKFLOW = 8,
+    UPDATE_WORKFLOW = 7,
+    INVITE_CONTACT = 8,
     GET_WORKFLOWS = 9,
 
     PROFILE = 12,
