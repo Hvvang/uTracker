@@ -30,7 +30,7 @@ public:
     QVariantMap createWorkflow(int owner_id, const QString &title, const QString &deadline);
     QVariantMap updateWorkflow(int workflow_id, const QString &title, const QString &deadline);
     QVariantMap inviteToWorkflow(const QString &login, int workflow_id);
-    QVariantMap removeFromWorkflow(int user_id);
+    QVariantMap removeFromWorkflow(int user_id, int workflowId);
 
     QVariantMap getWorkflows(int user_id);
     QVariantMap getWorkflow(int workflow_id);
@@ -40,11 +40,12 @@ public:
     QVariantMap removeWorkflow(int workflow_id);
 
     QVariantMap createList(const QString& title, int workflowId);
+    QVariantMap renameList(const QString &title, int listId);
     QVariantMap removeList(int listId);
     QVariantMap getLists(int workflowId);
 
     QVariantMap createTask(const QString& title, int listId);
-    QVariantMap updateTask(int taskId, const QString& description, const QVariant& checkList);
+    QVariantMap updateTask(int taskId, const QString &description, const QVariant &checkList, const QString &title);
     QVariantMap moveTask(int taskId, int newListId, int newIndexId);
     QVariantMap removeTask(int taskId);
     QVariantMap getTaskData(int taskId);

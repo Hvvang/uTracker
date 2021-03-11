@@ -98,6 +98,23 @@ bool ToInvitedToWorkflow::isValid(QJsonObject itemObject) {
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToRemoveFromWorkflow::ToRemoveFromWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToRemoveFromWorkflow::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("workflowId")
+        && itemObject.contains("userId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToGetUsersFromWorkflow::ToGetUsersFromWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToGetUsersFromWorkflow::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("workflowId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 SendAllWorkflows::SendAllWorkflows(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendAllWorkflows::isValid(QJsonObject itemObject) {
@@ -153,6 +170,23 @@ bool ToCreateList::isValid(QJsonObject itemObject) {
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToRenameList::ToRenameList(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToRenameList::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("title")
+        && itemObject.contains("listId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToGetLists::ToGetLists(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToGetLists::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("workflowId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToRemoveList::ToRemoveList(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToRemoveList::isValid(QJsonObject itemObject) {
@@ -171,13 +205,24 @@ bool ToCreateTask::isValid(QJsonObject itemObject) {
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+ToGetTasks::ToGetTasks(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ToGetTasks::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("listId"))
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateTask::ToUpdateTask(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToUpdateTask::isValid(QJsonObject itemObject) {
-    if (itemObject.contains("checkList")
-        && itemObject.contains("description")
-        && itemObject.contains("taskId"))
-        return true;
+    if (itemObject.contains("taskId")) {
+        if ((itemObject.contains("checkList")
+            && itemObject.contains("description"))
+            || itemObject.contains("title"))
+            qDebug() << "zashlo nikiti v uho";
+            return true;
+    }
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
