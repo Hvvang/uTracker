@@ -23,7 +23,6 @@ Item {
         width: parent.width
         height: parent.height
 
-        interactive: false
         clip: true
 
         GridLayout {

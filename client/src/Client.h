@@ -70,22 +70,31 @@ public:
         ARCHIVE_WORKFLOW = 6,
         UPDATE_WORKFLOW = 7,
         INVITE_CONTACT = 8,
-        GET_WORKFLOWS = 9,
 
-        GET_STATISTICS = 11,
-        GET_PROFILE = 12,
-        UPDATE_PROFILE = 13,
-        CREATE_LIST = 14,
-        REMOVE_LIST = 15,
-        CREATE_TASK = 16,
-        UPDATE_TASK = 17,
-        MOVE_TASK = 18,
-        REMOVE_TASK = 19,
-        GET_TASK_DATA = 20,
-        GET_WORKFLOW_COLABORANT = 21,
-        GET_WORKFLOW_PANELS = 22,
-        GET_PANEL_TASKS = 23,
-        GET_TASK_WORKERS = 24,
+        GET_WORKFLOW_COLABORANT = 10,
+        GET_WORKFLOWS = 11,
+
+        GET_STATISTICS = 13,
+
+        GET_PROFILE = 14,
+        UPDATE_PROFILE = 15,
+
+
+        CREATE_LIST = 16,
+        RENAME_PANEL = 17,
+        GET_WORKFLOW_PANELS = 18,
+        REMOVE_PANEL = 19,
+        CREATE_TASK = 20,
+        GET_PANEL_TASKS = 21,
+        UPDATE_TASK = 22,
+        MOVE_TASK = 23,
+        REMOVE_TASK = 24,
+        GET_TASK_DATA = 25,
+
+
+
+
+        GET_TASK_WORKERS = 26,
 
     };
 

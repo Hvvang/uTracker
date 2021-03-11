@@ -27,9 +27,8 @@ bool ToSignUp::isValid(QJsonObject itemObject) {
 ToSignIn::ToSignIn(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToSignIn::isValid(QJsonObject itemObject) {
-    if (!itemObject["password"].toString().isEmpty()) {
-        if (!itemObject["login"].toString().isEmpty()
-            || !itemObject["email"].toString().isEmpty())
+    if (!itemObject["email"].toString().isEmpty()
+        && !itemObject["password"].toString().isEmpty()) {
             return true;
     }
     return false;

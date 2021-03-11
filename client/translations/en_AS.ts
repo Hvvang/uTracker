@@ -102,12 +102,12 @@
 <context>
     <name>Kanbanview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="81"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="82"/>
         <source>New Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="247"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="248"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>

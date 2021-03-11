@@ -82,7 +82,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                     map.value("email").toString());
                 break;
             case RequestType::SIGN_IN:
-                result = containsUser(map.value("login").toString(),
+                result = containsUser(map.value("email").toString(),
                                       map.value("password").toString());
                 break;
             case RequestType::AUTO_OAUTH:
@@ -182,23 +182,20 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
     }
 }
 
-QVariantMap DataBase::containsUser(const QString &login, const QString &password) {
+QVariantMap DataBase::containsUser(const QString &email, const QString &password) {
     QSqlQuery query;
-    query.exec("SELECT id, password FROM UsersCredential where email = '" + login + "' or login = '" + login + "';");
+    query.exec("SELECT id, password, auth_token, first_name, last_name FROM UsersCredential where email = '" + email + "';");
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::SIGN_IN);
 
     if (query.first() && (query.value(1).toString() == password)) {
+        map["userId"] = query.value(0).toInt();
+        map["token"] = query.value(2).toString();
+        map["name"] = query.value(3).toString();
+        map["surname"] = query.value(4).toString();
+        map["email"] = email;
+
         map["message"] = "Successfully authorized";
-        QSqlQuery query1;
-        query1.exec("select auth_token, first_name, last_name, email from UsersCredential where id = " + query.value(0).toString());
-        if (query1.first()) {
-            map["userId"] = query.value(0).toInt();
-            map["token"] = query1.value(0).toString();
-            map["name"] = query1.value(1).toString();
-            map["surname"] = query1.value(2).toString();
-            map["email"] = query1.value(3).toString();
-        }
     } else {
         map["error"] = 1;
         map["message"] = "Invalid email or password";
@@ -345,7 +342,6 @@ QVariantMap DataBase::getWorkflows(int user_id) {  // треба норм доп
         QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
         workflows.append(jsonObject);
     }
-
     if (!map.contains("error")) {
         map["workflows"] = workflows;
         map["message"] = "Workflows successfully have gotten";
