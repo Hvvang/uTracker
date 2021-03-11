@@ -82,7 +82,6 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                     map.value("email").toString());
                 break;
             case RequestType::SIGN_IN:
-                result = containsUser(map.value("email").toString(),
                 result = containsUser(map.value("login").toString(),
                                       map.value("password").toString());
                 break;
