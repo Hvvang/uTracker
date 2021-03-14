@@ -39,7 +39,20 @@ void DataBase::create_tables() {
         "github_token varchar)");
     query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, deadline datetime)");
     // query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
-    query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, list_id int, taskIndex int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist varchar, files blob)");
+    query.exec(
+        "create table IF NOT EXISTS Tasks ("
+        "id integer primary key AUTOINCREMENT,"
+        "list_id int,"
+        "taskIndex int,"
+        "title varchar,"
+        "creation_time datetime,"
+        "deadline_time datetime,"
+        "creator_id int,"
+        "description varchar,"
+        "checklist varchar,"
+        "files blob,"
+        "FOREIGN KEY(list_id) REFERENCES Lists(id),"
+        "FOREIGN KEY(creator_id) REFERENCES UsersCredential(id))");
     query.exec(
         "create table IF NOT EXISTS T_connector ("
         "id integer primary key AUTOINCREMENT,"
@@ -557,9 +570,10 @@ QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
     QVariantMap map;
 
     map["type"] = static_cast<int>(RequestType::UPDATE_TASK_TITLE);
-    if (query.exec(QString("SELECT list_id, taskIndex FROM Tasks WHERE id = %1;").arg(taskId))) {
+    if (query.exec("SELECT list_id, taskIndex FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
         int listId = query.value(0).toInt();
         int taskIndex = query.value(1).toInt();
+        qDebug() << listId << taskIndex << title;
         if (query.exec(QString("UPDATE Tasks SET title = '%1' WHERE id = %2;")
                                .arg(title)
                                .arg(taskId))) {

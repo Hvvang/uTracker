@@ -73,7 +73,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
         m_itr->find(m_ptr).value() = itemObject["email"].toString();
         m_mutex->unlock();
     }
-    for (auto i : types)
+    for (const auto &i : types)
         if (static_cast<int>(i) == itemObject["type"].toInt())
             emit funcList[types.indexOf(i)]->responseInited(itemObject);
 }
