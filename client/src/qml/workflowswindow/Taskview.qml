@@ -35,9 +35,11 @@ Item {
 
             selectByMouse: true
             background: Rectangle { color: "transparent"; }
+            Keys.onReturnPressed:
+                focus = false;
             onFocusChanged: {
                 if (!focus)
-                    cient.updateTaskTitle(taskId, text);
+                    client.updateTaskTitle(taskId, text);
             }
         }
 

@@ -62,9 +62,7 @@ Item {
 
                             background: Rectangle { color: "transparent"; }
                             Keys.onReturnPressed: {
-                                print("qwe")
                                 focus = false
-                                forceActiveFocus();
                             }
                             onFocusChanged: {
                                 if (!focus)

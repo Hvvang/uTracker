@@ -31,7 +31,7 @@ void GetWorkflowPanelsResponseHandler::processResponse(const QByteArray &data) {
 
             Kanban k;
             k.id = obj["listId"].toInt();
-            k.index = obj["listIndex"].toInt();
+            k.index = obj["index"].toInt();
             k.title = obj["title"].toString();
             m_client->addPanel(workflowId, k);
         }

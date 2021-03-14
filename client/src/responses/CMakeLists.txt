@@ -38,7 +38,7 @@ set(HEADERS
         GetPanelResponseHandler.h
         RenamePanelTitleResponseHandler.h
 
-        )
+        GetTaskTitleUpdatingResponseHandler.cpp GetTaskTitleUpdatingResponseHandler.h)
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
 

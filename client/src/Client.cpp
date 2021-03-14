@@ -77,6 +77,7 @@ void Client::deInitResponseHandlers() {
     delete m_getTaskWorkersResponseHandler;
     delete m_getTagsResponseHandler;
     delete m_renamePanelTitleResponseHandler;
+    delete m_getTaskTitleUpdatingResponseHandler;
 
 }
 
@@ -96,6 +97,7 @@ void Client::initResponseHandlers() {
     m_getTaskResponseHandler = new GetTaskResponseHandler(this);
     m_getPanelResponseHandler = new GetPanelResponseHandler(this);
     m_renamePanelTitleResponseHandler = new RenamePanelTitleResponseHandler(this);
+    m_getTaskTitleUpdatingResponseHandler = new GetTaskTitleUpdatingResponseHandler(this);
 
 }
 
@@ -243,7 +245,7 @@ void Client::getPanelTasks(int panelId) {
 
     json["type"] = static_cast<int>(Client::RequestType::GET_PANEL_TASKS);
     json["token"] = m_accessesToken;
-    json["panelId"] = panelId;
+    json["listId"] = panelId;
 
     QJsonDocument document;
     document.setObject(json);
@@ -271,7 +273,7 @@ void Client::newTask(const int &panelId, const int &taskIndex) {
     json["token"] = m_accessesToken;
     json["listId"] = panelId;
     json["taskIndex"] = taskIndex;
-    json["taskTitle"] = "Untitled";
+    json["title"] = "Untitled";
     json["creatorId"] = m_id;
 
     QJsonDocument document;
@@ -388,6 +390,18 @@ void Client::updatePanelTitle(const int &panelId, const QString &title) {
     document.setObject(json);
     emit request(document.toJson(QJsonDocument::Compact));
 }
+void Client::updateTaskTitle(const int &taskId, const QString &title) {
+    QJsonObject json;
+
+    json["type"] = static_cast<int>(Client::RequestType::UPDATE_TASK_TITLE);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+    json["title"] = title;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
 
 void Client::logout() {
     QJsonObject json;
@@ -470,7 +484,9 @@ void Client::renamePanel(const int &workflowId, const int &panelIndex, const QSt
     }
 }
 
-
+void Client::renameTask(const int &taskId, const int &panelId, const QString &title) {
+    m_kanban->at(panelId).model->at(taskId).title = title;
+}
 
 
 

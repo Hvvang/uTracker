@@ -142,7 +142,6 @@ bool SendStatistics::isValid(QJsonObject itemObject) {
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendProfile::isValid(QJsonObject itemObject) {
-//    qDebug() << itemObject["userId"].toInt();
     if (itemObject.contains("userId"))
         return true;
     return false;
@@ -201,7 +200,9 @@ ToCreateTask::ToCreateTask(Connection *socket) : AbstractRequestHandler(socket){
 
 bool ToCreateTask::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
-        && itemObject.contains("listId"))
+        && itemObject.contains("listId")
+        && itemObject.contains("creatorId")
+        && itemObject.contains("taskIndex"))
         return true;
     return false;
 }
@@ -211,6 +212,16 @@ ToGetTasks::ToGetTasks(Connection *socket) : AbstractRequestHandler(socket){}
 bool ToGetTasks::isValid(QJsonObject itemObject) {
     if (itemObject.contains("listId"))
         return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+UpdateTaskTitleRequestHandler::UpdateTaskTitleRequestHandler(Connection *socket)
+    : AbstractRequestHandler(socket) {}
+
+bool UpdateTaskTitleRequestHandler::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId") && itemObject.contains("title")) {
+        return true;
+    }
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

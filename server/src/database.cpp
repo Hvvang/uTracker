@@ -39,14 +39,14 @@ void DataBase::create_tables() {
         "github_token varchar)");
     query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, deadline datetime)");
     // query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
-    query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, list_id int, index_id int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist varchar, files blob)");
+    query.exec("create table IF NOT EXISTS Tasks (id integer primary key AUTOINCREMENT, list_id int, taskIndex int, title varchar, creation_time datetime, deadline_time datetime, creator_id int, description varchar, checklist varchar, files blob)");
     query.exec(
         "create table IF NOT EXISTS T_connector ("
         "id integer primary key AUTOINCREMENT,"
         "task_id int,"
-        "worker_id int"
+        "worker_id int,"
         "FOREIGN KEY(task_id) REFERENCES Tasks(id),"
-        "FOREIGN KEY(worker_id) REFERENCES UsersCredential(id)\")");
+        "FOREIGN KEY(worker_id) REFERENCES UsersCredential(id))");
     query.exec(
         "create table IF NOT EXISTS WF_connector ("
         "id integer primary key AUTOINCREMENT,"
@@ -150,13 +150,17 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 break;
             case RequestType::CREATE_TASK:
                 result = createTask(map.value("title").toString(),
-                                    map.value("listId").toInt());
+                                    map.value("listId").toInt(),
+                                    map.value("taskIndex").toInt());
                 break;
             case RequestType::GET_TASKS:
                 result = getTasks(map.value("listId").toInt());
                 break;
+            case RequestType::UPDATE_TASK_TITLE:
+                result = renameTaskTitle(map.value("taskId").toInt(),
+                                         map.value("title").toString());
+                break;
             case RequestType::UPDATE_TASK:
-                qDebug() << "zashlo";
                 result = updateTask(map.value("taskId").toInt(),
                                     map.value("description").toString(),
                                     map.value("checkList"),
@@ -521,24 +525,56 @@ QVariantMap DataBase::getLists(int workflowId) {
     return map;
 }
 
-QVariantMap DataBase::createTask(const QString &title, int listId) {
+QVariantMap DataBase::createTask(const QString &title, const int &listId, const int &taskIndex) {
     QSqlQuery query;
-    int index_id = 1;
-    query.exec("select index_id from Tasks where list_id = " + QString::number(listId) + " order by index_id DESC limit 1");
-    if (query.first()) {
-        index_id = query.value(0).toInt() + 1;
-    }
     QVariantMap map;
+
+    query.exec(QString("SELECT deadline FROM WorkFlows where id = (SELECT workflow_id FROM Lists where id = %1);").arg(listId));
     map["type"] = static_cast<int>(RequestType::CREATE_TASK);
-    int lastid;
-    if (insert("Tasks", "title, list_id, index_id", "'" + title + "', " + QString::number(listId) + ", " + QString::number(index_id), lastid)) {
-        map["message"] = "Task created";
-        map["taskId"] = lastid;
+    if (query.exec(QString("INSERT INTO Tasks "
+                           "(list_id, taskIndex, title, creation_time, deadline_time, creator_id) "
+                           "VALUES(%1, %2, '%3', '%4', '%5', %6);")
+                           .arg(listId)
+                           .arg(taskIndex)
+                           .arg(title)
+                           .arg(QDate::currentDate().toString("dd-MM-yyyy"))
+                           .arg(query.value(0).toString())
+                           .arg(1))) {
+        map["taskId"] = query.lastInsertId().toInt();;
         map["listId"] = listId;
         map["title"] = title;
+        map["taskIndex"] = taskIndex;
+        map["message"] = "Task successfully created";
     } else {
         map["message"] = "Task wasn't created";
         map["error"] = 1;
+    }
+    return map;
+}
+
+QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::UPDATE_TASK_TITLE);
+    if (query.exec(QString("SELECT list_id, taskIndex FROM Tasks WHERE id = %1;").arg(taskId))) {
+        int listId = query.value(0).toInt();
+        int taskIndex = query.value(1).toInt();
+        if (query.exec(QString("UPDATE Tasks SET title = '%1' WHERE id = %2;")
+                               .arg(title)
+                               .arg(taskId))) {
+
+            map["taskId"] = taskId;
+            map["title"] = title;
+            map["listId"] = listId;
+            map["taskIndex"] = taskIndex;
+
+            map["message"] = "Task title successfully edited.";
+        }
+    }
+    else {
+        map["error"] = static_cast<int>(Errors::TASK_RENAME_ERROR);
+        map["message"] = "An error occurred in task editing.";
     }
     return map;
 }
@@ -635,21 +671,18 @@ QVariantMap DataBase::removeTask(int taskId) {
     return map;
 }
 
-QVariantMap DataBase::getTaskData(int taskId) {  //я подивлюся
-                                                 //    Q_UNUSED(taskId);
+QVariantMap DataBase::getTaskData(int taskId) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::GET_TASK_DATA);
     QSqlQuery query;
-    if (query.exec("select title, description, checklist, list_id from Tasks where id = " + QString::number(taskId)) && query.first()) {
-        map["message"] = "Take your task data bitch";
-        // query.first();
+    if (query.exec("SELECT title, taskIndex from Tasks where id = " + QString::number(taskId)) && query.first()) {
         map["title"] = query.value(0).toString();
-        map["description"] = query.value(1).toString();
-        map["checkList"] = query.value(2).toString();
-        map["listId"] = query.value(3).toInt();
+        map["taskIndex"] = query.value(1).toInt();
         map["taskId"] = taskId;
+
+        map["message"] = "Task successfully gotten.";
     } else {
-        map["message"] = "i dont now wtf";
+        map["message"] = "An error occurred in Task data getting.";
         map["error"] = 1;
     }
     return map;
@@ -659,8 +692,11 @@ QVariantMap DataBase::getTasks(int listId) {
     QSqlQuery query;
     QJsonArray tasks;
     QVariantMap map;
+
     map["type"] = static_cast<int>(RequestType::GET_TASKS);
+
     query.exec("select id from Tasks where list_id = " + QString::number(listId));
+
     if (query.first()) {
         tasks.append(QJsonObject::fromVariantMap(getTaskData(query.value(0).toInt())));
     } else {
@@ -670,13 +706,9 @@ QVariantMap DataBase::getTasks(int listId) {
     while (query.next()) {
         tasks.append(QJsonObject::fromVariantMap(getTaskData(query.value(0).toInt())));
     }
-    query.exec("select title from Lists where id = " + QString::number(listId));
-    if (query.first()) {
-        map["title"] = query.value(0).toString();
-        map["listId"] = listId;
-    }
     if (!map.contains("error")) {
         map["tasks"] = tasks;
+        map["listId"] = listId;
         map["message"] = "Tasks successfully have gotten";
     }
     return map;

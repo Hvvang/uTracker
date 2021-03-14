@@ -31,6 +31,7 @@ public:
         ColabsRole,
         IconRole,
         BlankRole,
+        IdRole,
     };
 
     // Basic functionality:

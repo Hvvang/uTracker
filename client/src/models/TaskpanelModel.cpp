@@ -44,6 +44,7 @@ QVariant TaskPanelModel::data(const QModelIndex &index, int role) const
         case ColabsRole: return QVariant::fromValue(m_model[index.row()].workers);
         case BlankRole: return m_model[index.row()].blank;
         case IconRole: return "";
+        case IdRole: return m_model[index.row()].id;
 //        case PanelModelRole: return m_model[index.row()].model;
     }
     // FIXME: Implement me!
@@ -90,6 +91,7 @@ QHash<int, QByteArray> TaskPanelModel::roleNames() const {
     roles[ColabsRole] = "WorkersModel";
     roles[IconRole] = "headerIcon";
     roles[BlankRole] = "isBlank";
+    roles[IdRole] = "taskId";
     return roles;
 }
 
