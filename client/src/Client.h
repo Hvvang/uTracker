@@ -16,10 +16,15 @@
 #include <QQuickItem>
 
 #include "googleauth.h"
+
+
+// MODELS
 #include "WorkflowsModel.h"
 #include "KanbanModel.h"
+#include "TaskDescriptionModel.h"
 
 
+// RESPONSE HANDLERS
 #include "AuthorisationResponseHandler.h"
 #include "ProfileDataResponseHandler.h"
 #include "CreateWorkflowResponseHandler.h"
@@ -36,11 +41,16 @@
 #include "GetPanelResponseHandler.h"
 #include "RenamePanelTitleResponseHandler.h"
 #include "GetTaskTitleUpdatingResponseHandler.h"
+#include "GetTaskDescriptionResponseHandler.h"
+#include "GetTaskUpdatingResponseHandler.h"
+
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
 #define UI_AuthWindow "qrc:/qml/authwindow/Authorization.qml"
 #define UI_MainWindow "qrc:/qml/mainwindow/Mainwindowview.qml"
+
+#define ENUM_TO_INT(var) static_cast<int>(var)
 
 struct Profile {
     QString login = "";
@@ -105,6 +115,7 @@ public:
     void saveToken(const QString &type, const QString &value);
     QString getToken(const QString &type);
     static Client* singleton();
+    static QQmlApplicationEngine* engineSingleton();
 
     void initWorkflowsModel();
     void getProfileData();
@@ -126,6 +137,8 @@ public:
     void addPanel(const int &workflowId, const Kanban &kanban);
     void renamePanel(const int &workflowId, const int &panelIndex, const QString &title);
     void renameTask(const int &taskId, const int &panelId, const QString &title);
+    void populateTaskModel(const int &taskId, const QString &title, const QString &creation_time,
+                           const QString &deadline_time, const QString &description);
 
     void addTask(const int &panelId, const Task &task);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
@@ -144,17 +157,23 @@ public:
     Q_INVOKABLE void newPanel(const int &workflowId, const int &panelIndex);
     Q_INVOKABLE void updatePanelTitle(const int &panelId, const QString &title);
     Q_INVOKABLE void updateTaskTitle(const int &taskId, const QString &title);
+    Q_INVOKABLE void getTaskDescription(const int &taskId);
+    Q_INVOKABLE void finishEditingTask();
     Q_INVOKABLE void logout();
 
 
 protected:
     static Client* m_instance;
+    static QQmlApplicationEngine *m_qmlEngine;
 
 private:
     bool updateKanbanModelIfNeeded(int workflowId);
+    bool updateTaskModelIfNeeded(const int &taskId);
 
 signals:
     void notification(const QString &msg);
+    void taskDescription();
+    void taskEdited();
 
     void switchWindow(const QString &windowPath);
     void switchMenu(const QString &panelPath);
@@ -172,7 +191,7 @@ public slots:
 
 private:
     QTcpSocket m_socket;
-    QQmlApplicationEngine *m_engine{nullptr};
+
     GoogleAuth *m_googleInstance{nullptr};
 
     Profile m_profile;
@@ -181,6 +200,7 @@ private:
 
     WorkflowsModel *m_workflows{nullptr};
     KanbanModel *m_kanban{nullptr};
+    TaskDescriptionModel *m_task{nullptr};
 
     AuthorisationResponseHandler *m_authHandler{nullptr};
     ProfileDataResponseHandler *m_profileHandler{nullptr};
@@ -198,9 +218,12 @@ private:
     GetPanelResponseHandler *m_getPanelResponseHandler{nullptr};
     RenamePanelTitleResponseHandler *m_renamePanelTitleResponseHandler{nullptr};
     GetTaskTitleUpdatingResponseHandler *m_getTaskTitleUpdatingResponseHandler{nullptr};
+    GetTaskDescriptionResponseHandler *m_getTaskDescriptionResponseHandler{nullptr};
+    GetTaskUpdatingResponseHandler *m_getTaskUpdatingResponseHandler{nullptr};
 
 };
 
 #define m_client Client::singleton()
+#define m_engine Client::engineSingleton()
 
 #endif //UTRACKER_CLIENT_H

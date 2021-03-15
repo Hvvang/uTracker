@@ -10,7 +10,6 @@ struct Task {
     int index;
     QString title = "Untitled";
     QStringList tags = {};
-//    TagsModel *tags = new TagsModel;
     ColaborantsModel *workers = new ColaborantsModel;
     bool blank = false;
 };
@@ -59,6 +58,8 @@ public:
 
     Task getTask(int index);
     void setTask(int index, Task &task);
+    [[nodiscard]] bool contains(const int &taskId) const;
+    void rename(const int &taskId, const QString &title);
 
     Q_INVOKABLE void reset();
 

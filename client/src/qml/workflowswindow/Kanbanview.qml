@@ -12,6 +12,16 @@ Item {
     id: root
     anchors.fill: parent
 
+    Connections {
+        target: client
+        function onTaskDescription() {
+            descriptionDialog.open();
+        }
+        function onTaskEdited() {
+            descriptionDialog.close();
+        }
+    }
+
     property int currentPanelIndexOnDragging: 0
 
     Flickable {
@@ -192,7 +202,6 @@ Item {
 
                                     visible: !isBlank
 
-
                                     MouseArea {
                                        id: dragArea
                                        anchors.fill: parent
@@ -209,7 +218,10 @@ Item {
 //                                               task.colabsCounter += 1;
 //                                           }
                                        }
-                                       onPressed: KanbanModel.setHeight(drag.target.height)
+                                       onPressed: {
+                                           client.getTaskDescription(taskId);
+                                           KanbanModel.setHeight(drag.target.height)
+                                       }
                                        onReleased: {
                                            parent.Drag.drop()
                                            KanbanModel.setHeight(0)
@@ -265,6 +277,10 @@ Item {
         }
 
 
+    }
+
+    TaskDiscriptionView {
+        id: descriptionDialog
     }
 }
 

@@ -171,4 +171,19 @@ Task &TaskPanelModel::at(const int &id) {
     }
 }
 
+bool TaskPanelModel::contains(const int &taskId) const {
+    foreach(auto &task, m_model) {
+        if (task.id == taskId) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void TaskPanelModel::rename(const int &taskId, const QString &title) {
+    auto &task = at(taskId);
+    task.title = title;
+    emit dataChanged(index(task.index, 0), index(task.index, 0));
+}
+
 

@@ -62,6 +62,8 @@ public:
 
     void rename(const int &panelIndex, const QString &title);
 
+    [[nodiscard]] bool contains(const int &panelId) const;
+
 private:
     QList<Kanban> m_model;
     int m_workflowId;

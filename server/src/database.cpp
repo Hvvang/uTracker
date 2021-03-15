@@ -175,10 +175,10 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 break;
             case RequestType::UPDATE_TASK:
                 result = updateTask(map.value("taskId").toInt(),
-                                    map.value("description").toString(),
-                                    map.value("checkList"),
-                                    map.value("title").toString());
-                qDebug() << QJsonDocument(QJsonObject::fromVariantMap(result)).toJson();
+                                    map.value("title").toString(),
+                                    map.value("deadline_time").toString(),
+                                    map.value("creation_time").toString(),
+                                    map.value("description").toString());
                 break;
             case RequestType::MOVE_TASK:
                 result = moveTask(map.value("taskId").toInt(),
@@ -346,11 +346,10 @@ QVariantMap DataBase::removeFromWorkflow(int user_id, int workflow_id) {
 }
 
 QVariantMap DataBase::getWorkflows(int user_id) {  // треба норм дописать мапу яку повертаю з ерорами
-    // qDebug() << user_id;
     QJsonArray workflows;
     QSqlQuery query;
     query.exec(QString("select workflow_id from WF_connector where user_id = %1;").arg(user_id));
-    QMap<QString, QVariant> map;
+    QVariantMap map;
 
     map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
     if (query.first()) {
@@ -373,17 +372,15 @@ QVariantMap DataBase::getWorkflows(int user_id) {  // треба норм доп
 
 QVariantMap DataBase::getWorkflow(int workflow_id) {
     QSqlQuery query = select("WorkFlows", "owner_id, title, deadline", "id = " + QString::number(workflow_id));
-    QMap<QString, QVariant> map;
+    QVariantMap map;
     if (query.first()) {
         map["type"] = static_cast<int>(RequestType::GET_SINGLE_WORKFLOW_DATA);
         map["workflowId"] = workflow_id;
         map["ownerId"] = query.value(0).toInt();
         map["title"] = query.value(1).toString();
         map["deadline"] = query.value(2).toString();
-        // QJsonArray lists;
-        // lists.append(QJsonObject::fromVariantMap(getLists(workflow_id)));
-        // map["lists"] = lists;
-        map["message"] = "Workflow successfully has gotten";
+
+        map["message"] = "Workflow successfully has gotten.";
     } else {
         map["error"] = 1;
         map["message"] = "External error in GET_WORKFLOW";
@@ -544,7 +541,7 @@ QVariantMap DataBase::createTask(const QString &title, const int &listId, const 
 
     query.exec(QString("SELECT deadline FROM WorkFlows where id = (SELECT workflow_id FROM Lists where id = %1);").arg(listId));
     map["type"] = static_cast<int>(RequestType::CREATE_TASK);
-    if (query.exec(QString("INSERT INTO Tasks "
+    if (query.first() && query.exec(QString("INSERT INTO Tasks "
                            "(list_id, taskIndex, title, creation_time, deadline_time, creator_id) "
                            "VALUES(%1, %2, '%3', '%4', '%5', %6);")
                            .arg(listId)
@@ -593,39 +590,33 @@ QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
     return map;
 }
 
-QVariantMap DataBase::updateTask(int taskId, const QString &description, const QVariant &checkList, const QString &title) {
-    Q_UNUSED(title);
+QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString &deadline,
+                                 const QString &creationTime, const QString &description) {
+    QSqlQuery query;
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_TASK);
-    if (title.isEmpty()) {
-        QJsonObject obj{
-            {"array", checkList.toJsonArray()}};
-        QJsonDocument *jsonDoc = new QJsonDocument(obj);
-        QByteArray json = jsonDoc->toJson();
 
-        QSqlQuery query;
-        query.prepare("UPDATE Tasks SET description = :description, checklist = :checklist WHERE id = " + QString::number(taskId) + ";");
-        query.bindValue(":description", description);
-        query.bindValue(":checklist", json);
-        if (query.exec()) {
-            map["message"] = "Task updated";
-            map["description"] = description;
-            map["checkList"] = checkList;
-        } else {
-            map["message"] = "Task wasn't updated";
-            map["error"] = 1;
+    if (query.exec(QString("UPDATE Tasks SET "
+                           "title = '%1', "
+                           "creation_time = '%2', "
+                           "deadline_time = '%3', "
+                           "description = '%4' "
+                           "WHERE id = %5 ;")
+                           .arg(title)
+                           .arg(creationTime)
+                           .arg(deadline)
+                           .arg(description)
+                           .arg(taskId))) {
+        map["taskId"] = taskId;
+        map["title"] = title;
+        if (query.exec("SELECT list_id, taskIndex FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+            map["listId"] = query.value(0).toInt();
+            map["taskIndex"] = query.value(1).toInt();
         }
+        map["message"] = "Task successfully updated.";
     } else {
-        QSqlQuery query;
-        query.prepare("UPDATE Tasks SET title = :title WHERE id = " + QString::number(taskId) + ";");
-        query.bindValue(":title", title);
-        if (query.exec()) {
-            map["message"] = "Task renamed";
-            map["title"] = title;
-        } else {
-            map["message"] = "Task wasn't renamed";
-            map["error"] = 1;
-        }
+        map["message"] = "Task wasn't updated.";
+        map["error"] = 1;
     }
     return map;
 }
@@ -689,9 +680,17 @@ QVariantMap DataBase::getTaskData(int taskId) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::GET_TASK_DATA);
     QSqlQuery query;
-    if (query.exec("SELECT title, taskIndex from Tasks where id = " + QString::number(taskId)) && query.first()) {
-        map["title"] = query.value(0).toString();
+    if (query.exec("SELECT "
+                   "list_id, taskIndex, title, creation_time, deadline_time, creator_id, description "
+                   "FROM Tasks "
+                   "WHERE id = " + QString::number(taskId)) && query.first()) {
+        map["listId"] = query.value(0).toInt();
         map["taskIndex"] = query.value(1).toInt();
+        map["title"] = query.value(2).toString();
+        map["creation_time"] = query.value(3).toString();
+        map["deadline_time"] = query.value(4).toString();
+        map["creator_id"] = query.value(5).toInt();
+        map["description"] = query.value(6).toString();
         map["taskId"] = taskId;
 
         map["message"] = "Task successfully gotten.";

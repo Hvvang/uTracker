@@ -102,12 +102,12 @@
 <context>
     <name>Kanbanview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="85"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="95"/>
         <source>New Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="252"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="264"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>
@@ -157,9 +157,37 @@
     </message>
 </context>
 <context>
+    <name>TaskDiscriptionView</name>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="91"/>
+        <source>New Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="149"/>
+        <source>x</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="334"/>
+        <source>New Property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="344"/>
+        <source>Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="353"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Taskview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Taskview.qml" line="114"/>
+        <location filename="../src/qml/workflowswindow/Taskview.qml" line="113"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -177,12 +205,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="116"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="115"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="182"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="181"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>

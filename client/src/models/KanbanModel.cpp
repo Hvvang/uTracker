@@ -152,3 +152,12 @@ int KanbanModel::flowId() {
 void KanbanModel::rename(const int &panelIndex, const QString &title) {
     m_model[panelIndex].title = title;
 }
+
+bool KanbanModel::contains(const int &panelId) const {
+    foreach(auto &panel, m_model) {
+        if (panel.id == panelId) {
+            return true;
+        }
+    }
+    return false;
+}

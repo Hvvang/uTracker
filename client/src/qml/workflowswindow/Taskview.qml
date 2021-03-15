@@ -11,7 +11,6 @@ Item {
     height: view.childrenRect.height + 30
 
     property int colabsCounter: 0
-
     property var backColor: ["#4287f5", "#f5b042", "#f56042", "#f54242", "#b942f5", "#4257f5", "#f5429c"]
 
     ColumnLayout {
@@ -126,7 +125,11 @@ Item {
         anchors.fill: parent
         Material.background: "white"
         radius: 6
+
     }
+
+
 }
+
 
 

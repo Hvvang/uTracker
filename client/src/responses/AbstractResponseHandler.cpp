@@ -76,6 +76,10 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit getTaskTags(data); break;
         case ResponseType::GET_TASK:
             emit getTask(data); break;
+        case ResponseType::GET_TASK_DATA:
+            emit getTaskDescription(data); break;
+        case ResponseType::UPDATE_TASK:
+            emit updateTask(data); break;
         case ResponseType::UPDATE_TASK_TITLE:
             emit renameTask(data); break;
         case ResponseType::GET_PANEL:
@@ -87,8 +91,6 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
 
 
         case ResponseType::REMOVE_PANEL:
-            break;
-        case ResponseType::UPDATE_TASK:
             break;
     }
 }

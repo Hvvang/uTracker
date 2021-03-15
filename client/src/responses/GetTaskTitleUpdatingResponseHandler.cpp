@@ -9,7 +9,8 @@
 
 GetTaskTitleUpdatingResponseHandler::GetTaskTitleUpdatingResponseHandler(QObject *parent)
         : AbstractResponseHandler(parent) {
-    connect(this, &AbstractResponseHandler::renameTask, this,  &GetTaskTitleUpdatingResponseHandler::processResponse);
+    connect(this, &AbstractResponseHandler::renameTask,
+            this,  &GetTaskTitleUpdatingResponseHandler::processResponse);
 }
 
 void GetTaskTitleUpdatingResponseHandler::processResponse(const QByteArray &data) {

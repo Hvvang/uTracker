@@ -12,11 +12,11 @@
 #include "models/KanbanModel.h"
 
 Client* Client::m_instance = nullptr;
+QQmlApplicationEngine* Client::m_qmlEngine = nullptr;
 
 Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
-    : QObject(parent)
-    , m_engine(engine) {
-
+    : QObject(parent) {
+    m_qmlEngine = engine;
     m_socket.connectToHost(host, port);
     connect(&m_socket, &QTcpSocket::connected, this, [=]{
         qDebug() << "Client successfully connected to server.";
@@ -76,8 +76,12 @@ void Client::deInitResponseHandlers() {
     delete m_getPanelTasksResponseHandler;
     delete m_getTaskWorkersResponseHandler;
     delete m_getTagsResponseHandler;
+    delete m_getTaskResponseHandler;
+    delete m_getPanelResponseHandler;
     delete m_renamePanelTitleResponseHandler;
     delete m_getTaskTitleUpdatingResponseHandler;
+    delete m_getTaskDescriptionResponseHandler;
+    delete m_getTaskUpdatingResponseHandler;
 
 }
 
@@ -98,6 +102,8 @@ void Client::initResponseHandlers() {
     m_getPanelResponseHandler = new GetPanelResponseHandler(this);
     m_renamePanelTitleResponseHandler = new RenamePanelTitleResponseHandler(this);
     m_getTaskTitleUpdatingResponseHandler = new GetTaskTitleUpdatingResponseHandler(this);
+    m_getTaskDescriptionResponseHandler = new GetTaskDescriptionResponseHandler(this);
+    m_getTaskUpdatingResponseHandler = new GetTaskUpdatingResponseHandler(this);
 
 }
 
@@ -118,10 +124,17 @@ Client *Client::singleton() {
     return m_instance;
 }
 
+QQmlApplicationEngine *Client::engineSingleton() {
+    if (!m_qmlEngine) {
+        m_qmlEngine = new QQmlApplicationEngine();
+    }
+    return m_qmlEngine;
+}
+
 void Client::getProfileData() {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::GET_PROFILE);
+    json["type"] = ENUM_TO_INT(Client::RequestType::GET_PROFILE);
     json["token"] = m_accessesToken;
     json["userId"] = m_id;
 
@@ -185,10 +198,10 @@ void Client::autoSignIn() {
     QJsonObject json;
 
     if (token = m_client->getToken("auth_token"); !token.isEmpty()) {
-        json["type"] = static_cast<int>(Client::RequestType::AUTO_AUTH);
+        json["type"] = ENUM_TO_INT(Client::RequestType::AUTO_AUTH);
         json["token"] = token;
     } else if (token = m_client->getToken("accesses_token"); !token.isEmpty()) {
-        json["type"] = static_cast<int>(Client::RequestType::AUTO_OAUTH);
+        json["type"] = ENUM_TO_INT(Client::RequestType::AUTO_OAUTH);
         json["token"] = token;
     } else {
         return;
@@ -201,7 +214,7 @@ void Client::autoSignIn() {
 void Client::authorize(const QString &email, const QString &password) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::SIGN_IN);
+    json["type"] = ENUM_TO_INT(Client::RequestType::SIGN_IN);
     json["email"] = email;
     json["password"] = password;
 
@@ -214,7 +227,7 @@ void Client::registrate(const QString &email, const QString &password,
                     const QString &name, const QString &surname) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::SIGN_UP);;
+    json["type"] = ENUM_TO_INT(Client::RequestType::SIGN_UP);;
     json["email"] = email;
     json["password"] = password;
     json["name"] = name;
@@ -229,7 +242,7 @@ void Client::openWorkflow(int workflowId) {
     if (updateKanbanModelIfNeeded(workflowId)) {
         QJsonObject json;
 
-        json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOW_PANELS);
+        json["type"] = ENUM_TO_INT(Client::RequestType::GET_WORKFLOW_PANELS);
         json["token"] = m_accessesToken;
         json["workflowId"] = workflowId;
 
@@ -243,7 +256,7 @@ void Client::openWorkflow(int workflowId) {
 void Client::getPanelTasks(int panelId) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::GET_PANEL_TASKS);
+    json["type"] = ENUM_TO_INT(Client::RequestType::GET_PANEL_TASKS);
     json["token"] = m_accessesToken;
     json["listId"] = panelId;
 
@@ -255,7 +268,7 @@ void Client::getPanelTasks(int panelId) {
 void Client::createWorkflow(const QString &title, const QString &date) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::CREATE_WORKFLOW);
+    json["type"] = ENUM_TO_INT(Client::RequestType::CREATE_WORKFLOW);
     json["token"] = m_accessesToken;
     json["title"] = title;
     json["deadline"] = date;
@@ -269,7 +282,7 @@ void Client::createWorkflow(const QString &title, const QString &date) {
 void Client::newTask(const int &panelId, const int &taskIndex) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::CREATE_TASK);
+    json["type"] = ENUM_TO_INT(Client::RequestType::CREATE_TASK);
     json["token"] = m_accessesToken;
     json["listId"] = panelId;
     json["taskIndex"] = taskIndex;
@@ -284,7 +297,7 @@ void Client::newTask(const int &panelId, const int &taskIndex) {
 void Client::newPanel(const int &workflowId, const int &panelIndex) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::CREATE_PANEL);
+    json["type"] = ENUM_TO_INT(Client::RequestType::CREATE_PANEL);
     json["token"] = m_accessesToken;
     json["workflowId"] = workflowId;
     json["listIndex"] = panelIndex;
@@ -299,7 +312,7 @@ void Client::newPanel(const int &workflowId, const int &panelIndex) {
 void Client::archiveWorkflow(int index) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::ARCHIVE_WORKFLOW);
+    json["type"] = ENUM_TO_INT(Client::RequestType::ARCHIVE_WORKFLOW);
     json["token"] = m_accessesToken;
     json["workflowId"] = index;
 
@@ -311,7 +324,7 @@ void Client::archiveWorkflow(int index) {
 void Client::inviteContact(const QString &contact, int index) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::INVITE_CONTACT);
+    json["type"] = ENUM_TO_INT(Client::RequestType::INVITE_CONTACT);
     json["token"] = m_accessesToken;
     json["workflowId"] = index;
     json["email"] = contact;
@@ -325,7 +338,7 @@ void Client::getWorkflows() {
     if (!m_workflows) {
         QJsonObject json;
 
-        json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOWS);
+        json["type"] = ENUM_TO_INT(Client::RequestType::GET_WORKFLOWS);
         json["token"] = m_accessesToken;
         json["userId"] = m_id;
 
@@ -340,7 +353,7 @@ void Client::getWorkflows() {
 void Client::editWorkflow(int id, const QString &title, const QString &date) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::UPDATE_WORKFLOW);
+    json["type"] = ENUM_TO_INT(Client::RequestType::UPDATE_WORKFLOW);
     json["token"] = m_accessesToken;
     json["userId"] = m_id;
     json["workflowId"] = id;
@@ -355,7 +368,7 @@ void Client::editWorkflow(int id, const QString &title, const QString &date) {
 void Client::getWorkflowColaborants(int workflowId) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::GET_WORKFLOW_COLABORANT);
+    json["type"] = ENUM_TO_INT(Client::RequestType::GET_WORKFLOW_COLABORANT);
     json["token"] = m_accessesToken;
     json["userId"] = m_id;
     json["workflowId"] = workflowId;
@@ -368,7 +381,7 @@ void Client::getWorkflowColaborants(int workflowId) {
 void Client::getTaskWorkers(const int &taskId) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::GET_TASK_WORKERS);
+    json["type"] = ENUM_TO_INT(Client::RequestType::GET_TASK_WORKERS);
     json["token"] = m_accessesToken;
     json["userId"] = m_id;
     json["taskId"] = taskId;
@@ -381,7 +394,7 @@ void Client::getTaskWorkers(const int &taskId) {
 void Client::updatePanelTitle(const int &panelId, const QString &title) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::RENAME_PANEL);
+    json["type"] = ENUM_TO_INT(Client::RequestType::RENAME_PANEL);
     json["token"] = m_accessesToken;
     json["listId"] = panelId;
     json["title"] = title;
@@ -393,7 +406,7 @@ void Client::updatePanelTitle(const int &panelId, const QString &title) {
 void Client::updateTaskTitle(const int &taskId, const QString &title) {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::UPDATE_TASK_TITLE);
+    json["type"] = ENUM_TO_INT(Client::RequestType::UPDATE_TASK_TITLE);
     json["token"] = m_accessesToken;
     json["taskId"] = taskId;
     json["title"] = title;
@@ -403,10 +416,34 @@ void Client::updateTaskTitle(const int &taskId, const QString &title) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::getTaskDescription(const int &taskId) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::GET_TASK_DATA);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::finishEditingTask() {
+    QJsonObject json = m_task->convertToJson();
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::UPDATE_TASK);
+    json["token"] = m_accessesToken;
+    json["taskId"] = m_task->Id();
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::logout() {
     QJsonObject json;
 
-    json["type"] = static_cast<int>(Client::RequestType::LOGOUT);
+    json["type"] = ENUM_TO_INT(Client::RequestType::LOGOUT);
     json["token"] = m_accessesToken;
     json["userId"] = m_id;
 
@@ -470,12 +507,27 @@ bool Client::updateKanbanModelIfNeeded(int workflowId) {
     return false;
 }
 
+bool Client::updateTaskModelIfNeeded(const int &taskId) {
+    if (!m_task) {
+        m_task = new TaskDescriptionModel(taskId, this);
+        m_engine->rootContext()->setContextProperty("TaskModel", m_task);
+    }
+    else {
+        m_task->reset(taskId);
+    }
+    return true;
+}
+
 void Client::addTask(const int &panelId, const Task &task) {
-    m_kanban->at(panelId).model->insert(task.index, task);
+    if (m_kanban->contains(panelId)) {
+        m_kanban->at(panelId).model->insert(task.index, task);
+    }
 }
 
 void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
-    m_kanban->at(panelId).model->at(taskId).workers->add(worker);
+    if (m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId)) {
+        m_kanban->at(panelId).model->at(taskId).workers->add(worker);
+    }
 }
 
 void Client::renamePanel(const int &workflowId, const int &panelIndex, const QString &title) {
@@ -485,8 +537,24 @@ void Client::renamePanel(const int &workflowId, const int &panelIndex, const QSt
 }
 
 void Client::renameTask(const int &taskId, const int &panelId, const QString &title) {
-    m_kanban->at(panelId).model->at(taskId).title = title;
+    if (m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId))
+        m_kanban->at(panelId).model->rename(taskId, title);
 }
+
+void Client::populateTaskModel(const int &taskId, const QString &title, const QString &creation_time,
+                               const QString &deadline_time, const QString &description) {
+    updateTaskModelIfNeeded(taskId);
+    if (!title.isEmpty())
+        m_task->pushBack("Title", title);
+    if (!creation_time.isEmpty())
+        m_task->pushBack("Creation time", creation_time, 1);
+    if (!deadline_time.isEmpty())
+        m_task->pushBack("Deadline time", deadline_time, 1);
+    if (!description.isEmpty())
+        m_task->pushBack(description);
+}
+
+
 
 
 
