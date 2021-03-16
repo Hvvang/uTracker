@@ -43,7 +43,7 @@
 #include "GetTaskTitleUpdatingResponseHandler.h"
 #include "GetTaskDescriptionResponseHandler.h"
 #include "GetTaskUpdatingResponseHandler.h"
-
+#include "MoveTaskResponseHandler.h"
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
@@ -137,6 +137,7 @@ public:
     void addPanel(const int &workflowId, const Kanban &kanban);
     void renamePanel(const int &workflowId, const int &panelIndex, const QString &title);
     void renameTask(const int &taskId, const int &panelId, const QString &title);
+    void updateTaskIndex(const int &taskId, const int &fromPanel, const int &fromIndex, const int &toPanel, const int &toIndex);
     void populateTaskModel(const int &taskId, const QString &title, const QString &creation_time,
                            const QString &deadline_time, const QString &description);
 
@@ -221,7 +222,7 @@ private:
     GetTaskTitleUpdatingResponseHandler *m_getTaskTitleUpdatingResponseHandler{nullptr};
     GetTaskDescriptionResponseHandler *m_getTaskDescriptionResponseHandler{nullptr};
     GetTaskUpdatingResponseHandler *m_getTaskUpdatingResponseHandler{nullptr};
-
+    MoveTaskResponseHandler *m_moveTaskResponseHandler{nullptr};
 };
 
 #define m_client Client::singleton()

@@ -53,13 +53,16 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void move(int from, int to, int n);
-    Q_INVOKABLE void test(int index);
+    Q_INVOKABLE void addBlank(int index);
     Q_INVOKABLE void removeBlank();
 
     Task getTask(int index);
     void setTask(int index, Task &task);
     [[nodiscard]] bool contains(const int &taskId) const;
     void rename(const int &taskId, const QString &title);
+
+    void decrementTaskIndex(const int &from);
+    void incrementTaskIndex(const int &from);
 
     Q_INVOKABLE void reset();
 

@@ -107,7 +107,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="260"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="264"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>

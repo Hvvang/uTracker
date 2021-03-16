@@ -630,9 +630,8 @@ QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &
     if (query.first()) {
         const int &currList = query.value(0).toInt();
         const int &currIndex = query.value(1).toInt();
-        qDebug() << "currList: " << currList << "currIndex: " << currIndex;
-        qDebug() << "listId: " << listId << "taskIndex: " << taskIndex;
-
+        map["fromListId"] = currList;
+        map["fromTaskIndex"] = currIndex;
 
         query.exec("select id from Tasks where list_id = " + QString::number(currList) + " and taskIndex > " + QString::number(currIndex) + " order by taskIndex desc");
         if (query.first()) {
@@ -653,6 +652,10 @@ QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &
     map["type"] = static_cast<int>(RequestType::MOVE_TASK);
     if (update("Tasks", "list_id = " + QString::number(listId) + ", taskIndex = " + QString::number(taskIndex), "id = " + QString::number(taskId))) {
         map["message"] = "Task moved";
+        map["taskId"] = taskId;
+        map["toListId"] = listId;
+        map["toTaskIndex"] = taskIndex;
+
     } else {
         map["message"] = "Task wasn't moved";
         map["error"] = 1;

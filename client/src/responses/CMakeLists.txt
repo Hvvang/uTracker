@@ -20,6 +20,7 @@ set(SOURCES
         GetTaskTitleUpdatingResponseHandler.cpp
         GetTaskDescriptionResponseHandler.cpp
         GetTaskUpdatingResponseHandler.cpp
+        MoveTaskResponseHandler.cpp
 
         )
 set(HEADERS
@@ -43,6 +44,7 @@ set(HEADERS
         GetTaskTitleUpdatingResponseHandler.h
         GetTaskDescriptionResponseHandler.h
         GetTaskUpdatingResponseHandler.h
+        MoveTaskResponseHandler.h
 
         )
 

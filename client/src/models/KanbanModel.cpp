@@ -86,11 +86,6 @@ QHash<int, QByteArray> KanbanModel::roleNames() const {
     return roles;
 }
 
-void KanbanModel::test(int index) {
-    m_model.at(index).model->reset();
-
-}
-
 void KanbanModel::setHeight(int height) {
     m_height = height;
 }
@@ -106,7 +101,6 @@ void KanbanModel::removeBlank(int panelIndex) {
 }
 
 void KanbanModel::swap(int sourcePanelIndex, int taskIndex, int targetPanelIndex, int targetTaskIndex) {
-
     auto sourceTask = m_model.at(sourcePanelIndex).model->getTask(taskIndex);
     m_model.at(targetPanelIndex).model->setTask(targetTaskIndex, sourceTask);
 
@@ -160,4 +154,14 @@ bool KanbanModel::contains(const int &panelId) const {
         }
     }
     return false;
+}
+
+void KanbanModel::moveTask(const int &taskId, const int &fromPanel, const int &fromIndex, const int &toPanel, const int &toIndex) {
+    if (fromPanel != toPanel) {
+        at(fromPanel).model->decrementTaskIndex(fromIndex + 1);
+        at(toPanel).model->incrementTaskIndex(toIndex);
+        swap(at(fromPanel).index, fromIndex, at(toPanel).index, toIndex);
+    } else {
+        at(fromPanel).model->move(fromIndex, toIndex, 1);
+    }
 }

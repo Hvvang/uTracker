@@ -151,14 +151,12 @@ Item {
                                 property int panel: panelId
 
                                 onDropped: {
-
                                     if (columnView._sourceModelIndex !== (drag.source as Taskview).panelIndex) {
                                         var sourcePanelIndex = (drag.source as Taskview).panelIndex;
                                         var sourceTaskIndex = (drag.source as Taskview).index;
                                         var targetPanelIndex = columnView._sourceModelIndex;
                                         var targetTaskIndex = task.index;
                                         client.moveTask((drag.source as Taskview).tId, delegateRoot.panel, targetTaskIndex);
-                                        KanbanModel.swap(sourcePanelIndex, sourceTaskIndex, targetPanelIndex, targetTaskIndex);
                                     }
                                 }
 
@@ -167,7 +165,6 @@ Item {
                                 }
 
                                 onEntered: function(drag) {
-
                                     if (root.currentPanelIndexOnDragging !== columnView._sourceModelIndex) {
                                         KanbanModel.removeBlank(root.currentPanelIndexOnDragging);
                                     }
@@ -176,10 +173,11 @@ Item {
                                     delegateRoot.width = (drag.source as Taskview).width
 
                                     if ((task as Taskview).realModel === (drag.source as Taskview).realModel) {
-                                        panelModel.move((drag.source as Taskview).index, (task as Taskview).index, 1);
-                                        client.moveTask(taskId, delegateRoot.panel, (task as Taskview).index);
+                                        if ((drag.source as Taskview).index !== (task as Taskview).index) {
+                                            client.moveTask((drag.source as Taskview).tId, delegateRoot.panel, (task as Taskview).index);
+                                        }
                                     } else {
-                                        panelModel.test((task as Taskview).index)
+                                        panelModel.addBlank((task as Taskview).index)
                                     }
 
                                 }

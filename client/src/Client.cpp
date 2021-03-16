@@ -82,6 +82,7 @@ void Client::deInitResponseHandlers() {
     delete m_getTaskTitleUpdatingResponseHandler;
     delete m_getTaskDescriptionResponseHandler;
     delete m_getTaskUpdatingResponseHandler;
+    delete m_moveTaskResponseHandler;
 
 }
 
@@ -104,7 +105,7 @@ void Client::initResponseHandlers() {
     m_getTaskTitleUpdatingResponseHandler = new GetTaskTitleUpdatingResponseHandler(this);
     m_getTaskDescriptionResponseHandler = new GetTaskDescriptionResponseHandler(this);
     m_getTaskUpdatingResponseHandler = new GetTaskUpdatingResponseHandler(this);
-
+    m_moveTaskResponseHandler = new MoveTaskResponseHandler(this);
 }
 
 void Client::send(const QString &data) {
@@ -540,7 +541,7 @@ void Client::addTask(const int &panelId, const Task &task) {
 }
 
 void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
-    if (m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId)) {
+    if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId)) {
         m_kanban->at(panelId).model->at(taskId).workers->add(worker);
     }
 }
@@ -552,8 +553,15 @@ void Client::renamePanel(const int &workflowId, const int &panelIndex, const QSt
 }
 
 void Client::renameTask(const int &taskId, const int &panelId, const QString &title) {
-    if (m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId))
+    if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId))
         m_kanban->at(panelId).model->rename(taskId, title);
+}
+
+void Client::updateTaskIndex(const int &taskId, const int &fromPanel, const int &fromIndex, const int &toPanel, const int &toIndex) {
+    if (m_kanban && m_kanban->contains(fromPanel) && m_kanban->contains(toPanel)
+        && m_kanban->at(fromPanel).model->contains(taskId)) {
+        m_kanban->moveTask(taskId, fromPanel, fromIndex, toPanel, toIndex);
+    }
 }
 
 void Client::populateTaskModel(const int &taskId, const QString &title, const QString &creation_time,
@@ -568,6 +576,8 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
     if (!description.isEmpty())
         m_task->pushBack(description);
 }
+
+
 
 
 

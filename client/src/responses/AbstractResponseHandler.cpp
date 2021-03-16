@@ -82,6 +82,8 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit updateTask(data); break;
         case ResponseType::UPDATE_TASK_TITLE:
             emit renameTask(data); break;
+        case ResponseType::MOVE_TASK:
+            emit moveTask(data); break;
         case ResponseType::GET_PANEL:
             emit getPanel(data); break;
         case ResponseType::ERROR:

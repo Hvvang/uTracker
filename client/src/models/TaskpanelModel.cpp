@@ -108,7 +108,7 @@ void TaskPanelModel::move(int from, int to, int n) {
     }
 }
 
-void TaskPanelModel::test(int index) {
+void TaskPanelModel::addBlank(int index) {
     if (blank_index == -1) {
         Task blankTask;
         blankTask.blank = true;
@@ -186,4 +186,15 @@ void TaskPanelModel::rename(const int &taskId, const QString &title) {
     emit dataChanged(index(task.index, 0), index(task.index, 0));
 }
 
+void TaskPanelModel::incrementTaskIndex(const int &from) {
+    for (int i = from; i < m_model.size(); ++i) {
+        m_model[i].index++;
+    }
+}
+
+void TaskPanelModel::decrementTaskIndex(const int &from) {
+    for (int i = from; i < m_model.size(); ++i) {
+        m_model[i].index--;
+    }
+}
 

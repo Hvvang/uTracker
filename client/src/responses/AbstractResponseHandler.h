@@ -32,7 +32,7 @@ enum class ResponseType {
     GET_PANEL_TASKS = 21,
     UPDATE_TASK_TITLE = 22,
     UPDATE_TASK = 23,
-
+    MOVE_TASK = 24,
     GET_TASK_DATA = 26,
 
     GET_TASKS_WORKERS = 27,
@@ -77,6 +77,7 @@ signals:
     void renamePanel(const QByteArray &);
     void renameTask(const QByteArray &);
     void updateTask(const QByteArray &);
+    void moveTask(const QByteArray &);
 
 private slots:
     void mediator(const QByteArray &);
