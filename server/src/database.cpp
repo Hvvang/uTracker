@@ -108,7 +108,6 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                       map.value("password").toString());
                 if (result.contains("userId")) {
                     m_connection->setUserId(result.value("userId").toInt());
-                    qDebug() << m_connection->getUserId();
                 }
                 break;
             case RequestType::AUTO_OAUTH:
@@ -217,7 +216,6 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
     if (!result.isEmpty()) {
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
-//        qDebug() << jsonDoc.toJson();
 
         emit m_connection->sendResponse(jsonDoc.toJson());
     }
@@ -309,6 +307,8 @@ DataBase::createWorkflow(int userId, const QString &title, const QString &deadli
 QVariantMap
 DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &deadline) {
     QVariantMap map;
+    QSqlQuery query;
+
     bool is_ok = false;
     if (!title.isEmpty() && !deadline.isEmpty()) {
         is_ok = update("WorkFlows", "title = '" + title + "', deadline = '" + deadline + "'", "id = " + QString::number(workflow_id));
@@ -325,10 +325,18 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
 
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
     if (is_ok)
-        map["message"] = "Workflow successfully updated";
+        map["message"] = "Workflow successfully updated.";
     else {
         map["error"] = 1;
-        map["message"] = "User isn't in database";
+        map["message"] = "Workflow isn't in database.";
+    }
+
+    if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = " + QString::number(workflow_id)) && query.first()) {
+        do {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            m_server->sendTo(query.value(0).toInt(), jsonDoc.toJson(QJsonDocument::Compact));
+        } while(query.next());
     }
     return map;
 }
@@ -355,10 +363,7 @@ DataBase::inviteToWorkflow(const QString &email, int workflow_id) {
             QJsonDocument jsonDoc = QJsonDocument(jsonObject);
             m_server->sendTo(invitedUserId, jsonDoc.toJson(QJsonDocument::Compact));
         }
-
-
         map["message"] = "User successfully invited to Workflow";
-
     } else {
         map["error"] = 1;
         map["message"] = "Invite canceled";

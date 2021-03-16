@@ -74,9 +74,8 @@ bool WorkflowsModel::removeRows(int row, int count, const QModelIndex &parent) {
     beginRemoveRows(parent, row, row + count - 1);
     delete m_data.at(row).colaborants;
     m_data.removeAt(row);
-    qDebug() << "removing";
     endRemoveRows();
-//    return true;
+    return true;
 }
 
 QHash<int, QByteArray> WorkflowsModel::roleNames() const {
@@ -114,7 +113,6 @@ void WorkflowsModel::addColaborant(quint64 index, const Colaborant &contact) {
 }
 
 void WorkflowsModel::updateWorkflow(const Workflow &workflow) {
-    qDebug() << workflow.id;
     for (int index = 0; index < rowCount(); ++index) {
         if (m_data[index].id == workflow.id) {
             m_data[index].title = workflow.title;

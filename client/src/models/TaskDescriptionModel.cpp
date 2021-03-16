@@ -35,11 +35,9 @@ QVariant TaskDescriptionModel::data(const QModelIndex &index, int role) const
 }
 
 bool TaskDescriptionModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    qDebug() << mainTypeCount;
     if (!index.isValid() || (index.row() < mainTypeCount && role != PropertyValueRole))
         return false;
 
-    qDebug() << "VALUE is " << value;
     auto &property = m_model[index.row()];
     switch(role) {
         case PropertyNameRole:
@@ -117,7 +115,6 @@ void TaskDescriptionModel::pushBack(const QString &description) {
     QJsonArray json = doc.array();
 
     foreach(const auto &jsonValue, json) {
-        qDebug() << jsonValue;
         QVariant value;
         switch (jsonValue["type"].toInt()) {
             case 0:
@@ -163,8 +160,6 @@ void TaskDescriptionModel::removeProperty(const int &index) {
 }
 
 void TaskDescriptionModel::removeTag(const int &tagIndex) {
-    qDebug() << "tagIndex: " << tagIndex << "row count; " <<  rowCount();;
-
     auto tags = m_model.at(3).value.toStringList();
     tags.removeAt(tagIndex);
     m_model[3].value = tags;
