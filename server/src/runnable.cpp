@@ -2,7 +2,7 @@
 #include "database.h"
 
 Runnable::Runnable(Connection *socket) {
-    m_ptr = socket;
+    m_connection = socket;
 
     m_signIn = std::make_shared<ToSignIn>(socket);
     m_signUp = std::make_shared<ToSignUp>(socket);
@@ -75,7 +75,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     if (static_cast<int>(RequestType::SIGN_UP) == itemObject["type"].toInt()
         || static_cast<int>(RequestType::SIGN_IN) == itemObject["type"].toInt()) {
         m_mutex->lock();
-        m_itr->find(m_ptr).value() = itemObject["email"].toString();
+//        m_itr->find(m_ptr).value() = itemObject["email"].toString();
         m_mutex->unlock();
     }
     for (const auto &i : types)
@@ -93,10 +93,6 @@ void Runnable::setMutex(QMutex *mutex) {
 
 void Runnable::setTask(QByteArray task) {
     m_task = task;
-}
-
-void Runnable::setMap(QMap<Connection *, QString> *map) {
-    m_itr = map;
 }
 
 void Runnable::run() {

@@ -15,16 +15,14 @@ public:
     
     void setMutex(QMutex *mutex);
     void setTask(QByteArray task);
-    void setMap(QMap<Connection *, QString> *map);
 
 protected:
     void run() override;
 
 private:
-    QMap<Connection *, QString> *m_itr;
     QByteArray m_task;
     QMutex *m_mutex;
-    Connection *m_ptr;
+    Connection *m_connection;
 
     std::shared_ptr<AbstractRequestHandler> m_signUp;
     std::shared_ptr<AbstractRequestHandler> m_signIn;

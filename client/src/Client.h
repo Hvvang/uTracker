@@ -110,7 +110,8 @@ public:
 
     };
 
-    Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost, const quint16 port = 5000, QObject *parent = nullptr);
+    Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost,
+           const quint16 port = 5000, QObject *parent = nullptr);
 
     Profile &profile();
     void initResponseHandlers();

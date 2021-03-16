@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QSqlQueryModel>
 
+#include "server.h"
 #include "hash.h"
 
 DataBase *DataBase::m_pInstance = nullptr;
@@ -98,10 +99,17 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                     map.value("name").toString(),
                                     map.value("surname").toString(),
                                     map.value("email").toString());
+                if (result.contains("userId")) {
+                    m_connection->setUserId(result.value("userId").toInt());
+                }
                 break;
             case RequestType::SIGN_IN:
                 result = containsUser(map.value("email").toString(),
                                       map.value("password").toString());
+                if (result.contains("userId")) {
+                    m_connection->setUserId(result.value("userId").toInt());
+                    qDebug() << m_connection->getUserId();
+                }
                 break;
             case RequestType::AUTO_OAUTH:
                 break;
@@ -210,6 +218,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
 //        qDebug() << jsonDoc.toJson();
+
         emit m_connection->sendResponse(jsonDoc.toJson());
     }
 }
@@ -329,12 +338,27 @@ DataBase::inviteToWorkflow(const QString &email, int workflow_id) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::INVITE_TO_WORKFLOW);
     QSqlQuery query;
-    qDebug() << email;
-    query.exec(QString("select id from UsersCredential where email = '%1';").arg(email));
-    if (query.first())
-        qDebug() << query.value(0).toString();
-    if (query.first() && insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + query.value(0).toString())) {
-        map["message"] = "User succesfully invited to Workflow";
+    if (query.exec(QString("select id from UsersCredential where email = '%1';").arg(email)) && query.first()) {
+        const int &invitedUserId = query.value(0).toInt();
+        insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(invitedUserId));
+
+        if (query.exec("SELECT title, deadline FROM WorkFlows WHERE id = " + QString::number(workflow_id)) && query.first()) {
+            QVariantMap map;
+            map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
+            map["workflowId"] = workflow_id;
+            map["title"] = query.value(0).toString();
+            map["deadline"] = query.value(1).toString();
+//        map["progress"] = progress;
+            map["message"] = "Workflow has been gotten by invitation.";
+
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            m_server->sendTo(invitedUserId, jsonDoc.toJson(QJsonDocument::Compact));
+        }
+
+
+        map["message"] = "User successfully invited to Workflow";
+
     } else {
         map["error"] = 1;
         map["message"] = "Invite canceled";
