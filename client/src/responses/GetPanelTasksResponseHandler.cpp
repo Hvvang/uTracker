@@ -13,6 +13,14 @@ GetPanelTasksResponseHandler::GetPanelTasksResponseHandler(QObject *parent)
     connect(this, &AbstractResponseHandler::getPanelTasks, this,  &GetPanelTasksResponseHandler::processResponse);
 }
 
+QStringList GetPanelTasksResponseHandler::tagsFromJsonArray(const QJsonArray &jsonValue) {
+    QStringList tags;
+    foreach(const auto& item, jsonValue) {
+        tags.push_back(item.toString());
+    }
+    return tags;
+}
+
 void GetPanelTasksResponseHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " << static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
@@ -33,6 +41,9 @@ void GetPanelTasksResponseHandler::processResponse(const QByteArray &data) {
             t.id = obj["taskId"].toInt();
             t.index = obj["taskIndex"].toInt();
             t.title = obj["title"].toString();
+
+            t.tags = tagsFromJsonArray(
+                    QJsonDocument::fromJson(obj["tags"].toString().toUtf8()).array());
             m_client->addTask(panelId, t);
         }
     }

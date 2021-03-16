@@ -46,7 +46,13 @@ bool TaskDescriptionModel::setData(const QModelIndex &index, const QVariant &val
             property.propertyName = value.toString();
             break;
         case PropertyValueRole:
-            property.value = value;
+            if (index.row() == 3) {
+                auto tags = property.value.toStringList();
+                tags.push_back(value.toString());
+                property.value = tags;
+            } else {
+                property.value = value;
+            }
             break;
         case PropertyTypeRole:
             if (value.toInt() == 2) {
@@ -156,6 +162,15 @@ void TaskDescriptionModel::removeProperty(const int &index) {
     endRemoveRows();
 }
 
+void TaskDescriptionModel::removeTag(const int &tagIndex) {
+    qDebug() << "tagIndex: " << tagIndex << "row count; " <<  rowCount();;
+
+    auto tags = m_model.at(3).value.toStringList();
+    tags.removeAt(tagIndex);
+    m_model[3].value = tags;
+    emit dataChanged(index(3), index(3));
+}
+
 void TaskDescriptionModel::addProperty() {
     Description d;
     beginInsertRows(QModelIndex(), m_model.size(), m_model.size());
@@ -181,12 +196,19 @@ QJsonObject TaskDescriptionModel::convertToJson() {
             QString key;
             if (property.propertyName == "Title") {
                 key = "title";
+                json[key] = property.value.toString();
             } else if (property.propertyName == "Deadline time") {
                 key = "deadline_time";
+                json[key] = property.value.toString();
+            } else if (property.propertyName == "Tags") {
+                key = "tags";
+                QJsonDocument doc(QJsonArray::fromStringList(property.value.toStringList()));
+                QString value = doc.toJson();
+                json[key] = value;
             } else {
                 key = "creation_time";
+                json[key] = property.value.toString();
             }
-            json[key] = property.value.toString();
         } else {
             QJsonObject wrap;
             wrap["name"] = property.propertyName;
@@ -214,7 +236,6 @@ QJsonObject TaskDescriptionModel::convertToJson() {
     QJsonDocument doc(description);
     QString desc = doc.toJson();
     json["description"] = deserialize(description);
-//    qDebug() << "QWEEQWEQWEWEQWEQWE: " << json.value("description").toVariant().toString();
     return json;
 }
 

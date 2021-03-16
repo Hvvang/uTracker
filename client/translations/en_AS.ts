@@ -107,7 +107,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="264"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="258"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>
@@ -164,22 +164,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="150"/>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="149"/>
         <source>x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="335"/>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="333"/>
         <source>New Property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="345"/>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="343"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="354"/>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="352"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>

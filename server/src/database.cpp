@@ -49,7 +49,7 @@ void DataBase::create_tables() {
         "deadline_time datetime,"
         "creator_id int,"
         "description varchar,"
-        "checklist varchar,"
+        "tags varchar,"
         "files blob,"
         "FOREIGN KEY(list_id) REFERENCES Lists(id),"
         "FOREIGN KEY(creator_id) REFERENCES UsersCredential(id))");
@@ -68,11 +68,11 @@ void DataBase::create_tables() {
         "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id),"
         "FOREIGN KEY(user_id) REFERENCES UsersCredential(id))");
     query.exec(
-            "create table IF NOT EXISTS Lists ("
-            "id integer primary key AUTOINCREMENT, "
-            "title varchar, "
-            "listIndex int, "
-            "workflow_id int)");
+        "create table IF NOT EXISTS Lists ("
+        "id integer primary key AUTOINCREMENT, "
+        "title varchar, "
+        "listIndex int, "
+        "workflow_id int)");
 }
 
 bool DataBase::isValidToken(const QString &token, int type) {
@@ -178,6 +178,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                     map.value("title").toString(),
                                     map.value("deadline_time").toString(),
                                     map.value("creation_time").toString(),
+                                    map.value("tags").toString(),
                                     map.value("description").toString());
                 break;
             case RequestType::MOVE_TASK:
@@ -591,7 +592,7 @@ QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
 }
 
 QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString &deadline,
-                                 const QString &creationTime, const QString &description) {
+                                 const QString &creationTime, const QString &tags, const QString &description) {
     QSqlQuery query;
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::UPDATE_TASK);
@@ -600,15 +601,18 @@ QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString
                            "title = '%1', "
                            "creation_time = '%2', "
                            "deadline_time = '%3', "
-                           "description = '%4' "
-                           "WHERE id = %5 ;")
+                           "description = '%4', "
+                           "tags = '%5' "
+                           "WHERE id = %6 ;")
                            .arg(title)
                            .arg(creationTime)
                            .arg(deadline)
                            .arg(description)
+                           .arg(tags)
                            .arg(taskId))) {
         map["taskId"] = taskId;
         map["title"] = title;
+        map["tags"] = tags;
         if (query.exec("SELECT list_id, taskIndex FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
             map["listId"] = query.value(0).toInt();
             map["taskIndex"] = query.value(1).toInt();
@@ -688,16 +692,17 @@ QVariantMap DataBase::getTaskData(int taskId) {
     map["type"] = static_cast<int>(RequestType::GET_TASK_DATA);
     QSqlQuery query;
     if (query.exec("SELECT "
-                   "list_id, taskIndex, title, creation_time, deadline_time, creator_id, description "
+                   "list_id, taskIndex, title, tags, creation_time, deadline_time, creator_id, description "
                    "FROM Tasks "
                    "WHERE id = " + QString::number(taskId)) && query.first()) {
         map["listId"] = query.value(0).toInt();
         map["taskIndex"] = query.value(1).toInt();
         map["title"] = query.value(2).toString();
-        map["creation_time"] = query.value(3).toString();
-        map["deadline_time"] = query.value(4).toString();
-        map["creator_id"] = query.value(5).toInt();
-        map["description"] = query.value(6).toString();
+        map["tags"] = query.value(3).toString();
+        map["creation_time"] = query.value(4).toString();
+        map["deadline_time"] = query.value(5).toString();
+        map["creator_id"] = query.value(6).toInt();
+        map["description"] = query.value(7).toString();
         map["taskId"] = taskId;
 
         map["message"] = "Task successfully gotten.";

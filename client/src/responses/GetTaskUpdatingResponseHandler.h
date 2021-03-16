@@ -13,6 +13,8 @@ public:
     explicit GetTaskUpdatingResponseHandler(QObject *parent = nullptr);
 
     void processResponse(const QByteArray &data) override;
+private:
+    QStringList tagsFromJsonArray(const QJsonArray &jsonValue);
 };
 
 #endif //CLIENT_GETTASKUPDATINGRESPONSEHANDLER_H

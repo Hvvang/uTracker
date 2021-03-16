@@ -13,6 +13,9 @@ public:
     explicit GetTaskResponseHandler(QObject *parent = nullptr);
 
     void processResponse(const QByteArray &data) override;
+
+private:
+    QStringList tagsFromJsonArray(const QJsonArray &jsonValue);
 };
 
 

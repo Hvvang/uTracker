@@ -75,7 +75,6 @@ void Client::deInitResponseHandlers() {
     delete m_getWorkflowPanelsResponseHandler;
     delete m_getPanelTasksResponseHandler;
     delete m_getTaskWorkersResponseHandler;
-    delete m_getTagsResponseHandler;
     delete m_getTaskResponseHandler;
     delete m_getPanelResponseHandler;
     delete m_renamePanelTitleResponseHandler;
@@ -98,7 +97,6 @@ void Client::initResponseHandlers() {
     m_getWorkflowPanelsResponseHandler = new GetWorkflowPanelsResponseHandler(this);
     m_getPanelTasksResponseHandler = new GetPanelTasksResponseHandler(this);
     m_getTaskWorkersResponseHandler = new GetTaskWorkersResponseHandler(this);
-    m_getTagsResponseHandler = new GetTagsResponseHandler(this);
     m_getTaskResponseHandler = new GetTaskResponseHandler(this);
     m_getPanelResponseHandler = new GetPanelResponseHandler(this);
     m_renamePanelTitleResponseHandler = new RenamePanelTitleResponseHandler(this);
@@ -557,6 +555,11 @@ void Client::renameTask(const int &taskId, const int &panelId, const QString &ti
         m_kanban->at(panelId).model->rename(taskId, title);
 }
 
+void Client::updateTaskPreview(const int &taskId, const int &panelId, const QString &title, const QStringList &tags) {
+    if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId))
+        m_kanban->at(panelId).model->update(taskId, title, tags);
+}
+
 void Client::updateTaskIndex(const int &taskId, const int &fromPanel, const int &fromIndex, const int &toPanel, const int &toIndex) {
     if (m_kanban && m_kanban->contains(fromPanel) && m_kanban->contains(toPanel)
         && m_kanban->at(fromPanel).model->contains(taskId)) {
@@ -565,17 +568,21 @@ void Client::updateTaskIndex(const int &taskId, const int &fromPanel, const int 
 }
 
 void Client::populateTaskModel(const int &taskId, const QString &title, const QString &creation_time,
-                               const QString &deadline_time, const QString &description) {
+                               const QString &deadline_time, const QStringList &tags, const QString &description) {
     updateTaskModelIfNeeded(taskId);
-    if (!title.isEmpty())
+//    if (!title.isEmpty())
         m_task->pushBack("Title", title);
-    if (!creation_time.isEmpty())
+//    if (!creation_time.isEmpty())
         m_task->pushBack("Creation time", creation_time, 1);
-    if (!deadline_time.isEmpty())
+//    if (!deadline_time.isEmpty())
         m_task->pushBack("Deadline time", deadline_time, 1);
+//    if (!tags.isEmpty())
+        m_task->pushBack("Tags", tags, 3);
     if (!description.isEmpty())
         m_task->pushBack(description);
 }
+
+
 
 
 

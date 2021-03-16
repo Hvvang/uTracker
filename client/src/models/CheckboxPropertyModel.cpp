@@ -55,6 +55,7 @@ bool CheckboxPropertyModel::insertRows(int row, int count, const QModelIndex &pa
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endInsertRows();
+    return true;
 }
 
 bool CheckboxPropertyModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -62,6 +63,7 @@ bool CheckboxPropertyModel::removeRows(int row, int count, const QModelIndex &pa
     beginRemoveRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endRemoveRows();
+    return true;
 }
 
 QHash<int, QByteArray> CheckboxPropertyModel::roleNames() const

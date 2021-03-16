@@ -60,6 +60,7 @@ public:
     void setTask(int index, Task &task);
     [[nodiscard]] bool contains(const int &taskId) const;
     void rename(const int &taskId, const QString &title);
+    void update(const int &taskId, const QString &title, const QStringList &tags);
 
     void decrementTaskIndex(const int &from);
     void incrementTaskIndex(const int &from);

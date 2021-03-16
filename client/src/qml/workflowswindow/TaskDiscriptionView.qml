@@ -119,7 +119,6 @@ Dialog {
                                 Layout.fillWidth: true
 
                                 Flow {
-
                                     spacing: 5
 
                                     Repeater {
@@ -152,6 +151,10 @@ Dialog {
 
                                                 anchors.left: name.right
                                                 Material.background: "transparent"
+
+                                                onClicked: {
+                                                    TaskModel.removeTag(index);
+                                                }
                                             }
 
 
@@ -167,23 +170,18 @@ Dialog {
 
                                 }
                                 TextField {
-                                        Layout.fillWidth: true
-//                                        width: parent.width
+                                    Layout.fillWidth: true
                                     wrapMode: Text.WrapAnywhere
                                     selectByMouse: true
                                     placeholderText: "tag name"
-                                    Keys.onReturnPressed: {
+                                    onEditingFinished: {
                                         if (text.length) {
-                                            var new_model = new Array
-                                            for (var item in rep.model) {
-                                                new_model.push(rep.model[item])
-                                            }
-                                            new_model.push(text)
-                                            rep.model = new_model;
+                                            propertyValue = text;
                                             text = ""
                                         }
-
-
+                                    }
+                                    Keys.onReturnPressed: {
+                                        editingFinished();
                                     }
                                 }
                             }

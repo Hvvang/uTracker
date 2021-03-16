@@ -49,6 +49,8 @@ public:
 
     Q_INVOKABLE void addProperty();
     Q_INVOKABLE void removeProperty(const int &index);
+    Q_INVOKABLE void removeTag(const int &index);
+
 
     QJsonObject convertToJson();
 

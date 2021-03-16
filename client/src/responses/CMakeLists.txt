@@ -12,7 +12,6 @@ set(SOURCES
         GetWorkflowPanelsResponseHandler.cpp
         GetPanelTasksResponseHandler.cpp
         GetTaskWorkersResponseHandler.cpp
-        GetTagsResponseHandler.cpp
         EditPanelTitleResponseHandler.cpp
         GetTaskResponseHandler.cpp
         GetPanelResponseHandler.cpp
@@ -36,7 +35,6 @@ set(HEADERS
         GetWorkflowPanelsResponseHandler.h
         GetPanelTasksResponseHandler.h
         GetTaskWorkersResponseHandler.h
-        GetTagsResponseHandler.h
         EditPanelTitleResponseHandler.h
         GetTaskResponseHandler.h
         GetPanelResponseHandler.h

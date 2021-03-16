@@ -13,6 +13,14 @@ GetTaskResponseHandler::GetTaskResponseHandler(QObject *parent)
     connect(this, &AbstractResponseHandler::getTask, this,  &GetTaskResponseHandler::processResponse);
 }
 
+QStringList GetTaskResponseHandler::tagsFromJsonArray(const QJsonArray &jsonValue) {
+    QStringList tags;
+    foreach(const auto& item, jsonValue) {
+        tags.push_back(item.toString());
+    }
+    return tags;
+}
+
 void GetTaskResponseHandler::processResponse(const QByteArray &data) {
     qDebug() << "error_type equal " << static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
@@ -29,6 +37,8 @@ void GetTaskResponseHandler::processResponse(const QByteArray &data) {
         t.id = rootObject["taskId"].toInt();
         t.index = rootObject["taskIndex"].toInt();
         t.title = rootObject["title"].toString();
+        t.tags = tagsFromJsonArray(
+                QJsonDocument::fromJson(rootObject["tags"].toString().toUtf8()).array());
         m_client->addTask(panelId, t);
     }
 }

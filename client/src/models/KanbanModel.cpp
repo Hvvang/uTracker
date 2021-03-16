@@ -165,3 +165,4 @@ void KanbanModel::moveTask(const int &taskId, const int &fromPanel, const int &f
         at(fromPanel).model->move(fromIndex, toIndex, 1);
     }
 }
+

@@ -5,12 +5,21 @@
 #include "GetTaskDescriptionResponseHandler.h"
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include "Client.h"
 
 GetTaskDescriptionResponseHandler::GetTaskDescriptionResponseHandler(QObject *parent)
         : AbstractResponseHandler(parent) {
     connect(this, &AbstractResponseHandler::getTaskDescription,
             this,  &GetTaskDescriptionResponseHandler::processResponse);
+}
+
+QStringList GetTaskDescriptionResponseHandler::tagsFromJsonArray(const QJsonArray &jsonValue) {
+    QStringList tags;
+    foreach(const auto& item, jsonValue) {
+        tags.push_back(item.toString());
+    }
+    return tags;
 }
 
 void GetTaskDescriptionResponseHandler::processResponse(const QByteArray &data) {
@@ -28,11 +37,13 @@ void GetTaskDescriptionResponseHandler::processResponse(const QByteArray &data) 
         const int &creatorId = rootObject.value("creator_id").toInt();
 
         const QString &title = rootObject.value("title").toString();
+        const QStringList &tags = tagsFromJsonArray(
+                QJsonDocument::fromJson(rootObject["tags"].toString().toUtf8()).array());
         const QString &creation_time = rootObject.value("creation_time").toString();
         const QString &deadline_time = rootObject.value("deadline_time").toString();
         const QString &description = rootObject.value("description").toString();
 
-        m_client->populateTaskModel(taskId, title, creation_time, deadline_time, description);
+        m_client->populateTaskModel(taskId, title, creation_time, deadline_time, tags, description);
         emit m_client->taskDescription();
     }
 }
