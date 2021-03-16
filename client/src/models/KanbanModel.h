@@ -53,12 +53,16 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void test(int index);
     Q_INVOKABLE int flowId();
     Q_INVOKABLE void setHeight(int height);
     Q_INVOKABLE int getHeight();
     Q_INVOKABLE void removeBlank(int panelIndex);
     Q_INVOKABLE void swap(int sourcePanelIndex, int sourceTaskIndex, int targetPanelIndex, int targetTaskIndex);
+
+    void rename(const int &panelIndex, const QString &title);
+
+    [[nodiscard]] bool contains(const int &panelId) const;
+    void moveTask(const int &taskId, const int &fromPanel, const int &fromIndex, const int &toPanel, const int &toIndex);
 
 private:
     QList<Kanban> m_model;

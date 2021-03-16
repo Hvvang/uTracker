@@ -6,6 +6,7 @@
 #include "Client.h"
 #include "src/models/KanbanModel.h"
 
+
 void init_fontBase() {
     QFontDatabase fontDatabase;
     if (fontDatabase.addApplicationFont(":/fonts/fontello.ttf") == -1)

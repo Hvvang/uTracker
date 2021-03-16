@@ -30,7 +30,7 @@ Item {
             font.pointSize: 14
             placeholderText: "Enter your Email address..."
 
-
+            selectByMouse: true
             validator: RegExpValidator { regExp:/\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/ }
 
             KeyNavigation.tab: password
@@ -56,6 +56,7 @@ Item {
             font.pointSize: 14
             placeholderText: qsTr("Enter your Password")
 
+            selectByMouse: true
             KeyNavigation.tab: name
 
             echoMode: "Password"
@@ -79,6 +80,7 @@ Item {
             font.pointSize: 14
             placeholderText: "Enter your Name..."
 
+            selectByMouse: true
             KeyNavigation.tab: lastName
 
             Material.accent: firstnameError ? "red" : "black"
@@ -102,6 +104,7 @@ Item {
             placeholderText: "Enter your Last Name..."
             verticalAlignment: Text.AlignVCenter
 
+            selectByMouse: true
             KeyNavigation.tab: signUpBtn
 
             Material.accent: lastnameError ? "red" : "black"
@@ -126,6 +129,7 @@ Item {
 
             KeyNavigation.tab: goToLoginBtn
 
+            Keys.onReturnPressed: clicked();
             onClicked: {
                 print("Sign Up clicked!")
                 var error = email.emailError || password.passwordError || name.firstnameError || lastName.lastnameError

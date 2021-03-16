@@ -12,6 +12,16 @@ Item {
     id: root
     anchors.fill: parent
 
+    Connections {
+        target: client
+        function onTaskDescription() {
+            descriptionDialog.open();
+        }
+        function onTaskEdited() {
+            descriptionDialog.close();
+        }
+    }
+
     property int currentPanelIndexOnDragging: 0
 
     Flickable {
@@ -61,6 +71,9 @@ Item {
                             selectByMouse: true
 
                             background: Rectangle { color: "transparent"; }
+                            Keys.onReturnPressed: {
+                                focus = false
+                            }
                             onFocusChanged: {
                                 if (!focus)
                                     client.updatePanelTitle(panelId, text);
@@ -130,19 +143,20 @@ Item {
                             delegate: DropArea {
                                 id: delegateRoot
 
-                                width: task.width; implicitHeight: (isBlank) ? KanbanModel.getHeight() : task.height
+                                width: task.width;
+                                implicitHeight: (isBlank) ? KanbanModel.getHeight() : task.height
 
                                 property int sourceIndex: index
                                 property int sourceModelIndex: columnView._sourceModelIndex
+                                property int panel: panelId
 
                                 onDropped: {
-
                                     if (columnView._sourceModelIndex !== (drag.source as Taskview).panelIndex) {
                                         var sourcePanelIndex = (drag.source as Taskview).panelIndex;
                                         var sourceTaskIndex = (drag.source as Taskview).index;
                                         var targetPanelIndex = columnView._sourceModelIndex;
-                                        var targetTaskIndex = task.index
-                                        KanbanModel.swap(sourcePanelIndex, sourceTaskIndex, targetPanelIndex, targetTaskIndex);
+                                        var targetTaskIndex = task.index;
+                                        client.moveTask((drag.source as Taskview).tId, delegateRoot.panel, targetTaskIndex);
                                     }
                                 }
 
@@ -151,20 +165,19 @@ Item {
                                 }
 
                                 onEntered: function(drag) {
-
                                     if (root.currentPanelIndexOnDragging !== columnView._sourceModelIndex) {
                                         KanbanModel.removeBlank(root.currentPanelIndexOnDragging);
                                     }
 
-
                                     delegateRoot.height = KanbanModel.getHeight()
                                     delegateRoot.width = (drag.source as Taskview).width
 
-
-                                    if ((task as Taskview).realModel === (drag.source as Taskview).realModel)
-                                        panelModel.move((drag.source as Taskview).index, (task as Taskview).index, 1);
-                                    else {
-                                        panelModel.test((task as Taskview).index)
+                                    if ((task as Taskview).realModel === (drag.source as Taskview).realModel) {
+                                        if ((drag.source as Taskview).index !== (task as Taskview).index) {
+                                            client.moveTask((drag.source as Taskview).tId, delegateRoot.panel, (task as Taskview).index);
+                                        }
+                                    } else {
+                                        panelModel.addBlank((task as Taskview).index)
                                     }
 
                                 }
@@ -185,9 +198,9 @@ Item {
                                     property int index: model.index
                                     property int panelIndex: delegateRoot.sourceModelIndex
                                     property var realModel: panelModel
+                                    property int tId: taskId
 
                                     visible: !isBlank
-
 
                                     MouseArea {
                                        id: dragArea
@@ -197,18 +210,15 @@ Item {
 
                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                                        onClicked: {
+                                           client.getTaskDescription(taskId);
                                            forceActiveFocus()
-//                                           if(mouse.button & Qt.RightButton) {
-//                                               task.realModel.removeRows(task.index, 1);
-//                                           }
-//                                           if(mouse.button & Qt.LeftButton) {
-//                                               task.colabsCounter += 1;
-//                                           }
                                        }
-                                       onPressed: KanbanModel.setHeight(drag.target.height)
+                                       onPressed: {
+                                           KanbanModel.setHeight(drag.target.height)
+                                       }
                                        onReleased: {
                                            parent.Drag.drop()
-                                           KanbanModel.setHeight(0)
+//                                           KanbanModel.setHeight(0)
                                        }
                                     }
                                     states: [
@@ -249,8 +259,8 @@ Item {
                         font.capitalization: Font.MixedCase
                         font.weight: Font.Medium
                         Layout.fillWidth: true
+                        implicitWidth: 250
                         radius: 6
-
                         onClicked: {
                             client.newTask(panelId, visualModel.count)
                         }
@@ -261,6 +271,10 @@ Item {
         }
 
 
+    }
+
+    TaskDiscriptionView {
+        id: descriptionDialog
     }
 }
 

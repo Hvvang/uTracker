@@ -14,6 +14,8 @@ public:
 
     void processResponse(const QByteArray &data) override;
 
+private:
+    QStringList tagsFromJsonArray(const QJsonArray &jsonValue);
 };
 
 

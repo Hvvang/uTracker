@@ -25,6 +25,7 @@ Runnable::Runnable(Connection *socket) {
     m_removeList = std::make_shared<ToRemoveList>(socket);
     m_createTask = std::make_shared<ToCreateTask>(socket);
     m_getTasks = std::make_shared<ToGetTasks>(socket);
+    m_updateTaskTitleRequestHandler = std::make_shared<UpdateTaskTitleRequestHandler>(socket);
     m_updateTask = std::make_shared<ToUpdateTask>(socket);
     m_moveTask = std::make_shared<ToMoveTask>(socket);
     m_removeTask = std::make_shared<ToRemoveTask>(socket);
@@ -37,7 +38,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow});
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow,m_removeFromWorkFlow, m_getUsersFromWorkFlow, m_sendAllWorkFlows});
     funcList.append({m_sendSingleWorkFlow, m_sendStatistics, m_sendProfile, m_updateProfile, m_createList});
-    funcList.append({m_renameList, m_getLists, m_removeList, m_createTask, m_getTasks, m_updateTask});
+    funcList.append({m_renameList, m_getLists, m_removeList, m_createTask, m_getTasks, m_updateTaskTitleRequestHandler, m_updateTask});
     funcList.append({m_moveTask, m_removeTask, m_sendTaskData});
     QVector<RequestType> types;
     types.append(RequestType::SIGN_UP);
@@ -61,6 +62,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::REMOVE_LIST);
     types.append(RequestType::CREATE_TASK);
     types.append(RequestType::GET_TASKS);
+    types.append(RequestType::UPDATE_TASK_TITLE);
     types.append(RequestType::UPDATE_TASK);
     types.append(RequestType::MOVE_TASK);
     types.append(RequestType::REMOVE_TASK);
@@ -68,13 +70,10 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     if (static_cast<int>(RequestType::SIGN_UP) == itemObject["type"].toInt()
         || static_cast<int>(RequestType::SIGN_IN) == itemObject["type"].toInt()) {
         m_mutex->lock();
-        if(!itemObject["login"].toString().isEmpty())
-            m_itr->find(m_ptr).value() = itemObject["login"].toString();
-        else
-            m_itr->find(m_ptr).value() = itemObject["email"].toString();
+        m_itr->find(m_ptr).value() = itemObject["email"].toString();
         m_mutex->unlock();
     }
-    for (auto i : types)
+    for (const auto &i : types)
         if (static_cast<int>(i) == itemObject["type"].toInt())
             emit funcList[types.indexOf(i)]->responseInited(itemObject);
 }

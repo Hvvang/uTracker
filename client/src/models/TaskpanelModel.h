@@ -10,7 +10,6 @@ struct Task {
     int index;
     QString title = "Untitled";
     QStringList tags = {};
-//    TagsModel *tags = new TagsModel;
     ColaborantsModel *workers = new ColaborantsModel;
     bool blank = false;
 };
@@ -31,6 +30,7 @@ public:
         ColabsRole,
         IconRole,
         BlankRole,
+        IdRole,
     };
 
     // Basic functionality:
@@ -53,11 +53,17 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void move(int from, int to, int n);
-    Q_INVOKABLE void test(int index);
+    Q_INVOKABLE void addBlank(int index);
     Q_INVOKABLE void removeBlank();
 
     Task getTask(int index);
     void setTask(int index, Task &task);
+    [[nodiscard]] bool contains(const int &taskId) const;
+    void rename(const int &taskId, const QString &title);
+    void update(const int &taskId, const QString &title, const QStringList &tags);
+
+    void decrementTaskIndex(const int &from);
+    void incrementTaskIndex(const int &from);
 
     Q_INVOKABLE void reset();
 

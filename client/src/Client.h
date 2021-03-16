@@ -16,10 +16,15 @@
 #include <QQuickItem>
 
 #include "googleauth.h"
+
+
+// MODELS
 #include "WorkflowsModel.h"
 #include "KanbanModel.h"
+#include "TaskDescriptionModel.h"
 
 
+// RESPONSE HANDLERS
 #include "AuthorisationResponseHandler.h"
 #include "ProfileDataResponseHandler.h"
 #include "CreateWorkflowResponseHandler.h"
@@ -31,14 +36,20 @@
 #include "GetWorkflowPanelsResponseHandler.h"
 #include "GetPanelTasksResponseHandler.h"
 #include "GetTaskWorkersResponseHandler.h"
-#include "GetTagsResponseHandler.h"
 #include "GetTaskResponseHandler.h"
 #include "GetPanelResponseHandler.h"
+#include "RenamePanelTitleResponseHandler.h"
+#include "GetTaskTitleUpdatingResponseHandler.h"
+#include "GetTaskDescriptionResponseHandler.h"
+#include "GetTaskUpdatingResponseHandler.h"
+#include "MoveTaskResponseHandler.h"
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
 #define UI_AuthWindow "qrc:/qml/authwindow/Authorization.qml"
 #define UI_MainWindow "qrc:/qml/mainwindow/Mainwindowview.qml"
+
+#define ENUM_TO_INT(var) static_cast<int>(var)
 
 struct Profile {
     QString login = "";
@@ -80,21 +91,19 @@ public:
         UPDATE_PROFILE = 15,
 
 
-        CREATE_LIST = 16,
+        CREATE_PANEL = 16,
         RENAME_PANEL = 17,
         GET_WORKFLOW_PANELS = 18,
         REMOVE_PANEL = 19,
         CREATE_TASK = 20,
         GET_PANEL_TASKS = 21,
-        UPDATE_TASK = 22,
-        MOVE_TASK = 23,
-        REMOVE_TASK = 24,
-        GET_TASK_DATA = 25,
+        UPDATE_TASK_TITLE = 22,
+        UPDATE_TASK = 23,
+        MOVE_TASK = 24,
+        REMOVE_TASK = 25,
+        GET_TASK_DATA = 26,
 
-
-
-
-        GET_TASK_WORKERS = 26,
+        GET_TASK_WORKERS = 27,
 
     };
 
@@ -105,6 +114,7 @@ public:
     void saveToken(const QString &type, const QString &value);
     QString getToken(const QString &type);
     static Client* singleton();
+    static QQmlApplicationEngine* engineSingleton();
 
     void initWorkflowsModel();
     void getProfileData();
@@ -124,6 +134,12 @@ public:
     void getTaskWorkers(const int &taskId);
     void getPanelTasks(int panelId);
     void addPanel(const int &workflowId, const Kanban &kanban);
+    void renamePanel(const int &workflowId, const int &panelIndex, const QString &title);
+    void renameTask(const int &taskId, const int &panelId, const QString &title);
+    void updateTaskPreview(const int &taskId, const int &panelId, const QString &title, const QStringList &tags);
+    void updateTaskIndex(const int &taskId, const int &fromPanel, const int &fromIndex, const int &toPanel, const int &toIndex);
+    void populateTaskModel(const int &taskId, const QString &title, const QString &creation_time,
+                           const QString &deadline_time, const QStringList &tags, const QString &description);
 
     void addTask(const int &panelId, const Task &task);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
@@ -140,17 +156,26 @@ public:
     Q_INVOKABLE void editWorkflow(int index, const QString &title, const QString &date);
     Q_INVOKABLE void newTask(const int &panelId, const int &taskIndex);
     Q_INVOKABLE void newPanel(const int &workflowId, const int &panelIndex);
+    Q_INVOKABLE void updatePanelTitle(const int &panelId, const QString &title);
+    Q_INVOKABLE void updateTaskTitle(const int &taskId, const QString &title);
+    Q_INVOKABLE void getTaskDescription(const int &taskId);
+    Q_INVOKABLE void finishEditingTask();
+    Q_INVOKABLE void moveTask(const int &taskId, const int &panelId, const int &index);
     Q_INVOKABLE void logout();
 
 
 protected:
     static Client* m_instance;
+    static QQmlApplicationEngine *m_qmlEngine;
 
 private:
     bool updateKanbanModelIfNeeded(int workflowId);
+    bool updateTaskModelIfNeeded(const int &taskId);
 
 signals:
     void notification(const QString &msg);
+    void taskDescription();
+    void taskEdited();
 
     void switchWindow(const QString &windowPath);
     void switchMenu(const QString &panelPath);
@@ -168,7 +193,7 @@ public slots:
 
 private:
     QTcpSocket m_socket;
-    QQmlApplicationEngine *m_engine{nullptr};
+
     GoogleAuth *m_googleInstance{nullptr};
 
     Profile m_profile;
@@ -177,6 +202,7 @@ private:
 
     WorkflowsModel *m_workflows{nullptr};
     KanbanModel *m_kanban{nullptr};
+    TaskDescriptionModel *m_task{nullptr};
 
     AuthorisationResponseHandler *m_authHandler{nullptr};
     ProfileDataResponseHandler *m_profileHandler{nullptr};
@@ -189,12 +215,16 @@ private:
     GetWorkflowPanelsResponseHandler *m_getWorkflowPanelsResponseHandler{nullptr};
     GetPanelTasksResponseHandler *m_getPanelTasksResponseHandler{nullptr};
     GetTaskWorkersResponseHandler *m_getTaskWorkersResponseHandler{nullptr};
-    GetTagsResponseHandler *m_getTagsResponseHandler{nullptr};
     GetTaskResponseHandler *m_getTaskResponseHandler{nullptr};
     GetPanelResponseHandler *m_getPanelResponseHandler{nullptr};
-
+    RenamePanelTitleResponseHandler *m_renamePanelTitleResponseHandler{nullptr};
+    GetTaskTitleUpdatingResponseHandler *m_getTaskTitleUpdatingResponseHandler{nullptr};
+    GetTaskDescriptionResponseHandler *m_getTaskDescriptionResponseHandler{nullptr};
+    GetTaskUpdatingResponseHandler *m_getTaskUpdatingResponseHandler{nullptr};
+    MoveTaskResponseHandler *m_moveTaskResponseHandler{nullptr};
 };
 
 #define m_client Client::singleton()
+#define m_engine Client::engineSingleton()
 
 #endif //UTRACKER_CLIENT_H

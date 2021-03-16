@@ -14,12 +14,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/Authwindow.qml" line="136"/>
+        <location filename="../src/qml/authwindow/Authwindow.qml" line="137"/>
         <source>Continue with email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/Authwindow.qml" line="169"/>
+        <location filename="../src/qml/authwindow/Authwindow.qml" line="170"/>
         <source>Create new account</source>
         <translation type="unfinished"></translation>
     </message>
@@ -102,12 +102,12 @@
 <context>
     <name>Kanbanview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="82"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="95"/>
         <source>New Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="248"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="258"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>
@@ -133,17 +133,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/RegisterWidow.qml" line="119"/>
+        <location filename="../src/qml/authwindow/RegisterWidow.qml" line="122"/>
         <source>Sign up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/RegisterWidow.qml" line="159"/>
+        <location filename="../src/qml/authwindow/RegisterWidow.qml" line="163"/>
         <source>Already have an account?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/RegisterWidow.qml" line="164"/>
+        <location filename="../src/qml/authwindow/RegisterWidow.qml" line="168"/>
         <source>Log in here</source>
         <translation type="unfinished"></translation>
     </message>
@@ -157,9 +157,37 @@
     </message>
 </context>
 <context>
+    <name>TaskDiscriptionView</name>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="92"/>
+        <source>New Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="149"/>
+        <source>x</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="333"/>
+        <source>New Property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="343"/>
+        <source>Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="352"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Taskview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Taskview.qml" line="112"/>
+        <location filename="../src/qml/workflowswindow/Taskview.qml" line="113"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -177,12 +205,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="116"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="115"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="182"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="181"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,12 +256,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/authwindow.qml" line="136"/>
+        <location filename="../src/qml/authwindow/authwindow.qml" line="137"/>
         <source>Continue with email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/authwindow/authwindow.qml" line="169"/>
+        <location filename="../src/qml/authwindow/authwindow.qml" line="170"/>
         <source>Create new account</source>
         <translation type="unfinished"></translation>
     </message>

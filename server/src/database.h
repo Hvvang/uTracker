@@ -44,9 +44,11 @@ public:
     QVariantMap removeList(int listId);
     QVariantMap getLists(int workflowId);
 
-    QVariantMap createTask(const QString& title, int listId);
-    QVariantMap updateTask(int taskId, const QString &description, const QVariant &checkList, const QString &title);
-    QVariantMap moveTask(int taskId, int newListId, int newIndexId);
+    QVariantMap createTask(const QString &title, const int &listId, const int &taskIndex);
+    QVariantMap renameTaskTitle(const int &taskId, const QString &title);
+    QVariantMap updateTask(int taskId, const QString &title, const QString &deadline,
+                           const QString &creationTime, const QString &tags, const QString &description);
+    QVariantMap moveTask(const int &taskId, const int &listId, const int &taskIndex);
     QVariantMap removeTask(int taskId);
     QVariantMap getTaskData(int taskId);
     QVariantMap getTasks(int listId);

@@ -105,9 +105,8 @@ Item {
 
                 onTextChanged: {
                     var currentDate = new Date();
-                    var selectedDate = new Date(datepicker.selectedDate)
 
-                    deadlineError = currentDate.getTime() > selectedDate.getTime()
+                    deadlineError = currentDate.getTime() > datepicker.selectedDate.getTime()
                 }
 
                 Text {

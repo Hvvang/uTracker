@@ -35,11 +35,19 @@ enum class RequestType {
     REMOVE_LIST = 19,
     CREATE_TASK = 20,
     GET_TASKS = 21,
-    UPDATE_TASK = 22,
-    MOVE_TASK = 23,
-    REMOVE_TASK = 24,
-    GET_TASK_DATA = 25
+    UPDATE_TASK_TITLE = 22,
+    UPDATE_TASK = 23,
+    MOVE_TASK = 24,
+    REMOVE_TASK = 25,
+    GET_TASK_DATA = 26,
+
 };
+
+enum class Errors {
+    TASK_RENAME_ERROR = 10,
+};
+
+
 
 class AbstractRequestHandler : public QObject{
     Q_OBJECT
@@ -218,6 +226,13 @@ class ToGetTasks : public AbstractRequestHandler  {
 Q_OBJECT
 public:
     ToGetTasks(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class UpdateTaskTitleRequestHandler : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    UpdateTaskTitleRequestHandler(Connection *socket);
     bool isValid(QJsonObject itemObject);
 };
 

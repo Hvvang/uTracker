@@ -12,10 +12,15 @@ set(SOURCES
         GetWorkflowPanelsResponseHandler.cpp
         GetPanelTasksResponseHandler.cpp
         GetTaskWorkersResponseHandler.cpp
-        GetTagsResponseHandler.cpp
         EditPanelTitleResponseHandler.cpp
         GetTaskResponseHandler.cpp
         GetPanelResponseHandler.cpp
+        RenamePanelTitleResponseHandler.cpp
+        GetTaskTitleUpdatingResponseHandler.cpp
+        GetTaskDescriptionResponseHandler.cpp
+        GetTaskUpdatingResponseHandler.cpp
+        MoveTaskResponseHandler.cpp
+
         )
 set(HEADERS
         AbstractResponseHandler.h
@@ -30,10 +35,16 @@ set(HEADERS
         GetWorkflowPanelsResponseHandler.h
         GetPanelTasksResponseHandler.h
         GetTaskWorkersResponseHandler.h
-        GetTagsResponseHandler.h
         EditPanelTitleResponseHandler.h
         GetTaskResponseHandler.h
-        GetPanelResponseHandler.h)
+        GetPanelResponseHandler.h
+        RenamePanelTitleResponseHandler.h
+        GetTaskTitleUpdatingResponseHandler.h
+        GetTaskDescriptionResponseHandler.h
+        GetTaskUpdatingResponseHandler.h
+        MoveTaskResponseHandler.h
+
+        )
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
 

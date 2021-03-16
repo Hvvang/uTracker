@@ -5,29 +5,10 @@
 
 TaskPanelModel::TaskPanelModel(QObject *parent)
     : QAbstractListModel(parent) {
-//    Task t1;
-//    t1.title = QString("task %1").arg(m_model.size());
-//    t1.tags.append({"common", "feature", "high priority", "important"});
-//    m_model.append(t1);
-//    Task t2;
-//    t2.title = QString("task %1").arg(m_model.size());
-//    t2.tags.append({"common", "high priority", "important"});
-//    m_model.append(t2);
-//    Task t3;
-//    t3.title = QString("task %1").arg(m_model.size());
-//    t3.tags.append("important");
-//    m_model.append(t3);
-//    Task t4;
-//    t4.title = QString("task %1").arg(m_model.size());
-//    t4.tags.append("important");
-//    m_model.append(t4);
-
 }
 
 int TaskPanelModel::rowCount(const QModelIndex &parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid())
         return 0;
     return m_model.size();
@@ -40,10 +21,10 @@ QVariant TaskPanelModel::data(const QModelIndex &index, int role) const
     switch(role) {
         case TitleRole: return m_model[index.row()].title;
         case TagsRole: return m_model[index.row()].tags;
-//        case TagsRole: return QVariant::fromValue(m_model[index.row()].tags);
         case ColabsRole: return QVariant::fromValue(m_model[index.row()].workers);
         case BlankRole: return m_model[index.row()].blank;
         case IconRole: return "";
+        case IdRole: return m_model[index.row()].id;
 //        case PanelModelRole: return m_model[index.row()].model;
     }
     // FIXME: Implement me!
@@ -90,6 +71,7 @@ QHash<int, QByteArray> TaskPanelModel::roleNames() const {
     roles[ColabsRole] = "WorkersModel";
     roles[IconRole] = "headerIcon";
     roles[BlankRole] = "isBlank";
+    roles[IdRole] = "taskId";
     return roles;
 }
 
@@ -106,7 +88,7 @@ void TaskPanelModel::move(int from, int to, int n) {
     }
 }
 
-void TaskPanelModel::test(int index) {
+void TaskPanelModel::addBlank(int index) {
     if (blank_index == -1) {
         Task blankTask;
         blankTask.blank = true;
@@ -168,5 +150,42 @@ Task &TaskPanelModel::at(const int &id) {
         }
     }
 }
+
+bool TaskPanelModel::contains(const int &taskId) const {
+    foreach(auto &task, m_model) {
+        if (task.id == taskId) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void TaskPanelModel::rename(const int &taskId, const QString &title) {
+    auto &task = at(taskId);
+    task.title = title;
+    emit dataChanged(index(task.index, 0), index(task.index, 0));
+}
+
+void TaskPanelModel::update(const int &taskId, const QString &title, const QStringList &tags) {
+    auto &task = at(taskId);
+    task.title = title;
+    task.tags = tags;
+    emit dataChanged(index(task.index, 0), index(task.index, 0));
+}
+
+void TaskPanelModel::incrementTaskIndex(const int &from) {
+    for (int i = from; i < m_model.size(); ++i) {
+        m_model[i].index++;
+    }
+}
+
+void TaskPanelModel::decrementTaskIndex(const int &from) {
+    for (int i = from; i < m_model.size(); ++i) {
+        m_model[i].index--;
+    }
+}
+
+
+
 
 

@@ -142,7 +142,6 @@ bool SendStatistics::isValid(QJsonObject itemObject) {
 SendProfile::SendProfile(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool SendProfile::isValid(QJsonObject itemObject) {
-//    qDebug() << itemObject["userId"].toInt();
     if (itemObject.contains("userId"))
         return true;
     return false;
@@ -164,6 +163,8 @@ ToCreateList::ToCreateList(Connection *socket) : AbstractRequestHandler(socket){
 
 bool ToCreateList::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
+        && itemObject.contains("creatorId")
+        && itemObject.contains("listIndex")
         && itemObject.contains("workflowId"))
         return true;
     return false;
@@ -199,7 +200,9 @@ ToCreateTask::ToCreateTask(Connection *socket) : AbstractRequestHandler(socket){
 
 bool ToCreateTask::isValid(QJsonObject itemObject) {
     if (itemObject.contains("title")
-        && itemObject.contains("listId"))
+        && itemObject.contains("listId")
+        && itemObject.contains("creatorId")
+        && itemObject.contains("taskIndex"))
         return true;
     return false;
 }
@@ -212,15 +215,26 @@ bool ToGetTasks::isValid(QJsonObject itemObject) {
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+UpdateTaskTitleRequestHandler::UpdateTaskTitleRequestHandler(Connection *socket)
+    : AbstractRequestHandler(socket) {}
+
+bool UpdateTaskTitleRequestHandler::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId") && itemObject.contains("title")) {
+        return true;
+    }
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 ToUpdateTask::ToUpdateTask(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToUpdateTask::isValid(QJsonObject itemObject) {
-    if (itemObject.contains("taskId")) {
-        if ((itemObject.contains("checkList")
-            && itemObject.contains("description"))
-            || itemObject.contains("title"))
-            qDebug() << "zashlo nikiti v uho";
-            return true;
+    if (itemObject.contains("taskId")
+        && itemObject.contains("title")
+        && itemObject.contains("deadline_time")
+        && itemObject.contains("creation_time")
+        && itemObject.contains("tags")
+        && itemObject.contains("description")) {
+        return true;
     }
     return false;
 }
@@ -229,7 +243,8 @@ ToMoveTask::ToMoveTask(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToMoveTask::isValid(QJsonObject itemObject) {
     if (itemObject.contains("listId")
-        && itemObject.contains("taskId"))
+        && itemObject.contains("taskId")
+        && itemObject.contains("taskIndex"))
         return true;
     return false;
 }

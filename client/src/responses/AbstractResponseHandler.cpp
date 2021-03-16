@@ -68,12 +68,22 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit getWorkflowPanels(data); break;
         case ResponseType::GET_PANEL_TASKS:
             emit getPanelTasks(data); break;
+        case ResponseType::RENAME_PANEL:
+            emit renamePanel(data); break;
         case ResponseType::GET_TASKS_WORKERS:
             emit getTaskWorkers(data); break;
         case ResponseType::GET_TASK_TAGS:
             emit getTaskTags(data); break;
         case ResponseType::GET_TASK:
             emit getTask(data); break;
+        case ResponseType::GET_TASK_DATA:
+            emit getTaskDescription(data); break;
+        case ResponseType::UPDATE_TASK:
+            emit updateTask(data); break;
+        case ResponseType::UPDATE_TASK_TITLE:
+            emit renameTask(data); break;
+        case ResponseType::MOVE_TASK:
+            emit moveTask(data); break;
         case ResponseType::GET_PANEL:
             emit getPanel(data); break;
         case ResponseType::ERROR:
@@ -82,5 +92,7 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             qDebug() << "Emit some error in response!";
 
 
+        case ResponseType::REMOVE_PANEL:
+            break;
     }
 }

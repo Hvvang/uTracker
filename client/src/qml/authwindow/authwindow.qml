@@ -92,7 +92,7 @@ Item {
             font.pointSize: 14
             placeholderText: "Enter your Email address..."
 
-
+            selectByMouse: true
             validator: RegExpValidator { regExp:/\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/ }
 
             KeyNavigation.tab: password
@@ -117,8 +117,9 @@ Item {
 
             font.pointSize: 14
             placeholderText: qsTr("Enter your Password")
+            selectByMouse: true
 
-            KeyNavigation.tab: signUpBtn
+            KeyNavigation.tab: signInBtn
 
             echoMode: "Password"
             Material.accent: passwordError ? "red" : "black"
@@ -132,7 +133,7 @@ Item {
         }
 
         Button {
-            id: signUpBtn
+            id: signInBtn
             text: qsTr("Continue with email")
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
@@ -141,8 +142,8 @@ Item {
             Material.background: Material.Blue
             Material.elevation: 4
 
-            KeyNavigation.tab: goToSignUpBtn
-
+            KeyNavigation.tab: goTosignUpBtn
+            Keys.onReturnPressed: clicked();
             onClicked: {
                 print("Continue with email clicked!")
 //                client.authorize("shemedvedd@gmail.com", "A112263a");
@@ -164,7 +165,7 @@ Item {
         }
 
         Button {
-            id: goToSignUpBtn
+            id: goTosignUpBtn
 
             text: qsTr("Create new account")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
@@ -174,7 +175,7 @@ Item {
             KeyNavigation.tab: googleOAuthBtn
 
             Material.accent: "transparent"
-            Material.foreground: goToSignUpBtn.hovered ? Material.Blue : "black"
+            Material.foreground: goTosignUpBtn.hovered ? Material.Blue : "black"
             Material.background: "transparent"
 
             onClicked: {

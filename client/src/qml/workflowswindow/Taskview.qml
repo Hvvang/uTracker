@@ -11,7 +11,6 @@ Item {
     height: view.childrenRect.height + 30
 
     property int colabsCounter: 0
-
     property var backColor: ["#4287f5", "#f5b042", "#f56042", "#f54242", "#b942f5", "#4257f5", "#f5429c"]
 
     ColumnLayout {
@@ -35,9 +34,11 @@ Item {
 
             selectByMouse: true
             background: Rectangle { color: "transparent"; }
+            Keys.onReturnPressed:
+                focus = false;
             onFocusChanged: {
                 if (!focus)
-                    cient.updateTaskTitle(taskId, text);
+                    client.updateTaskTitle(taskId, text);
             }
         }
 
@@ -124,7 +125,11 @@ Item {
         anchors.fill: parent
         Material.background: "white"
         radius: 6
+
     }
+
+
 }
+
 
 

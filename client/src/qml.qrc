@@ -22,5 +22,6 @@
         <file>qml/workflowswindow/WorkflowDialog.qml</file>
         <file>qml/components/DatePicker.qml</file>
         <file>qml/workflowswindow/InviteColaborantDialog.qml</file>
+        <file>qml/workflowswindow/TaskDiscriptionView.qml</file>
     </qresource>
 </RCC>

@@ -1,34 +1,14 @@
 #include "TaskDescriptionModel.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QJsonArray>
+#include "CheckboxPropertyModel.h"
+#include "Client.h"
 
-TaskDescriptionModel::TaskDescriptionModel(const QJsonObject &json, QObject *parent)
-    : QAbstractListModel(parent) {
-    m_data.resize(json.count());
-    foreach(const QString& key, json.keys()) {
-        const auto &value = json.value(key);
-
-        Description d;
-        d.property = key;
-        d.type = value["type"].toInt();
-        switch (d.type) {
-            case 0:
-                d.str = value["str"].toString(); break;
-            case 1:
-                d.str = value["date"].toString(); break;
-            case 2:
-                foreach(const auto& item, value["checkboxes"].toArray()) {
-                    d.checkboxesText.push_back(item["value"].toString());
-                    d.checkboxesText.push_back(item["status"].toString());
-                }
-                break;
-            case 3:
-                d.tags = value["tags"].toString().split('&');
-                break;
-        }
-        m_data.insert(value["index"].toInt(), d);
-    }
-}
+TaskDescriptionModel::TaskDescriptionModel(const int &taskId, QObject *parent)
+    : QAbstractListModel(parent)
+    , taskId(taskId) { }
 
 int TaskDescriptionModel::rowCount(const QModelIndex &parent) const
 {
@@ -36,8 +16,7 @@ int TaskDescriptionModel::rowCount(const QModelIndex &parent) const
     // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid())
         return 0;
-    return m_data.size();
-    // FIXME: Implement me!
+    return m_model.size();
 }
 
 QVariant TaskDescriptionModel::data(const QModelIndex &index, int role) const
@@ -45,15 +24,53 @@ QVariant TaskDescriptionModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     switch(role) {
-        case PropertyRole: return m_data[index.row()].property;
-        case TypeRole: return m_data[index.row()].type;
-        case StrRole: return m_data[index.row()].str;
-        case DateRole: return m_data[index.row()].date;
-        case CheckBoxRole: return m_data[index.row()].checkboxesText;
-        case CheckBoxStatus: return m_data[index.row()].checkboxesValue;
-        case TagsRole: return m_data[index.row()].tags;
+        case PropertyNameRole:
+            return m_model.at(index.row()).propertyName;
+        case PropertyValueRole:
+            return m_model.at(index.row()).value;
+        case PropertyTypeRole:
+            return m_model.at(index.row()).type;
     }
     return QVariant();
+}
+
+bool TaskDescriptionModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    qDebug() << mainTypeCount;
+    if (!index.isValid() || (index.row() < mainTypeCount && role != PropertyValueRole))
+        return false;
+
+    qDebug() << "VALUE is " << value;
+    auto &property = m_model[index.row()];
+    switch(role) {
+        case PropertyNameRole:
+            property.propertyName = value.toString();
+            break;
+        case PropertyValueRole:
+            if (index.row() == 3) {
+                auto tags = property.value.toStringList();
+                tags.push_back(value.toString());
+                property.value = tags;
+            } else {
+                property.value = value;
+            }
+            break;
+        case PropertyTypeRole:
+            if (value.toInt() == 2) {
+                auto *checkboxes = new CheckboxPropertyModel(this);
+                m_engine->rootContext()->setContextProperty("CheckboxModel", checkboxes);
+                property.value = QVariant::fromValue<CheckboxPropertyModel *>(checkboxes);
+            }
+            property.type = value.toInt();
+            break;
+    }
+    emit dataChanged(index, index, QVector<int>() << role);
+    return true;
+}
+
+Qt::ItemFlags TaskDescriptionModel::flags(const QModelIndex &index) const {
+    if (!index.isValid())
+        return Qt::NoItemFlags;
+    return Qt::ItemIsEditable;
 }
 
 bool TaskDescriptionModel::insertRows(int row, int count, const QModelIndex &parent)
@@ -73,13 +90,152 @@ bool TaskDescriptionModel::removeRows(int row, int count, const QModelIndex &par
 QHash<int, QByteArray> TaskDescriptionModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[PropertyRole] = "propertyValue";
-    roles[TypeRole] = "typeValue";
-    roles[StrRole] = "strValue";
-    roles[DateRole] = "dateValue";
-    roles[CheckBoxRole] = "checkboxText";
-    roles[CheckBoxStatus] = "checkboxStatus";
-    roles[CheckBoxesCountRole] = "checkboxSize";
-    roles[TagsRole] = "tagsValue";
+    roles[PropertyNameRole] = "propertyName";
+    roles[PropertyValueRole] = "propertyValue";
+    roles[PropertyTypeRole] = "propertyType";
     return roles;
 }
+
+void TaskDescriptionModel::reset(const int &id) {
+    beginResetModel();
+    m_model.clear();
+    taskId = id;
+    mainTypeCount = 0;
+    endResetModel();
+}
+
+QVariant tagsFromJsonArray(const QJsonArray &jsonValue) {
+    QStringList tags;
+    foreach(const auto& item, jsonValue) {
+        tags.push_back(item.toString());
+    }
+    return tags;
+}
+
+void TaskDescriptionModel::pushBack(const QString &description) {
+    QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
+    QJsonArray json = doc.array();
+
+    foreach(const auto &jsonValue, json) {
+        qDebug() << jsonValue;
+        QVariant value;
+        switch (jsonValue["type"].toInt()) {
+            case 0:
+            case 1:
+                value = jsonValue["value"].toString(); break;
+            case 2:
+                value = CheckboxPropertyModel::QVariantFromJson(
+                        QJsonDocument::fromJson(jsonValue["value"].toString().toUtf8()).array());
+                break;
+            case 3:
+                value = tagsFromJsonArray(jsonValue["value"].toArray());
+                break;
+            case 4:
+//                value = CheckboxPropertyModel::QVariantFromJson(QJsonDocument::fromJson(description.toUtf8()).array());
+                break;
+        }
+        pushBack(jsonValue["name"].toString(), value, jsonValue["type"].toInt(),false);
+    }
+}
+
+void TaskDescriptionModel::pushBack(const QString &name, const QVariant &value, const int &typeId, const bool &isMain) {
+    Description t;
+    t.isMainType = isMain;
+    t.type = typeId;
+    t.propertyName = name;
+    t.value = value;
+
+    if (isMain) {
+        ++mainTypeCount;
+    }
+    beginInsertRows(QModelIndex(), m_model.size(), m_model.size());
+    m_model.push_back(t);
+    endInsertRows();
+}
+
+void TaskDescriptionModel::removeProperty(const int &index) {
+    if (m_model.at(index).isMainType) {
+        --mainTypeCount;
+    }
+    beginRemoveRows(QModelIndex(), index, index);
+    m_model.remove(index);
+    endRemoveRows();
+}
+
+void TaskDescriptionModel::removeTag(const int &tagIndex) {
+    qDebug() << "tagIndex: " << tagIndex << "row count; " <<  rowCount();;
+
+    auto tags = m_model.at(3).value.toStringList();
+    tags.removeAt(tagIndex);
+    m_model[3].value = tags;
+    emit dataChanged(index(3), index(3));
+}
+
+void TaskDescriptionModel::addProperty() {
+    Description d;
+    beginInsertRows(QModelIndex(), m_model.size(), m_model.size());
+    m_model.push_back(d);
+    endInsertRows();
+}
+
+int TaskDescriptionModel::Id() const {
+    return taskId;
+}
+
+QString deserialize(const QJsonArray &json) {
+    QJsonDocument doc(json);
+    return doc.toJson();
+}
+
+QJsonObject TaskDescriptionModel::convertToJson() {
+    QJsonObject json;
+    QJsonArray description;
+
+    foreach(const auto &property, m_model) {
+        if (property.isMainType) {
+            QString key;
+            if (property.propertyName == "Title") {
+                key = "title";
+                json[key] = property.value.toString();
+            } else if (property.propertyName == "Deadline time") {
+                key = "deadline_time";
+                json[key] = property.value.toString();
+            } else if (property.propertyName == "Tags") {
+                key = "tags";
+                QJsonDocument doc(QJsonArray::fromStringList(property.value.toStringList()));
+                QString value = doc.toJson();
+                json[key] = value;
+            } else {
+                key = "creation_time";
+                json[key] = property.value.toString();
+            }
+        } else {
+            QJsonObject wrap;
+            wrap["name"] = property.propertyName;
+            wrap["type"] = property.type;
+            switch (property.type) {
+                case 0:
+                case 1:
+                    wrap["value"] = property.value.toString();
+                    break;
+                case 2:
+                    wrap["value"] = deserialize(
+                            qobject_cast<CheckboxPropertyModel *>(qvariant_cast<QObject*>(property.value))->toJsonArray());
+                    break;
+                case 3:
+                    wrap["value"] = QJsonArray::fromStringList(property.value.toStringList());
+                    break;
+                case 4:
+
+                    break;
+
+            }
+            description.push_back(wrap);
+        }
+    }
+    QJsonDocument doc(description);
+    QString desc = doc.toJson();
+    json["description"] = deserialize(description);
+    return json;
+}
+

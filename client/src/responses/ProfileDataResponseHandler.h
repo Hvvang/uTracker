@@ -9,7 +9,6 @@ public:
     explicit ProfileDataResponseHandler(QObject *parent = nullptr);
 
     void processResponse(const QByteArray &data) override;
-
 };
 
 

@@ -27,7 +27,7 @@ private:
     void autoSignIn();
 
 private:
-    QQmlEngine *m_engine;
+//    QQmlEngine *m_engine;
     GoogleAuth m_googleAuth;
 };
 
