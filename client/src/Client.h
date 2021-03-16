@@ -43,6 +43,7 @@
 #include "GetTaskDescriptionResponseHandler.h"
 #include "GetTaskUpdatingResponseHandler.h"
 #include "MoveTaskResponseHandler.h"
+#include "RemoveTaskResponseHandler.h"
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
@@ -142,6 +143,7 @@ public:
                            const QString &deadline_time, const QStringList &tags, const QString &description);
 
     void addTask(const int &panelId, const Task &task);
+    void deleteTask(const int &panelId, const int &taskId);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
     void reject();
 
@@ -161,6 +163,7 @@ public:
     Q_INVOKABLE void getTaskDescription(const int &taskId);
     Q_INVOKABLE void finishEditingTask();
     Q_INVOKABLE void moveTask(const int &taskId, const int &panelId, const int &index);
+    Q_INVOKABLE void removeTask(const int &taskId);
     Q_INVOKABLE void logout();
 
 
@@ -222,6 +225,7 @@ private:
     GetTaskDescriptionResponseHandler *m_getTaskDescriptionResponseHandler{nullptr};
     GetTaskUpdatingResponseHandler *m_getTaskUpdatingResponseHandler{nullptr};
     MoveTaskResponseHandler *m_moveTaskResponseHandler{nullptr};
+    RemoveTaskResponseHandler *m_removeTaskResponseHandler{nullptr};
 };
 
 #define m_client Client::singleton()

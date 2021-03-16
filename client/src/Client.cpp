@@ -82,6 +82,7 @@ void Client::deInitResponseHandlers() {
     delete m_getTaskDescriptionResponseHandler;
     delete m_getTaskUpdatingResponseHandler;
     delete m_moveTaskResponseHandler;
+    delete m_removeTaskResponseHandler;
 
 }
 
@@ -104,6 +105,8 @@ void Client::initResponseHandlers() {
     m_getTaskDescriptionResponseHandler = new GetTaskDescriptionResponseHandler(this);
     m_getTaskUpdatingResponseHandler = new GetTaskUpdatingResponseHandler(this);
     m_moveTaskResponseHandler = new MoveTaskResponseHandler(this);
+    m_removeTaskResponseHandler = new RemoveTaskResponseHandler(this);
+
 }
 
 void Client::send(const QString &data) {
@@ -454,6 +457,18 @@ void Client::moveTask(const int &taskId, const int &panelId, const int &index) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::removeTask(const int &taskId) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::REMOVE_TASK);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::logout() {
     QJsonObject json;
 
@@ -533,8 +548,14 @@ bool Client::updateTaskModelIfNeeded(const int &taskId) {
 }
 
 void Client::addTask(const int &panelId, const Task &task) {
-    if (m_kanban->contains(panelId)) {
+    if (m_kanban && m_kanban->contains(panelId)) {
         m_kanban->at(panelId).model->insert(task.index, task);
+    }
+}
+
+void Client::deleteTask(const int &panelId, const int &taskId) {
+    if (m_kanban && m_kanban->contains(panelId)) {
+        m_kanban->at(panelId).model->remove(taskId);
     }
 }
 
@@ -581,6 +602,8 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
     if (!description.isEmpty())
         m_task->pushBack(description);
 }
+
+
 
 
 

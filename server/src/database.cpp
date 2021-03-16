@@ -655,33 +655,32 @@ QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &
     }
     map["type"] = static_cast<int>(RequestType::MOVE_TASK);
     if (update("Tasks", "list_id = " + QString::number(listId) + ", taskIndex = " + QString::number(taskIndex), "id = " + QString::number(taskId))) {
-        map["message"] = "Task moved";
         map["taskId"] = taskId;
         map["toListId"] = listId;
         map["toTaskIndex"] = taskIndex;
-
+        map["message"] = "Task successfully moved.";
     } else {
-        map["message"] = "Task wasn't moved";
+        map["message"] = "Task wasn't moved.";
         map["error"] = 1;
     }
     return map;
 }
 
 QVariantMap DataBase::removeTask(int taskId) {
-    Q_UNUSED(taskId);
     QVariantMap map;
     QSqlQuery query;
+
     map["type"] = static_cast<int>(RequestType::REMOVE_TASK);
     query.exec("select list_id from Tasks where id = " + QString::number(taskId));
+
     if (query.first()) {
         map["listId"] = query.value(0).toInt();
     }
     if (query.exec("DELETE from Tasks where id = " + QString::number(taskId))) {
-        map["message"] = "Task removed";
-
+        map["message"] = "Task successfully removed.";
         map["taskId"] = taskId;
     } else {
-        map["message"] = "Task wasn't removed";
+        map["message"] = "Task wasn't removed.";
         map["error"] = 1;
     }
     return map;

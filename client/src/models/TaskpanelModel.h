@@ -12,6 +12,7 @@ struct Task {
     QStringList tags = {};
     ColaborantsModel *workers = new ColaborantsModel;
     bool blank = false;
+    bool mine = false;
 };
 
 class TaskPanelModel : public QAbstractListModel
@@ -31,6 +32,7 @@ public:
         IconRole,
         BlankRole,
         IdRole,
+        WorkStatusRole,
     };
 
     // Basic functionality:
@@ -64,6 +66,7 @@ public:
 
     void decrementTaskIndex(const int &from);
     void incrementTaskIndex(const int &from);
+    void remove(const int &taskId);
 
     Q_INVOKABLE void reset();
 

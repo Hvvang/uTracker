@@ -210,7 +210,15 @@ Item {
 
                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                                        onClicked: {
-                                           client.getTaskDescription(taskId);
+                                           if (mouse.button & Qt.LeftButton) {
+                                               client.getTaskDescription(taskId);
+                                           } else if (mouse.button & Qt.RightButton) {
+                                               print(mouseX, mouseY)
+                                               contextMenu.x = mouseX
+                                               contextMenu.y = mouseY
+                                               contextMenu.open();
+                                           }
+
                                            forceActiveFocus()
                                        }
                                        onPressed: {
@@ -243,6 +251,43 @@ Item {
                                     Drag.hotSpot.x: task.width / 2
                                     Drag.hotSpot.y: task.height / 2
 
+                                    Menu {
+                                        id: contextMenu
+
+                                        width: 130
+                                        topPadding: 0
+                                        bottomPadding: 0
+
+                                        font.pixelSize: 13
+
+                                        background: Pane {
+                                            anchors.fill: parent
+                                            Material.primary: Material.Grey
+                                            Material.elevation: 6
+                                        }
+
+                                        MenuItem {
+                                            text: "\ue809  edit"
+                                            font.family: "fontello"
+                                            onTriggered: client.getTaskDescription(taskId);
+                                            height: 30
+                                            width: parent.width
+                                        }
+                                        MenuItem {
+                                            text: workStatus ? "\uf234  Unnote me" : "\uf234  Note me"
+                                            font.family: "fontello"
+                                            onTriggered: client.noteTaskWorkStatus(taskId, !workStatus)
+                                            height: 30
+                                            width: parent.width
+                                        }
+                                        MenuItem {
+                                            text: "\ue808  remove"
+                                            font.family: "fontello"
+                                            onTriggered: client.removeTask(taskId);
+                                            height: 30
+                                            width: parent.width
+                                        }
+                                    }
                                 }
                             }
 
@@ -276,5 +321,8 @@ Item {
     TaskDiscriptionView {
         id: descriptionDialog
     }
+
 }
+
+
 
