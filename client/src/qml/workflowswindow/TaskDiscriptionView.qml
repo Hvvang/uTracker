@@ -317,12 +317,12 @@ Dialog {
                                     height: 30
                                     width: parent.width
                                 }
-                                MenuItem {
-                                    text: "People"
-                                    onTriggered: model.propertyType = 4
-                                    height: 30
-                                    width: parent.width
-                                }
+//                                MenuItem {
+//                                    text: "People"
+//                                    onTriggered: model.propertyType = 4
+//                                    height: 30
+//                                    width: parent.width
+//                                }
                             }
                         }
                     }

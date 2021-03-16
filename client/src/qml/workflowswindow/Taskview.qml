@@ -107,6 +107,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: colaborantIcon
+                                color: "white"
                             }
                         }
                         Text {

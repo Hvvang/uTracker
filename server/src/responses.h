@@ -40,6 +40,8 @@ enum class RequestType {
     MOVE_TASK = 24,
     REMOVE_TASK = 25,
     GET_TASK_DATA = 26,
+    GET_TASK_WORKERS = 27,
+    NoteWorkStatus = 28,
 
 };
 
@@ -261,5 +263,19 @@ class SendTaskData : public AbstractRequestHandler  {
 Q_OBJECT
 public:
     SendTaskData(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class GetTaskWorkers : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    GetTaskWorkers(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class ChangeTaskWorkStatus : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ChangeTaskWorkStatus(Connection *socket);
     bool isValid(QJsonObject itemObject);
 };

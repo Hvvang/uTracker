@@ -23,9 +23,9 @@ void GetTaskWorkersResponseHandler::processResponse(const QByteArray &data) {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
-        const auto &panelId = rootObject["panelId"].toInt();
+        const auto &panelId = rootObject["listId"].toInt();
         const auto &taskId = rootObject["taskId"].toInt();
-        const auto &colaborants = rootObject["colaborants"].toArray();
+        const auto &colaborants = rootObject["workers"].toArray();
 
         foreach(const QJsonValue &colaborant, colaborants) {
             QJsonObject obj = colaborant.toObject();
@@ -36,6 +36,7 @@ void GetTaskWorkersResponseHandler::processResponse(const QByteArray &data) {
             c.surname = obj["surname"].toString();
             c.icon = c.name.front();
             m_client->addWorker(panelId, taskId, c);
+
         }
     }
 }

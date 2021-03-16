@@ -264,3 +264,21 @@ bool SendTaskData::isValid(QJsonObject itemObject) {
         return true;
     return false;
 }
+
+GetTaskWorkers::GetTaskWorkers(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool GetTaskWorkers::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId"))
+        return true;
+    return false;
+}
+
+ChangeTaskWorkStatus::ChangeTaskWorkStatus(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ChangeTaskWorkStatus::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId")
+        && itemObject.contains("userId")
+        && itemObject.contains("status"))
+        return true;
+    return false;
+}

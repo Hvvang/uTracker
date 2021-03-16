@@ -33,10 +33,12 @@ enum class ResponseType {
     UPDATE_TASK_TITLE = 22,
     UPDATE_TASK = 23,
     MOVE_TASK = 24,
+    REMOVE_TASK = 25,
     GET_TASK_DATA = 26,
 
     GET_TASKS_WORKERS = 27,
-    GET_TASK_TAGS = 25,
+    GET_WORK_STATUS = 28,
+
     ERROR = 250,
 };
 
@@ -70,7 +72,6 @@ signals:
     void getWorkflowPanels(const QByteArray &);
     void getPanelTasks(const QByteArray &);
     void getTaskWorkers(const QByteArray &);
-    void getTaskTags(const QByteArray &);
     void getTask(const QByteArray &);
     void getTaskDescription(const QByteArray &);
     void getPanel(const QByteArray &);
@@ -78,6 +79,9 @@ signals:
     void renameTask(const QByteArray &);
     void updateTask(const QByteArray &);
     void moveTask(const QByteArray &);
+    void removeTask(const QByteArray &);
+    void getWorkStatus(const QByteArray &);
+
 
 private slots:
     void mediator(const QByteArray &);

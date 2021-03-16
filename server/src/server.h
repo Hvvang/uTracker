@@ -7,7 +7,7 @@
 
 #include "runnable.h"
 
-#define MAX_THREAD_COUNT 5
+#define MAX_THREAD_COUNT 10
 
 class Server : public QTcpServer {
     Q_OBJECT
@@ -17,7 +17,12 @@ public:
 
     void startServer(quint16 port = 0);
 
+    void sendTo(const int &userId, const QByteArray &data);
+
+    static Server* singleton();
+
 protected:
+    static Server* m_instance;
     void incomingConnection(qintptr handle) override;
 
 signals:
@@ -29,5 +34,8 @@ public slots:
 private:
     QMutex *m_mutex;
     QThreadPool *m_pool;
-    QMap<Connection *, QString> m_connections;
+    QVector<Connection *> m_connections;
 };
+
+#define m_server Server::singleton()
+

@@ -2,7 +2,7 @@
 #include "database.h"
 
 Runnable::Runnable(Connection *socket) {
-    m_ptr = socket;
+    m_connection = socket;
 
     m_signIn = std::make_shared<ToSignIn>(socket);
     m_signUp = std::make_shared<ToSignUp>(socket);
@@ -30,6 +30,9 @@ Runnable::Runnable(Connection *socket) {
     m_moveTask = std::make_shared<ToMoveTask>(socket);
     m_removeTask = std::make_shared<ToRemoveTask>(socket);
     m_sendTaskData = std::make_shared<SendTaskData>(socket);
+    m_changeTaskWorkStatus = std::make_shared<ChangeTaskWorkStatus>(socket);
+    m_getTaskWorkers = std::make_shared<GetTaskWorkers>(socket);
+
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
@@ -39,7 +42,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow,m_removeFromWorkFlow, m_getUsersFromWorkFlow, m_sendAllWorkFlows});
     funcList.append({m_sendSingleWorkFlow, m_sendStatistics, m_sendProfile, m_updateProfile, m_createList});
     funcList.append({m_renameList, m_getLists, m_removeList, m_createTask, m_getTasks, m_updateTaskTitleRequestHandler, m_updateTask});
-    funcList.append({m_moveTask, m_removeTask, m_sendTaskData});
+    funcList.append({m_moveTask, m_removeTask, m_sendTaskData, m_getTaskWorkers, m_changeTaskWorkStatus});
     QVector<RequestType> types;
     types.append(RequestType::SIGN_UP);
     types.append(RequestType::SIGN_IN);
@@ -67,10 +70,12 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::MOVE_TASK);
     types.append(RequestType::REMOVE_TASK);
     types.append(RequestType::GET_TASK_DATA);
+    types.append(RequestType::GET_TASK_WORKERS);
+    types.append(RequestType::NoteWorkStatus);
     if (static_cast<int>(RequestType::SIGN_UP) == itemObject["type"].toInt()
         || static_cast<int>(RequestType::SIGN_IN) == itemObject["type"].toInt()) {
         m_mutex->lock();
-        m_itr->find(m_ptr).value() = itemObject["email"].toString();
+//        m_itr->find(m_ptr).value() = itemObject["email"].toString();
         m_mutex->unlock();
     }
     for (const auto &i : types)
@@ -88,10 +93,6 @@ void Runnable::setMutex(QMutex *mutex) {
 
 void Runnable::setTask(QByteArray task) {
     m_task = task;
-}
-
-void Runnable::setMap(QMap<Connection *, QString> *map) {
-    m_itr = map;
 }
 
 void Runnable::run() {

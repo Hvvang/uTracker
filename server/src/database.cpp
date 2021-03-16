@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QSqlQueryModel>
 
+#include "server.h"
 #include "hash.h"
 
 DataBase *DataBase::m_pInstance = nullptr;
@@ -98,10 +99,17 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                     map.value("name").toString(),
                                     map.value("surname").toString(),
                                     map.value("email").toString());
+                if (result.contains("userId")) {
+                    m_connection->setUserId(result.value("userId").toInt());
+                }
                 break;
             case RequestType::SIGN_IN:
                 result = containsUser(map.value("email").toString(),
                                       map.value("password").toString());
+                if (result.contains("userId")) {
+                    m_connection->setUserId(result.value("userId").toInt());
+                    qDebug() << m_connection->getUserId();
+                }
                 break;
             case RequestType::AUTO_OAUTH:
                 break;
@@ -191,6 +199,15 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 break;
             case RequestType::GET_TASK_DATA:
                 result = getTaskData(map.value("taskId").toInt());
+                break;
+            case RequestType::GET_TASK_WORKERS:
+                result = getTaskWorkers(map.value("taskId").toInt());
+                break;
+            case RequestType::NoteWorkStatus:
+                result = changeTaskWorkStatus(map.value("taskId").toInt(),
+                                     map.value("userId").toInt(),
+                                     map.value("status").toInt());
+                break;
         }
     } else {
         result["type"] = map.value("type").toInt();
@@ -201,6 +218,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
         QJsonObject jsonObject = QJsonObject::fromVariantMap(result);
         QJsonDocument jsonDoc = QJsonDocument(jsonObject);
 //        qDebug() << jsonDoc.toJson();
+
         emit m_connection->sendResponse(jsonDoc.toJson());
     }
 }
@@ -320,12 +338,27 @@ DataBase::inviteToWorkflow(const QString &email, int workflow_id) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::INVITE_TO_WORKFLOW);
     QSqlQuery query;
-    qDebug() << email;
-    query.exec(QString("select id from UsersCredential where email = '%1';").arg(email));
-    if (query.first())
-        qDebug() << query.value(0).toString();
-    if (query.first() && insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + query.value(0).toString())) {
-        map["message"] = "User succesfully invited to Workflow";
+    if (query.exec(QString("select id from UsersCredential where email = '%1';").arg(email)) && query.first()) {
+        const int &invitedUserId = query.value(0).toInt();
+        insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(invitedUserId));
+
+        if (query.exec("SELECT title, deadline FROM WorkFlows WHERE id = " + QString::number(workflow_id)) && query.first()) {
+            QVariantMap map;
+            map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
+            map["workflowId"] = workflow_id;
+            map["title"] = query.value(0).toString();
+            map["deadline"] = query.value(1).toString();
+//        map["progress"] = progress;
+            map["message"] = "Workflow has been gotten by invitation.";
+
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            m_server->sendTo(invitedUserId, jsonDoc.toJson(QJsonDocument::Compact));
+        }
+
+
+        map["message"] = "User successfully invited to Workflow";
+
     } else {
         map["error"] = 1;
         map["message"] = "Invite canceled";
@@ -655,33 +688,32 @@ QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &
     }
     map["type"] = static_cast<int>(RequestType::MOVE_TASK);
     if (update("Tasks", "list_id = " + QString::number(listId) + ", taskIndex = " + QString::number(taskIndex), "id = " + QString::number(taskId))) {
-        map["message"] = "Task moved";
         map["taskId"] = taskId;
         map["toListId"] = listId;
         map["toTaskIndex"] = taskIndex;
-
+        map["message"] = "Task successfully moved.";
     } else {
-        map["message"] = "Task wasn't moved";
+        map["message"] = "Task wasn't moved.";
         map["error"] = 1;
     }
     return map;
 }
 
 QVariantMap DataBase::removeTask(int taskId) {
-    Q_UNUSED(taskId);
     QVariantMap map;
     QSqlQuery query;
+
     map["type"] = static_cast<int>(RequestType::REMOVE_TASK);
     query.exec("select list_id from Tasks where id = " + QString::number(taskId));
+
     if (query.first()) {
         map["listId"] = query.value(0).toInt();
     }
     if (query.exec("DELETE from Tasks where id = " + QString::number(taskId))) {
-        map["message"] = "Task removed";
-
+        map["message"] = "Task successfully removed.";
         map["taskId"] = taskId;
     } else {
-        map["message"] = "Task wasn't removed";
+        map["message"] = "Task wasn't removed.";
         map["error"] = 1;
     }
     return map;
@@ -704,6 +736,10 @@ QVariantMap DataBase::getTaskData(int taskId) {
         map["creator_id"] = query.value(6).toInt();
         map["description"] = query.value(7).toString();
         map["taskId"] = taskId;
+        if (query.exec(QString("SELECT EXISTS (SELECT 1 FROM T_connector WHERE worker_id = %1 and task_id = %2);")
+                                .arg(query.value(6).toInt())
+                                .arg(taskId)) && query.first())
+            map["status"] = query.value(0).toBool();
 
         map["message"] = "Task successfully gotten.";
     } else {
@@ -761,6 +797,72 @@ QVariantMap DataBase::getUsersFromWorkFlow(int workflow_id) {
     if (!map.contains("error")) {
         map["users"] = Users;
         map["message"] = "Users successfully have gotten";
+    }
+    return map;
+}
+
+QVariantMap DataBase::getTaskWorkers(const int &taskId) {
+    QSqlQuery query;
+    QJsonArray users;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::GET_TASK_WORKERS);
+
+    if(query.exec("SELECT id, first_name, last_name FROM UsersCredential where id in "
+             "(SELECT worker_id FROM T_connector WHERE task_id =  " + QString::number(taskId) + ");") && query.first()) {
+        do {
+            map["userId"] = query.value(0).toInt();
+            map["name"] = query.value(1).toString();
+            map["surname"] = query.value(2).toString();
+            users.append(QJsonObject::fromVariantMap(map));
+        } while (query.next());
+        map["taskId"] = taskId;
+        map["workers"] = users;
+        if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+            map["listId"] = query.value(0).toInt();
+        }
+        map["message"] = "Workers successfully have gotten.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "An error occurred while getting task workers.";
+    }
+    return map;
+}
+
+QVariantMap DataBase::changeTaskWorkStatus(const int &taskId, const int &userId, const bool &status) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::NoteWorkStatus);
+    if (status) {
+        if (query.exec(QString("INSERT INTO T_connector (task_id, worker_id) VALUES(%1, %2);")
+                          .arg(taskId)
+                          .arg(userId))) {
+            map["status"] = status;
+            map["taskId"] = taskId;
+            map["userId"] = userId;
+            map["message"] = "Note work status successfully.";
+        } else {
+            map["error"] = 1;
+            map["message"] = "An error occurred while noting work status.";
+        }
+    } else {
+        if (query.exec(QString("DELETE from T_connector where task_id = %1 and worker_id = %2;")
+                           .arg(taskId)
+                           .arg(userId))) {
+            map["status"] = status;
+            map["taskId"] = taskId;
+            map["userId"] = userId;
+            map["message"] = "Unnote work status successfully.";
+        } else {
+            map["error"] = 1;
+            map["message"] = "An error occurred while unnoting work status.";
+        }
+    }
+    if (!map.contains("error")) {
+        if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+            map["listId"] = query.value(0).toInt();
+        }
     }
     return map;
 }

@@ -82,6 +82,8 @@ void Client::deInitResponseHandlers() {
     delete m_getTaskDescriptionResponseHandler;
     delete m_getTaskUpdatingResponseHandler;
     delete m_moveTaskResponseHandler;
+    delete m_removeTaskResponseHandler;
+    delete m_getWorkStatusResponseHandler;
 
 }
 
@@ -104,6 +106,9 @@ void Client::initResponseHandlers() {
     m_getTaskDescriptionResponseHandler = new GetTaskDescriptionResponseHandler(this);
     m_getTaskUpdatingResponseHandler = new GetTaskUpdatingResponseHandler(this);
     m_moveTaskResponseHandler = new MoveTaskResponseHandler(this);
+    m_removeTaskResponseHandler = new RemoveTaskResponseHandler(this);
+    m_getWorkStatusResponseHandler = new GetWorkStatusResponseHandler(this);
+
 }
 
 void Client::send(const QString &data) {
@@ -115,6 +120,9 @@ void Client::send(const QString &data) {
     qDebug() << "request is: " << json;
 }
 
+Profile &Client::profile() {
+    return m_profile;
+}
 
 Client *Client::singleton() {
     if (!m_instance) {
@@ -150,6 +158,7 @@ void Client::setProfile(const QString &login, const QString &name, const QString
 }
 
 void Client::setId(quint64 id) {
+    m_profile.id = id;
     m_id = id;
 }
 
@@ -284,7 +293,6 @@ void Client::newTask(const int &panelId, const int &taskIndex) {
     json["type"] = ENUM_TO_INT(Client::RequestType::CREATE_TASK);
     json["token"] = m_accessesToken;
     json["listId"] = panelId;
-    qDebug() << "taskIndex: " << taskIndex;
     json["taskIndex"] = taskIndex;
     json["title"] = "Untitled";
     json["creatorId"] = m_id;
@@ -454,6 +462,32 @@ void Client::moveTask(const int &taskId, const int &panelId, const int &index) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::removeTask(const int &taskId) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::REMOVE_TASK);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::noteTaskWorkStatus(const int &taskId, const bool &status) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::NOTE_WORK_STATUS);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+    json["userId"] = m_id;
+    json["status"] = status;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::logout() {
     QJsonObject json;
 
@@ -533,14 +567,27 @@ bool Client::updateTaskModelIfNeeded(const int &taskId) {
 }
 
 void Client::addTask(const int &panelId, const Task &task) {
-    if (m_kanban->contains(panelId)) {
+    if (m_kanban && m_kanban->contains(panelId)) {
         m_kanban->at(panelId).model->insert(task.index, task);
+    }
+}
+
+void Client::deleteTask(const int &panelId, const int &taskId) {
+    if (m_kanban && m_kanban->contains(panelId)) {
+        m_kanban->at(panelId).model->remove(taskId);
+    }
+}
+
+void Client::setTaskWorkStatus(const int &panelId, const int &taskId, const bool &status) {
+    if (m_kanban && m_kanban->contains(panelId)) {
+        m_kanban->at(panelId).model->setStatus(taskId, status);
     }
 }
 
 void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
     if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId)) {
         m_kanban->at(panelId).model->at(taskId).workers->add(worker);
+        m_kanban->at(panelId).model->updateView(taskId);
     }
 }
 
@@ -581,6 +628,12 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
     if (!description.isEmpty())
         m_task->pushBack(description);
 }
+
+
+
+
+
+
 
 
 

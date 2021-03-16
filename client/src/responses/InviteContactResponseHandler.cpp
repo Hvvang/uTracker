@@ -9,9 +9,7 @@ InviteContactResponseHandler::InviteContactResponseHandler(QObject *parent)
 }
 
 void InviteContactResponseHandler::processResponse(const QByteArray &data) {
-    qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
-
         qWarning() << "An error occurred: " << handleMessage(data);
         emit m_client->notification(handleMessage(data));
     }
@@ -24,7 +22,6 @@ void InviteContactResponseHandler::processResponse(const QByteArray &data) {
         c.id = rootObject.value("contactId").toInt();
         c.name = rootObject.value("first_name").toString();
         c.surname = rootObject.value("last_name").toString();
-//        c.status = "Pending invite";
         c.icon = c.name.front();
         m_client->addColaborant(workflowIndex, c);
     }

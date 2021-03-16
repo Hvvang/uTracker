@@ -15,6 +15,9 @@ public:
     void doConnect(qintptr handle);
     QByteArray getTask() const;
 
+    int getUserId() const;
+    void setUserId(const int &id);
+
 signals:
     void sendResponse(const QByteArray &data);
 
@@ -27,4 +30,5 @@ private:
     QByteArray m_task;
     QTcpSocket *m_socket;
     QObject *m_parent;
+    int m_userId = -1;
 };

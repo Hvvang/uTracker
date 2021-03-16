@@ -14,6 +14,14 @@ Connection::~Connection() {
     qobject_cast<Server *>(m_parent)->deleteConnection(this);
 }
 
+int Connection::getUserId() const {
+    return m_userId;
+}
+
+void Connection::setUserId(const int &id) {
+    m_userId = id;
+}
+
 void Connection::doConnect(qintptr handle) {
     m_socket->setSocketDescriptor(handle);
 

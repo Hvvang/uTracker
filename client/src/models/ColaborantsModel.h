@@ -43,6 +43,7 @@ public:
      Q_INVOKABLE int hidden();
 
      void add(const Colaborant &contact);
+     void remove(const int &colabId);
 
 private:
     QList<Colaborant> m_data;

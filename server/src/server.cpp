@@ -1,9 +1,12 @@
 #include "server.h"
 
+Server* Server::m_instance = nullptr;
+
 Server::Server(QObject *parent) : QTcpServer(parent) {
     m_mutex = new QMutex();
     m_pool = new QThreadPool(this);
     m_pool->setMaxThreadCount(MAX_THREAD_COUNT);
+    m_instance = this;
 }
 
 Server::~Server() {
@@ -24,11 +27,20 @@ void Server::incomingConnection(qintptr handle) {
     Connection *newConnection = new Connection(this);
     newConnection->doConnect(handle);
 
-    m_connections.insert(newConnection, nullptr);
+    m_connections.push_back(newConnection);
 }
 
 void Server::deleteConnection(Connection *ptr) {
-    m_connections.erase(m_connections.find(ptr));
+    m_connections.erase(m_connections.begin() + m_connections.indexOf(ptr));
+}
+
+void Server::sendTo(const int &userId, const QByteArray &data) {
+    foreach(const auto &connect, m_connections) {
+        if (connect->getUserId() == userId) {
+            connect->writeToSocket(data);
+            return;
+        }
+    }
 }
 
 void Server::setNewTask(Connection *ptr) {
@@ -37,6 +49,12 @@ void Server::setNewTask(Connection *ptr) {
     task->setAutoDelete(true);
     task->setMutex(m_mutex);
     task->setTask(ptr->getTask());
-    task->setMap(&m_connections);
     m_pool->start(task);
+}
+
+Server *Server::singleton() {
+    if (!m_instance) {
+        m_instance = new Server();
+    }
+    return m_instance;
 }

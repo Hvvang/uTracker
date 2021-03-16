@@ -25,16 +25,14 @@ QVariant TaskPanelModel::data(const QModelIndex &index, int role) const
         case BlankRole: return m_model[index.row()].blank;
         case IconRole: return "";
         case IdRole: return m_model[index.row()].id;
-//        case PanelModelRole: return m_model[index.row()].model;
+        case WorkStatusRole: return m_model[index.row()].mine;
     }
-    // FIXME: Implement me!
     return QVariant();
 }
 
 bool TaskPanelModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
-        // FIXME: Implement me!
         emit dataChanged(index, index, QVector<int>() << role);
         return true;
     }
@@ -72,6 +70,7 @@ QHash<int, QByteArray> TaskPanelModel::roleNames() const {
     roles[IconRole] = "headerIcon";
     roles[BlankRole] = "isBlank";
     roles[IdRole] = "taskId";
+    roles[WorkStatusRole] = "workStatus";
     return roles;
 }
 
@@ -115,7 +114,6 @@ void TaskPanelModel::removeBlank() {
 }
 
 Task TaskPanelModel::getTask(int index) {
-    qDebug() << "blank while get " << blank_index;
     beginRemoveRows(QModelIndex(), index, index);
     Task task = m_model.takeAt(index);
     endRemoveRows();
@@ -123,7 +121,6 @@ Task TaskPanelModel::getTask(int index) {
 }
 
 void TaskPanelModel::setTask(int index, Task &task) {
-    qDebug() << "blank while set up" << blank_index;
     removeBlank();
     insert(index, task);
 }
@@ -139,7 +136,6 @@ void TaskPanelModel::reset() {
 void TaskPanelModel::insert(const int &index, const Task &task) {
     beginInsertRows(QModelIndex(), index, index);
     m_model.insert(index, task);
-    m_client->getTaskWorkers(task.id);
     endInsertRows();
 }
 
@@ -182,6 +178,46 @@ void TaskPanelModel::incrementTaskIndex(const int &from) {
 void TaskPanelModel::decrementTaskIndex(const int &from) {
     for (int i = from; i < m_model.size(); ++i) {
         m_model[i].index--;
+    }
+}
+
+void TaskPanelModel::remove(const int &taskId) {
+        for (int index = 0; index < m_model.size(); ++index) {
+            if (m_model.at(index).id == taskId) {
+                removeRows(index, 1);
+                return;
+            }
+        }
+}
+
+void TaskPanelModel::setStatus(const int &taskId, const bool &status) {
+    for (int i = 0; i < m_model.size(); ++i) {
+        auto &task = m_model[i];
+        if (task.id == taskId) {
+            task.mine = status;
+            const auto &profile = m_client->profile();
+            if (status) {
+                Colaborant c;
+                c.id = profile.id;
+                c.surname = profile.surname;
+                c.name = profile.name;
+                c.icon = profile.name.front();
+                task.workers->add(c);
+            } else {
+                task.workers->remove(profile.id);
+            }
+            emit dataChanged(index(i), index(i));
+            return;
+        }
+    }
+}
+
+void TaskPanelModel::updateView(const int &taskId) {
+    for (int i = 0; i < m_model.size(); ++i) {
+        auto &task = m_model[i];
+        if (task.id == taskId) {
+            emit dataChanged(index(i), index(i));
+        }
     }
 }
 
