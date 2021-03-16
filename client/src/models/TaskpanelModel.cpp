@@ -136,7 +136,6 @@ void TaskPanelModel::reset() {
 void TaskPanelModel::insert(const int &index, const Task &task) {
     beginInsertRows(QModelIndex(), index, index);
     m_model.insert(index, task);
-    m_client->getTaskWorkers(task.id);
     endInsertRows();
 }
 
@@ -183,12 +182,41 @@ void TaskPanelModel::decrementTaskIndex(const int &from) {
 }
 
 void TaskPanelModel::remove(const int &taskId) {
-    if (contains(taskId)) {
         for (int index = 0; index < m_model.size(); ++index) {
             if (m_model.at(index).id == taskId) {
                 removeRows(index, 1);
                 return;
             }
+        }
+}
+
+void TaskPanelModel::setStatus(const int &taskId, const bool &status) {
+    for (int i = 0; i < m_model.size(); ++i) {
+        auto &task = m_model[i];
+        if (task.id == taskId) {
+            task.mine = status;
+            const auto &profile = m_client->profile();
+            if (status) {
+                Colaborant c;
+                c.id = profile.id;
+                c.surname = profile.surname;
+                c.name = profile.name;
+                c.icon = profile.name.front();
+                task.workers->add(c);
+            } else {
+                task.workers->remove(profile.id);
+            }
+            emit dataChanged(index(i), index(i));
+            return;
+        }
+    }
+}
+
+void TaskPanelModel::updateView(const int &taskId) {
+    for (int i = 0; i < m_model.size(); ++i) {
+        auto &task = m_model[i];
+        if (task.id == taskId) {
+            emit dataChanged(index(i), index(i));
         }
     }
 }

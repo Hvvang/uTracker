@@ -52,6 +52,8 @@ public:
     QVariantMap removeTask(int taskId);
     QVariantMap getTaskData(int taskId);
     QVariantMap getTasks(int listId);
+    QVariantMap getTaskWorkers(const int &taskId);
+    QVariantMap changeTaskWorkStatus(const int &taskId, const int &userId, const bool &status);
 
 public:
     static DataBase *getInstance();

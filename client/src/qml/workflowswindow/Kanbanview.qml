@@ -213,7 +213,6 @@ Item {
                                            if (mouse.button & Qt.LeftButton) {
                                                client.getTaskDescription(taskId);
                                            } else if (mouse.button & Qt.RightButton) {
-                                               print(mouseX, mouseY)
                                                contextMenu.x = mouseX
                                                contextMenu.y = mouseY
                                                contextMenu.open();
@@ -226,7 +225,6 @@ Item {
                                        }
                                        onReleased: {
                                            parent.Drag.drop()
-//                                           KanbanModel.setHeight(0)
                                        }
                                     }
                                     states: [

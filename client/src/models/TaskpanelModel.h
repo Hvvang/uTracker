@@ -63,10 +63,12 @@ public:
     [[nodiscard]] bool contains(const int &taskId) const;
     void rename(const int &taskId, const QString &title);
     void update(const int &taskId, const QString &title, const QStringList &tags);
+    void updateView(const int &taskId);
 
     void decrementTaskIndex(const int &from);
     void incrementTaskIndex(const int &from);
     void remove(const int &taskId);
+    void setStatus(const int &taskId, const bool &status);
 
     Q_INVOKABLE void reset();
 

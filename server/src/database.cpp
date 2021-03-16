@@ -191,6 +191,15 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 break;
             case RequestType::GET_TASK_DATA:
                 result = getTaskData(map.value("taskId").toInt());
+                break;
+            case RequestType::GET_TASK_WORKERS:
+                result = getTaskWorkers(map.value("taskId").toInt());
+                break;
+            case RequestType::NoteWorkStatus:
+                result = changeTaskWorkStatus(map.value("taskId").toInt(),
+                                     map.value("userId").toInt(),
+                                     map.value("status").toInt());
+                break;
         }
     } else {
         result["type"] = map.value("type").toInt();
@@ -703,6 +712,10 @@ QVariantMap DataBase::getTaskData(int taskId) {
         map["creator_id"] = query.value(6).toInt();
         map["description"] = query.value(7).toString();
         map["taskId"] = taskId;
+        if (query.exec(QString("SELECT EXISTS (SELECT 1 FROM T_connector WHERE worker_id = %1 and task_id = %2);")
+                                .arg(query.value(6).toInt())
+                                .arg(taskId)) && query.first())
+            map["status"] = query.value(0).toBool();
 
         map["message"] = "Task successfully gotten.";
     } else {
@@ -760,6 +773,72 @@ QVariantMap DataBase::getUsersFromWorkFlow(int workflow_id) {
     if (!map.contains("error")) {
         map["users"] = Users;
         map["message"] = "Users successfully have gotten";
+    }
+    return map;
+}
+
+QVariantMap DataBase::getTaskWorkers(const int &taskId) {
+    QSqlQuery query;
+    QJsonArray users;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::GET_TASK_WORKERS);
+
+    if(query.exec("SELECT id, first_name, last_name FROM UsersCredential where id in "
+             "(SELECT worker_id FROM T_connector WHERE task_id =  " + QString::number(taskId) + ");") && query.first()) {
+        do {
+            map["userId"] = query.value(0).toInt();
+            map["name"] = query.value(1).toString();
+            map["surname"] = query.value(2).toString();
+            users.append(QJsonObject::fromVariantMap(map));
+        } while (query.next());
+        map["taskId"] = taskId;
+        map["workers"] = users;
+        if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+            map["listId"] = query.value(0).toInt();
+        }
+        map["message"] = "Workers successfully have gotten.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "An error occurred while getting task workers.";
+    }
+    return map;
+}
+
+QVariantMap DataBase::changeTaskWorkStatus(const int &taskId, const int &userId, const bool &status) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::NoteWorkStatus);
+    if (status) {
+        if (query.exec(QString("INSERT INTO T_connector (task_id, worker_id) VALUES(%1, %2);")
+                          .arg(taskId)
+                          .arg(userId))) {
+            map["status"] = status;
+            map["taskId"] = taskId;
+            map["userId"] = userId;
+            map["message"] = "Note work status successfully.";
+        } else {
+            map["error"] = 1;
+            map["message"] = "An error occurred while noting work status.";
+        }
+    } else {
+        if (query.exec(QString("DELETE from T_connector where task_id = %1 and worker_id = %2;")
+                           .arg(taskId)
+                           .arg(userId))) {
+            map["status"] = status;
+            map["taskId"] = taskId;
+            map["userId"] = userId;
+            map["message"] = "Unnote work status successfully.";
+        } else {
+            map["error"] = 1;
+            map["message"] = "An error occurred while unnoting work status.";
+        }
+    }
+    if (!map.contains("error")) {
+        if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+            map["listId"] = query.value(0).toInt();
+        }
     }
     return map;
 }

@@ -44,6 +44,7 @@
 #include "GetTaskUpdatingResponseHandler.h"
 #include "MoveTaskResponseHandler.h"
 #include "RemoveTaskResponseHandler.h"
+#include "GetWorkStatusResponseHandler.h"
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
@@ -53,6 +54,7 @@
 #define ENUM_TO_INT(var) static_cast<int>(var)
 
 struct Profile {
+    int id;
     QString login = "";
     QString name = "";
     QString surname = "";
@@ -103,13 +105,14 @@ public:
         MOVE_TASK = 24,
         REMOVE_TASK = 25,
         GET_TASK_DATA = 26,
-
         GET_TASK_WORKERS = 27,
+        NOTE_WORK_STATUS = 28,
 
     };
 
     Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost, const quint16 port = 5000, QObject *parent = nullptr);
 
+    Profile &profile();
     void initResponseHandlers();
     void deInitResponseHandlers();
     void saveToken(const QString &type, const QString &value);
@@ -144,6 +147,7 @@ public:
 
     void addTask(const int &panelId, const Task &task);
     void deleteTask(const int &panelId, const int &taskId);
+    void setTaskWorkStatus(const int &panelId, const int &taskId, const bool &status);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
     void reject();
 
@@ -164,6 +168,7 @@ public:
     Q_INVOKABLE void finishEditingTask();
     Q_INVOKABLE void moveTask(const int &taskId, const int &panelId, const int &index);
     Q_INVOKABLE void removeTask(const int &taskId);
+    Q_INVOKABLE void noteTaskWorkStatus(const int &taskId, const bool &status);
     Q_INVOKABLE void logout();
 
 
@@ -226,6 +231,8 @@ private:
     GetTaskUpdatingResponseHandler *m_getTaskUpdatingResponseHandler{nullptr};
     MoveTaskResponseHandler *m_moveTaskResponseHandler{nullptr};
     RemoveTaskResponseHandler *m_removeTaskResponseHandler{nullptr};
+    GetWorkStatusResponseHandler *m_getWorkStatusResponseHandler{nullptr};
+
 };
 
 #define m_client Client::singleton()

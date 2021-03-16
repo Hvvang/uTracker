@@ -52,4 +52,6 @@ private:
     std::shared_ptr<AbstractRequestHandler> m_moveTask;
     std::shared_ptr<AbstractRequestHandler> m_removeTask;
     std::shared_ptr<AbstractRequestHandler> m_sendTaskData;
+    std::shared_ptr<AbstractRequestHandler> m_changeTaskWorkStatus;
+    std::shared_ptr<AbstractRequestHandler> m_getTaskWorkers;
 };

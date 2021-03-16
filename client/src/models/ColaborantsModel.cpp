@@ -47,7 +47,6 @@ Qt::ItemFlags ColaborantsModel::flags(const QModelIndex &index) const
 bool ColaborantsModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
     endInsertRows();
     return true;
 }
@@ -55,7 +54,7 @@ bool ColaborantsModel::insertRows(int row, int count, const QModelIndex &parent)
 bool ColaborantsModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
+    m_data.removeAt(row);
     endRemoveRows();
     return true;
 }
@@ -77,5 +76,14 @@ void ColaborantsModel::add(const Colaborant &contact) {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(contact);
     endInsertRows();
+}
+
+void ColaborantsModel::remove(const int &colabId) {
+    for (int i = 0; i < m_data.size(); ++i) {
+        if (m_data.at(i).id == colabId) {
+            removeRows(i, 1);
+            return;
+        }
+    }
 }
 
