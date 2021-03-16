@@ -48,7 +48,7 @@ public:
     QVariantMap renameTaskTitle(const int &taskId, const QString &title);
     QVariantMap updateTask(int taskId, const QString &title, const QString &deadline,
                            const QString &creationTime, const QString &description);
-    QVariantMap moveTask(int taskId, int newListId, int newIndexId);
+    QVariantMap moveTask(const int &taskId, const int &listId, const int &taskIndex);
     QVariantMap removeTask(int taskId);
     QVariantMap getTaskData(int taskId);
     QVariantMap getTasks(int listId);

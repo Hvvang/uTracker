@@ -159,6 +159,7 @@ public:
     Q_INVOKABLE void updateTaskTitle(const int &taskId, const QString &title);
     Q_INVOKABLE void getTaskDescription(const int &taskId);
     Q_INVOKABLE void finishEditingTask();
+    Q_INVOKABLE void moveTask(const int &taskId, const int &panelId, const int &index);
     Q_INVOKABLE void logout();
 
 

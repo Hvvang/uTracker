@@ -27,7 +27,7 @@ void GetTaskResponseHandler::processResponse(const QByteArray &data) {
 
         Task t;
         t.id = rootObject["taskId"].toInt();
-        t.index = rootObject["index"].toInt();
+        t.index = rootObject["taskIndex"].toInt();
         t.title = rootObject["title"].toString();
         m_client->addTask(panelId, t);
     }

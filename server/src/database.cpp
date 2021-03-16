@@ -183,7 +183,7 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             case RequestType::MOVE_TASK:
                 result = moveTask(map.value("taskId").toInt(),
                                   map.value("listId").toInt(),
-                                  map.value("indexId").toInt());
+                                  map.value("taskIndex").toInt());
                 break;
             case RequestType::REMOVE_TASK:
                 result = removeTask(map.value("taskId").toInt());
@@ -621,33 +621,37 @@ QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString
     return map;
 }
 
-QVariantMap DataBase::moveTask(int taskId, int newListId, int newIndexId) {
-    Q_UNUSED(taskId);
-    Q_UNUSED(newListId);
-    Q_UNUSED(newIndexId);
+QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &taskIndex) {
     QVariantMap map;
     QSqlQuery query;
-    query.exec("select list_id, index_id from Tasks where id = " + QString::number(taskId));
+
+    query.exec("select list_id, taskIndex from Tasks where id = " + QString::number(taskId));
+
     if (query.first()) {
-        int listId = query.value(0).toInt();
-        int indexId = query.value(1).toInt();
-        query.exec("select index_id from Tasks where list_id = " + QString::number(newListId) + " and index_id > " + QString::number(newIndexId - 1) + " order by index_id desc");
+        const int &currList = query.value(0).toInt();
+        const int &currIndex = query.value(1).toInt();
+        qDebug() << "currList: " << currList << "currIndex: " << currIndex;
+        qDebug() << "listId: " << listId << "taskIndex: " << taskIndex;
+
+
+        query.exec("select id from Tasks where list_id = " + QString::number(currList) + " and taskIndex > " + QString::number(currIndex) + " order by taskIndex desc");
         if (query.first()) {
-            update("Tasks", "index_id = " + QString::number(query.value(0).toInt() + 1), "list_id = " + QString::number(newListId) + " and index_id = " + QString::number(query.value(0).toInt()));
+            update("Tasks", "taskIndex = taskIndex - 1", "id = " + QString::number(query.value(0).toInt()));
             while (query.next()) {
-                update("Tasks", "index_id = " + QString::number(query.value(0).toInt() + 1), "list_id = " + QString::number(newListId) + " and index_id = " + QString::number(query.value(0).toInt()));
+                update("Tasks", "taskIndex = taskIndex - 1", "id = " + QString::number(query.value(0).toInt()));
             }
         }
-        query.exec("select index_id from Tasks where list_id = " + QString::number(listId) + " and index_id > " + QString::number(indexId) + " order by index_id asc");
+
+        query.exec("select id from Tasks where list_id = " + QString::number(listId) + " and taskIndex > " + QString::number(taskIndex - 1) + " order by taskIndex desc");
         if (query.first()) {
-            update("Tasks", "index_id = " + QString::number(query.value(0).toInt() - 1), "list_id = " + QString::number(listId) + " and index_id = " + QString::number(query.value(0).toInt()));
+            update("Tasks", "taskIndex = taskIndex + 1", "id = " + QString::number(query.value(0).toInt()));
             while (query.next()) {
-                update("Tasks", "index_id = " + QString::number(query.value(0).toInt() - 1), "list_id = " + QString::number(listId) + " and index_id = " + QString::number(query.value(0).toInt()));
+                update("Tasks", "taskIndex = taskIndex + 1", "id = " + QString::number(query.value(0).toInt()));
             }
         }
     }
     map["type"] = static_cast<int>(RequestType::MOVE_TASK);
-    if (update("Tasks", "list_id = " + QString::number(newListId) + ", index_id = " + QString::number(newIndexId), "id = " + QString::number(taskId))) {
+    if (update("Tasks", "list_id = " + QString::number(listId) + ", taskIndex = " + QString::number(taskIndex), "id = " + QString::number(taskId))) {
         map["message"] = "Task moved";
     } else {
         map["message"] = "Task wasn't moved";
@@ -708,7 +712,7 @@ QVariantMap DataBase::getTasks(int listId) {
 
     map["type"] = static_cast<int>(RequestType::GET_TASKS);
 
-    query.exec("select id from Tasks where list_id = " + QString::number(listId));
+    query.exec("select id from Tasks where list_id = " + QString::number(listId) + " order by taskIndex asc");
 
     if (query.first()) {
         tasks.append(QJsonObject::fromVariantMap(getTaskData(query.value(0).toInt())));

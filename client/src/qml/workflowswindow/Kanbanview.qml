@@ -148,6 +148,7 @@ Item {
 
                                 property int sourceIndex: index
                                 property int sourceModelIndex: columnView._sourceModelIndex
+                                property int panel: panelId
 
                                 onDropped: {
 
@@ -155,7 +156,8 @@ Item {
                                         var sourcePanelIndex = (drag.source as Taskview).panelIndex;
                                         var sourceTaskIndex = (drag.source as Taskview).index;
                                         var targetPanelIndex = columnView._sourceModelIndex;
-                                        var targetTaskIndex = task.index
+                                        var targetTaskIndex = task.index;
+                                        client.moveTask((drag.source as Taskview).tId, delegateRoot.panel, targetTaskIndex);
                                         KanbanModel.swap(sourcePanelIndex, sourceTaskIndex, targetPanelIndex, targetTaskIndex);
                                     }
                                 }
@@ -170,14 +172,13 @@ Item {
                                         KanbanModel.removeBlank(root.currentPanelIndexOnDragging);
                                     }
 
-
                                     delegateRoot.height = KanbanModel.getHeight()
                                     delegateRoot.width = (drag.source as Taskview).width
 
-
-                                    if ((task as Taskview).realModel === (drag.source as Taskview).realModel)
+                                    if ((task as Taskview).realModel === (drag.source as Taskview).realModel) {
                                         panelModel.move((drag.source as Taskview).index, (task as Taskview).index, 1);
-                                    else {
+                                        client.moveTask(taskId, delegateRoot.panel, (task as Taskview).index);
+                                    } else {
                                         panelModel.test((task as Taskview).index)
                                     }
 
@@ -199,6 +200,7 @@ Item {
                                     property int index: model.index
                                     property int panelIndex: delegateRoot.sourceModelIndex
                                     property var realModel: panelModel
+                                    property int tId: taskId
 
                                     visible: !isBlank
 
@@ -210,21 +212,15 @@ Item {
 
                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                                        onClicked: {
+                                           client.getTaskDescription(taskId);
                                            forceActiveFocus()
-//                                           if(mouse.button & Qt.RightButton) {
-//                                               task.realModel.removeRows(task.index, 1);
-//                                           }
-//                                           if(mouse.button & Qt.LeftButton) {
-//                                               task.colabsCounter += 1;
-//                                           }
                                        }
                                        onPressed: {
-                                           client.getTaskDescription(taskId);
                                            KanbanModel.setHeight(drag.target.height)
                                        }
                                        onReleased: {
                                            parent.Drag.drop()
-                                           KanbanModel.setHeight(0)
+//                                           KanbanModel.setHeight(0)
                                        }
                                     }
                                     states: [

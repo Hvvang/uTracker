@@ -109,7 +109,7 @@ QVariant tagsFromJsonArray(const QJsonArray &jsonValue) {
 void TaskDescriptionModel::pushBack(const QString &description) {
     QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
     QJsonArray json = doc.array();
-    
+
     foreach(const auto &jsonValue, json) {
         qDebug() << jsonValue;
         QVariant value;

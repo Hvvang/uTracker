@@ -242,7 +242,8 @@ ToMoveTask::ToMoveTask(Connection *socket) : AbstractRequestHandler(socket){}
 
 bool ToMoveTask::isValid(QJsonObject itemObject) {
     if (itemObject.contains("listId")
-        && itemObject.contains("taskId"))
+        && itemObject.contains("taskId")
+        && itemObject.contains("taskIndex"))
         return true;
     return false;
 }

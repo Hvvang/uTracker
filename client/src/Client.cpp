@@ -285,6 +285,7 @@ void Client::newTask(const int &panelId, const int &taskIndex) {
     json["type"] = ENUM_TO_INT(Client::RequestType::CREATE_TASK);
     json["token"] = m_accessesToken;
     json["listId"] = panelId;
+    qDebug() << "taskIndex: " << taskIndex;
     json["taskIndex"] = taskIndex;
     json["title"] = "Untitled";
     json["creatorId"] = m_id;
@@ -434,6 +435,20 @@ void Client::finishEditingTask() {
     json["type"] = ENUM_TO_INT(Client::RequestType::UPDATE_TASK);
     json["token"] = m_accessesToken;
     json["taskId"] = m_task->Id();
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::moveTask(const int &taskId, const int &panelId, const int &index) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::MOVE_TASK);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+    json["listId"] = panelId;
+    json["taskIndex"] = index;
 
     QJsonDocument document;
     document.setObject(json);
