@@ -350,8 +350,20 @@ DataBase::updateWorkflow(const int &userId, int workflow_id, const QString &titl
     }
 
     map["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
-    if (is_ok)
+    if (is_ok) {
+        query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1);")
+                           .arg(workflow_id));
+        query.first();
+        const double &allTasks = query.value(0).toInt();
+        query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1) and done = true;")
+                           .arg(workflow_id));
+        query.first();
+        const double &doneTasks = query.value(0).toInt();
+        map["progress"] = (allTasks) ? doneTasks / allTasks * 100.0 : 100;
+
         map["message"] = "Workflow successfully updated.";
+    }
+
     else {
         map["error"] = 1;
         map["message"] = "Workflow isn't in database.";
@@ -1072,17 +1084,19 @@ QVariantMap DataBase::changeTaskDoneStatus(const int &taskId, const int &userId,
         temp["workflow_id"] = query.value(0).toInt();
         temp["title"] = query.value(1).toString();
         temp["deadline"] = query.value(2).toString();
+
         query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1);")
-                           .arg(query.value(0).toInt()));
+                           .arg(temp["workflow_id"].toInt()));
         query.first();
         const double &allTasks = query.value(0).toInt();
         query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1) and done = true;")
-                           .arg(query.value(0).toInt()));
+                           .arg(temp["workflow_id"].toInt()));
         query.first();
         const double &doneTasks = query.value(0).toInt();
         temp["progress"] = (allTasks) ? doneTasks / allTasks * 100.0 : 100;
         temp["message"] = "Workflow successfully updated.";
 
+        qDebug() << allTasks << doneTasks << temp;
         if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
                        "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(map["listId"].toInt()) + ");")
             && query.first()) {
@@ -1104,6 +1118,7 @@ QVariantMap DataBase::changeTaskDoneStatus(const int &taskId, const int &userId,
         map["error"] = 1;
         map["message"] = "An error occurred while noting done status.";
     }
+    qDebug() << getTaskData(9);
     return map;
 }
 
