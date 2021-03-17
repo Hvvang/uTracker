@@ -22,8 +22,11 @@ set(SOURCES
         MoveTaskResponseHandler.cpp
         RemoveTaskResponseHandler.cpp
         GetWorkStatusResponseHandler.cpp
+        GetTaskWorkerResponseHandler.cpp
+        RemoveTaskWorkerResponseHandler.cpp
+        GetTaskDoneStatusResponseHandler.cpp
 
-        )
+)
 set(HEADERS
         AbstractResponseHandler.h
         AuthorisationResponseHandler.h
@@ -47,8 +50,11 @@ set(HEADERS
         MoveTaskResponseHandler.h
         RemoveTaskResponseHandler.h
         GetWorkStatusResponseHandler.h
+        GetTaskWorkerResponseHandler.h
+        RemoveTaskWorkerResponseHandler.h
+        GetTaskDoneStatusResponseHandler.h
 
-        GetTaskWorkerResponseHandler.cpp GetTaskWorkerResponseHandler.h RemoveTaskWorkerResponseHandler.cpp RemoveTaskWorkerResponseHandler.h)
+)
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
 

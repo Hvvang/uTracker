@@ -47,6 +47,7 @@
 #include "GetWorkStatusResponseHandler.h"
 #include "GetTaskWorkerResponseHandler.h"
 #include "RemoveTaskWorkerResponseHandler.h"
+#include "GetTaskDoneStatusResponseHandler.h"
 
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
@@ -112,6 +113,7 @@ public:
         NOTE_WORK_STATUS = 28,
         GET_TASK_WORKER = 29,
         REMOVE_TASK_WORKER = 30,
+        NOTE_TASK_DONE_STATUS = 31,
 
     };
 
@@ -154,6 +156,7 @@ public:
     void addTask(const int &panelId, const Task &task);
     void deleteTask(const int &panelId, const int &taskId);
     void setTaskWorkStatus(const int &panelId, const int &taskId, const bool &status);
+    void setTaskDoneStatus(const int &panelId, const int &taskId, const bool &status);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
     void removeWorker(const int &panelId, const int &taskId, const int &workerId);
 
@@ -177,6 +180,7 @@ public:
     Q_INVOKABLE void moveTask(const int &taskId, const int &panelId, const int &index);
     Q_INVOKABLE void removeTask(const int &taskId);
     Q_INVOKABLE void noteTaskWorkStatus(const int &taskId, const bool &status);
+    Q_INVOKABLE void noteTaskDoneStatus(const int &taskId, const bool &status);
     Q_INVOKABLE void logout();
 
 
@@ -242,6 +246,8 @@ private:
     GetWorkStatusResponseHandler *m_getWorkStatusResponseHandler{nullptr};
     GetTaskWorkerResponseHandler *m_getTaskWorkerResponseHandler{nullptr};
     RemoveTaskWorkerResponseHandler *m_removeTaskWorkerResponseHandler{nullptr};
+    GetTaskDoneStatusResponseHandler *m_getTaskDoneStatusResponseHandler{nullptr};
+
 };
 
 #define m_client Client::singleton()

@@ -38,6 +38,7 @@ void GetTaskResponseHandler::processResponse(const QByteArray &data) {
         t.index = rootObject["taskIndex"].toInt();
         t.title = rootObject["title"].toString();
         t.mine = rootObject["status"].toBool();
+        t.isDone = rootObject["done"].toBool();
         t.tags = tagsFromJsonArray(
                 QJsonDocument::fromJson(rootObject["tags"].toString().toUtf8()).array());
         m_client->addTask(panelId, t);

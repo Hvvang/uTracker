@@ -145,6 +145,7 @@ int KanbanModel::flowId() {
 
 void KanbanModel::rename(const int &panelIndex, const QString &title) {
     m_model[panelIndex].title = title;
+    emit dataChanged(index(panelIndex), index(panelIndex));
 }
 
 bool KanbanModel::contains(const int &panelId) const {

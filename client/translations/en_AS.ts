@@ -107,7 +107,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="301"/>
+        <location filename="../src/qml/workflowswindow/Kanbanview.qml" line="308"/>
         <source>New Task</source>
         <translation type="unfinished"></translation>
     </message>
@@ -187,7 +187,12 @@
 <context>
     <name>Taskview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Taskview.qml" line="109"/>
+        <location filename="../src/qml/workflowswindow/Taskview.qml" line="66"/>
+        <source>✔️</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/workflowswindow/Taskview.qml" line="146"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,17 +233,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="101"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="103"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="112"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="114"/>
         <source>+%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="128"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="130"/>
         <source>personal</source>
         <translation type="unfinished"></translation>
     </message>

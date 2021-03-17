@@ -78,6 +78,8 @@ Item {
                 anchors.right: parent.right
                 anchors.left: parent.left
                 anchors.top: percent.bottom
+                hoverEnabled: false
+                indeterminate: flowProgress !== 100
                 value: flowProgress
             }
 

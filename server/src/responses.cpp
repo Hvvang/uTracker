@@ -282,3 +282,13 @@ bool ChangeTaskWorkStatus::isValid(QJsonObject itemObject) {
         return true;
     return false;
 }
+
+ChangeTaskDoneStatus::ChangeTaskDoneStatus(Connection *socket) : AbstractRequestHandler(socket){}
+
+bool ChangeTaskDoneStatus::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId")
+        && itemObject.contains("userId")
+        && itemObject.contains("status"))
+        return true;
+    return false;
+}

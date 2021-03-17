@@ -13,6 +13,7 @@ struct Task {
     ColaborantsModel *workers = new ColaborantsModel;
     bool blank = false;
     bool mine = false;
+    bool isDone = false;
 };
 
 class TaskPanelModel : public QAbstractListModel
@@ -33,6 +34,7 @@ public:
         BlankRole,
         IdRole,
         WorkStatusRole,
+        DoneRole,
     };
 
     // Basic functionality:
@@ -69,6 +71,7 @@ public:
     void incrementTaskIndex(const int &from);
     void remove(const int &taskId);
     void setStatus(const int &taskId, const bool &status);
+    void setDoneStatus(const int &taskId, const bool &status);
 
     Q_INVOKABLE void reset();
 

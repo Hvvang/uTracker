@@ -23,7 +23,7 @@ void EditWorkflowResponseHandler::processResponse(const QByteArray &data) {
 
         Workflow w;
         w.id = rootObject["workflow_id"].toInt();
-        w.progress = rootObject["progress"].toInt();
+        w.progress = rootObject["progress"].toDouble();
         w.deadline = rootObject["deadline"].toString();
         w.title = rootObject["title"].toString();
         m_client->updateWorkflow(w);

@@ -86,6 +86,8 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit removeTask(data); break;
         case ResponseType::GET_WORK_STATUS:
             emit getWorkStatus(data); break;
+        case ResponseType::GET_TASK_DONE_STATUS:
+            emit getTaskDoneStatus(data); break;
         case ResponseType::GET_PANEL:
             emit getPanel(data); break;
         case ResponseType::GET_TASK_WORKER:

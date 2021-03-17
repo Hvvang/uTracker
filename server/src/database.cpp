@@ -24,7 +24,6 @@ DataBase::~DataBase() {
 }
 
 void DataBase::create_tables() {
-    //const std ::lock_guard<std ::mutex> lock(g_i_mutex);
     QSqlQuery query;
     query.exec(
         "create table IF NOT EXISTS UsersCredential ("
@@ -54,6 +53,7 @@ void DataBase::create_tables() {
         "title varchar,"
         "creation_time datetime,"
         "deadline_time datetime,"
+        "done bool"
         "creator_id int,"
         "description varchar,"
         "tags varchar,"
@@ -224,6 +224,11 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                      map.value("userId").toInt(),
                                      map.value("status").toInt());
                 break;
+            case RequestType::NOTE_TASK_DONE_STATUS:
+                result = changeTaskDoneStatus(map.value("taskId").toInt(),
+                                              map.value("userId").toInt(),
+                                              map.value("status").toInt());
+                break;
             case RequestType::GET_TASK_WORKER:
                 break;
             case RequestType::REMOVE_TASK_WORKER:
@@ -312,7 +317,7 @@ DataBase::createWorkflow(const int &userId, const QString &title, const QString 
         map["workflowId"] = workflowId;
         map["title"] = title;
         map["deadline"] = deadline;
-//        map["progress"] = progress;
+        map["progress"] = 100;
         map["message"] = "Workflow has been created";
         query.exec(QString("INSERT INTO WF_connector (workflow_id, user_id) VALUES(%1, '%2');")
                        .arg(workflowId)
@@ -446,7 +451,15 @@ QVariantMap DataBase::getWorkflow(int workflow_id) {
         map["ownerId"] = query.value(0).toInt();
         map["title"] = query.value(1).toString();
         map["deadline"] = query.value(2).toString();
-
+        query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1);")
+                .arg(workflow_id));
+        query.first();
+        const double &allTasks = query.value(0).toInt();
+        query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1) and done = true;")
+               .arg(workflow_id));
+        query.first();
+        const double &doneTasks = query.value(0).toInt();
+        map["progress"] = (allTasks) ? doneTasks / allTasks * 100.0 : 100;
         map["message"] = "Workflow successfully has gotten.";
     } else {
         map["error"] = 1;
@@ -553,10 +566,10 @@ QVariantMap DataBase::createList(const int &userId, const QString &title, const 
 
 QVariantMap DataBase::renameList(const int &userId, const QString &title, int listId) {
     QVariantMap map;
-    map["type"] = static_cast<int>(RequestType::RENAME_LIST);
     QSqlQuery query;
 
-    if (query.exec(QString("UPDATE Lists SET title = %1 WHERE id = %2;")
+    map["type"] = static_cast<int>(RequestType::RENAME_LIST);
+    if (query.exec(QString("UPDATE Lists SET title = '%1' WHERE id = %2;")
                            .arg(title)
                            .arg(listId))) {
         query.exec(QString("SELECT listIndex, workflow_id FROM Lists where id = %1;").arg(listId));
@@ -655,6 +668,8 @@ QVariantMap DataBase::createTask(const int &userId, const QString &title, const 
         map["listId"] = listId;
         map["title"] = title;
         map["taskIndex"] = taskIndex;
+        map["status"] = false;
+        map["done"] = false;
         map["message"] = "Task successfully created";
 
         if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
@@ -847,7 +862,7 @@ QVariantMap DataBase::getTaskData(int taskId) {
     map["type"] = static_cast<int>(RequestType::GET_TASK_DATA);
     QSqlQuery query;
     if (query.exec("SELECT "
-                   "list_id, taskIndex, title, tags, creation_time, deadline_time, creator_id, description "
+                   "list_id, taskIndex, title, tags, creation_time, deadline_time, done, creator_id, description "
                    "FROM Tasks "
                    "WHERE id = " + QString::number(taskId)) && query.first()) {
         map["listId"] = query.value(0).toInt();
@@ -856,8 +871,9 @@ QVariantMap DataBase::getTaskData(int taskId) {
         map["tags"] = query.value(3).toString();
         map["creation_time"] = query.value(4).toString();
         map["deadline_time"] = query.value(5).toString();
-        map["creator_id"] = query.value(6).toInt();
-        map["description"] = query.value(7).toString();
+        map["done"] = query.value(6).toBool();
+        map["creator_id"] = query.value(7).toInt();
+        map["description"] = query.value(8).toString();
         map["taskId"] = taskId;
         if (query.exec(QString("SELECT EXISTS (SELECT 1 FROM T_connector WHERE worker_id = %1 and task_id = %2);")
                                 .arg(query.value(6).toInt())
@@ -1034,6 +1050,63 @@ QVariantMap DataBase::changeTaskWorkStatus(const int &taskId, const int &userId,
     return map;
 }
 
+QVariantMap DataBase::changeTaskDoneStatus(const int &taskId, const int &userId, const bool &status) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::NOTE_TASK_DONE_STATUS);
+    if (query.exec(QString("UPDATE Tasks SET done = %1 where id = %2;").arg(status).arg(taskId))) {
+        map["status"] = status;
+        map["taskId"] = taskId;
+        map["userId"] = userId;
+        if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+            map["listId"] = query.value(0).toInt();
+        }
+        map["message"] = "Note done status successfully.";
+
+        QVariantMap temp;
+        temp["type"] = static_cast<int>(RequestType::UPDATE_WORKFLOW);
+        query.exec(QString("SELECT id, title, deadline FROM WorkFlows WHERE id = (SELECT workflow_id FROM Lists WHERE id = %1);")
+                           .arg(map["listId"].toInt()));
+        query.first();
+        temp["workflow_id"] = query.value(0).toInt();
+        temp["title"] = query.value(1).toString();
+        temp["deadline"] = query.value(2).toString();
+        query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1);")
+                           .arg(query.value(0).toInt()));
+        query.first();
+        const double &allTasks = query.value(0).toInt();
+        query.exec(QString("SELECT COUNT(*) FROM Tasks WHERE list_id in (SELECT id FROM Lists WHERE workflow_id = %1) and done = true;")
+                           .arg(query.value(0).toInt()));
+        query.first();
+        const double &doneTasks = query.value(0).toInt();
+        temp["progress"] = (allTasks) ? doneTasks / allTasks * 100.0 : 100;
+        temp["message"] = "Workflow successfully updated.";
+
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                       "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(map["listId"].toInt()) + ");")
+            && query.first()) {
+
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument firstResponse = QJsonDocument(jsonObject);
+            jsonObject = QJsonObject::fromVariantMap(temp);
+            QJsonDocument secondResponse = QJsonDocument(jsonObject);
+
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId) {
+                    m_server->sendTo(id, firstResponse.toJson(QJsonDocument::Compact));
+                }
+                m_server->sendTo(id, secondResponse.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
+    } else {
+        map["error"] = 1;
+        map["message"] = "An error occurred while noting done status.";
+    }
+    return map;
+}
+
 bool DataBase::insert(const QString &table, const QString &insert, const QString &values) {
     QSqlQuery query;
     return query.exec("INSERT INTO " + table + " (" + insert + ") VALUES (" + values + ");");
@@ -1053,19 +1126,3 @@ QSqlQuery DataBase::select(const QString &table, const QString &select, const QS
     query.exec("SELECT " + select + " FROM " + table + " WHERE " + where + ";");
     return query;
 }
-
-// //QJsonArray npcArray;
-// //QVector<int> vitya = {1, 2, 3, 4, 5};
-// //for (auto item : vitya) {
-// //QJsonObject npcObject {
-// //        {"num", item}
-// //};
-// //npcArray.append(npcObject);
-// //}
-
-//QJsonArray array = itemObject["checkList"].toArray();
-// qDebug() << "CHECK_LIST :\n";
-// for(int i = 0; i < checkList.count(); i++) {
-// qDebug() << checkList.at(i)["str"].toString();
-// qDebug() << checkList.at(i)["isDone"].toBool();
-// }

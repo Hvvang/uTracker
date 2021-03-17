@@ -279,6 +279,13 @@ Item {
                                             width: parent.width
                                         }
                                         MenuItem {
+                                            text: doneStatus ? "✖️  Unnote Done" : "✔️  Note Done"
+                                            font.family: "fontello"
+                                            onTriggered: client.noteTaskDoneStatus(taskId, !doneStatus)
+                                            height: 30
+                                            width: parent.width
+                                        }
+                                        MenuItem {
                                             text: "\ue808  remove"
                                             font.family: "fontello"
                                             onTriggered: client.removeTask(taskId);

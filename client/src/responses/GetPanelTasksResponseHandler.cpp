@@ -42,6 +42,7 @@ void GetPanelTasksResponseHandler::processResponse(const QByteArray &data) {
             t.index = obj["taskIndex"].toInt();
             t.title = obj["title"].toString();
             t.mine = obj["status"].toBool();
+            t.isDone = obj["done"].toBool();
 
             t.tags = tagsFromJsonArray(
                 QJsonDocument::fromJson(obj["tags"].toString().toUtf8()).array());

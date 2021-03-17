@@ -10,7 +10,6 @@ Item {
     width: 250
     height: view.childrenRect.height + 30
 
-    property int colabsCounter: 0
     property var backColor: ["#4287f5", "#f5b042", "#f56042", "#f54242", "#b942f5", "#4257f5", "#f5429c"]
 
     ColumnLayout {
@@ -22,27 +21,65 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
-//        implicitHeight: taskTxt.height + tags.height + workers.height
 
-        TextField {
-            id: taskTxt
+        RowLayout {
 
-            text: taskTitle
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.fillWidth: true
+            TextField {
+                id: taskTxt
 
-            selectByMouse: true
-            background: Rectangle { color: "transparent"; }
-            Keys.onReturnPressed:
-                focus = false;
-            onFocusChanged: {
-                if (!focus)
-                    client.updateTaskTitle(taskId, text);
+                text: taskTitle
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+
+                selectByMouse: true
+                background: Rectangle { color: "transparent"; }
+                Keys.onReturnPressed:
+                    focus = false;
+                onFocusChanged: {
+                    if (!focus)
+                        client.updateTaskTitle(taskId, text);
+                }
+            }
+            Loader {
+                id: load
+
+                function getComponent(doneStatus, workers) {
+                    if (doneStatus) {
+                        return doneComponent;
+                    }
+                    if (!doneStatus && workers) {
+                        return busyComponent;
+                    }
+                }
+
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                Layout.preferredHeight: 34
+                Layout.preferredWidth: 34
+                sourceComponent: getComponent(doneStatus, colabsRepeater.count)
+            }
+
+            Component {
+                id: doneComponent
+                Text {
+                    text: qsTr("✔️")
+                    font.pixelSize: 30;
+                    color: Material.color(Material.Pink)
+                    Layout.topMargin: 0
+                    Layout.margins: 3
+
+                }
+            }
+            Component {
+                id: busyComponent
+                BusyIndicator {
+                    Layout.margins: 3
+                    wheelEnabled: true
+                    hoverEnabled: false
+                }
             }
         }
-
         ColumnLayout {
             id: tags
             width: parent.width

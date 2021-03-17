@@ -26,6 +26,7 @@ QVariant TaskPanelModel::data(const QModelIndex &index, int role) const
         case IconRole: return "";
         case IdRole: return m_model[index.row()].id;
         case WorkStatusRole: return m_model[index.row()].mine;
+        case DoneRole: return m_model[index.row()].isDone;
     }
     return QVariant();
 }
@@ -71,6 +72,7 @@ QHash<int, QByteArray> TaskPanelModel::roleNames() const {
     roles[BlankRole] = "isBlank";
     roles[IdRole] = "taskId";
     roles[WorkStatusRole] = "workStatus";
+    roles[DoneRole] = "doneStatus";
     return roles;
 }
 
@@ -212,6 +214,17 @@ void TaskPanelModel::setStatus(const int &taskId, const bool &status) {
     }
 }
 
+void TaskPanelModel::setDoneStatus(const int &taskId, const bool &status) {
+    for (int i = 0; i < m_model.size(); ++i) {
+        auto &task = m_model[i];
+        if (task.id == taskId) {
+            task.isDone = status;
+            emit dataChanged(index(i), index(i));
+            return;
+        }
+    }
+}
+
 void TaskPanelModel::updateView(const int &taskId) {
     for (int i = 0; i < m_model.size(); ++i) {
         auto &task = m_model[i];
@@ -220,6 +233,8 @@ void TaskPanelModel::updateView(const int &taskId) {
         }
     }
 }
+
+
 
 
 

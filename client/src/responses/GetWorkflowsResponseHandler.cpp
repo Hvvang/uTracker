@@ -14,9 +14,7 @@ GetWorkflowsResponseHandler::GetWorkflowsResponseHandler(QObject *parent)
 }
 
 void GetWorkflowsResponseHandler::processResponse(const QByteArray &data) {
-    qDebug() << "error_type equal " <<  static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
-
         qWarning() << "An error occurred: " << handleMessage(data);
         emit m_client->notification(handleMessage(data));
     }
@@ -33,10 +31,9 @@ void GetWorkflowsResponseHandler::processResponse(const QByteArray &data) {
             w.id = obj.value("workflowId").toInt();
             w.title = obj.value("title").toString();
             w.deadline = obj.value("deadline").toString();
-            w.progress = obj.value("progress").toInt();
+            w.progress = obj.value("progress").toDouble();
 
             m_client->newWorkflow(w);
-
         }
     }
 }

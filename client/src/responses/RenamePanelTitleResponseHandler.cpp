@@ -23,6 +23,7 @@ void RenamePanelTitleResponseHandler::processResponse(const QByteArray &data) {
         QJsonObject rootObject = itemDoc.object();
 
         const auto &workflowId = rootObject["workflowId"].toInt();
+        const auto &listId = rootObject["listId"].toInt();
         const auto &panelIndex = rootObject["listIndex"].toInt();
         const auto &title = rootObject["title"].toString();
 

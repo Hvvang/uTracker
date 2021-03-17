@@ -53,7 +53,6 @@ void Client::readyRead() {
         if (!itemDoc.isNull()) {
             QJsonObject rootObject = itemDoc.object();
 
-            int responseType;
             if (rootObject.contains("type")) {
                 emit handled(data);
             } else {
@@ -86,6 +85,7 @@ void Client::deInitResponseHandlers() {
     delete m_getWorkStatusResponseHandler;
     delete m_getTaskWorkerResponseHandler;
     delete m_removeTaskWorkerResponseHandler;
+    delete m_getTaskDoneStatusResponseHandler;
 
 }
 
@@ -112,6 +112,7 @@ void Client::initResponseHandlers() {
     m_getWorkStatusResponseHandler = new GetWorkStatusResponseHandler(this);
     m_getTaskWorkerResponseHandler = new GetTaskWorkerResponseHandler(this);
     m_removeTaskWorkerResponseHandler = new RemoveTaskWorkerResponseHandler(this);
+    m_getTaskDoneStatusResponseHandler = new GetTaskDoneStatusResponseHandler(this);
 
 }
 
@@ -492,6 +493,20 @@ void Client::noteTaskWorkStatus(const int &taskId, const bool &status) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::noteTaskDoneStatus(const int &taskId, const bool &status) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::NOTE_TASK_DONE_STATUS);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+    json["userId"] = m_id;
+    json["status"] = status;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
 void Client::logout() {
     QJsonObject json;
 
@@ -588,6 +603,12 @@ void Client::setTaskWorkStatus(const int &panelId, const int &taskId, const bool
     }
 }
 
+void Client::setTaskDoneStatus(const int &panelId, const int &taskId, const bool &status) {
+    if (m_kanban && m_kanban->contains(panelId)) {
+        m_kanban->at(panelId).model->setDoneStatus(taskId, status);
+    }
+}
+
 void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &worker) {
     if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId)) {
         m_kanban->at(panelId).model->at(taskId).workers->add(worker);
@@ -638,6 +659,8 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
     if (!description.isEmpty())
         m_task->pushBack(description);
 }
+
+
 
 
 

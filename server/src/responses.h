@@ -44,6 +44,7 @@ enum class RequestType {
     NoteWorkStatus = 28,
     GET_TASK_WORKER = 29,
     REMOVE_TASK_WORKER = 30,
+    NOTE_TASK_DONE_STATUS = 31,
 
 };
 
@@ -279,5 +280,12 @@ class ChangeTaskWorkStatus : public AbstractRequestHandler  {
 Q_OBJECT
 public:
     ChangeTaskWorkStatus(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+class ChangeTaskDoneStatus : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    ChangeTaskDoneStatus(Connection *socket);
     bool isValid(QJsonObject itemObject);
 };
