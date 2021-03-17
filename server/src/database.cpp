@@ -784,24 +784,26 @@ QVariantMap DataBase::getUsersFromWorkFlow(int workflow_id) {
     QJsonArray Users;
     QSqlQuery query;
     QVariantMap map;
+
     map["type"] = static_cast<int>(RequestType::GET_USERS_FROM_WORKFLOW);
-    query.exec("select first_name, last_name, id from UsersCredential where id in (select user_id from WF_connector where workflow_id = " + QString::number(workflow_id) + ");");
-    if (query.first()) {
-        map["name"] = query.value(0).toString();
-        map["surname"] = query.value(1).toString();
-        Users.append(QJsonObject::fromVariantMap(map));
+    if (query.exec("SELECT first_name, last_name, id "
+                   "FROM UsersCredential "
+                   "WHERE id IN ("
+                   "SELECT user_id "
+                   "FROM WF_connector "
+                   "WHERE workflow_id = " + QString::number(workflow_id) + ");") && query.first()) {
+        do {
+            map["name"] = query.value(0).toString();
+            map["surname"] = query.value(1).toString();
+            map["userId"] = query.value(2).toInt();
+            Users.append(QJsonObject::fromVariantMap(map));
+        } while (query.next());
+        map["colaborants"] = Users;
+        map["workflowId"] = workflow_id;
+        map["message"] = "Users successfully have gotten";
     } else {
         map["error"] = 1;
         map["message"] = "Workflows don't exist";
-    }
-    while (query.next()) {
-        map["name"] = query.value(0).toString();
-        map["surname"] = query.value(1).toString();
-        Users.append(QJsonObject::fromVariantMap(map));
-    }
-    if (!map.contains("error")) {
-        map["users"] = Users;
-        map["message"] = "Users successfully have gotten";
     }
     return map;
 }

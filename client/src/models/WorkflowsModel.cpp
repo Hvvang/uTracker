@@ -4,22 +4,7 @@
 #include "Client.h"
 
 WorkflowsModel::WorkflowsModel(QObject *parent)
-    : QAbstractListModel(parent) {
-//    Workflow w1;
-//    w1.deadline = "11-22-33";
-//    w1.title = "What is Lorem Ipsum?\n"
-//            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-//    w1.progress = 34;
-//    w1.colaborants = new ColaborantsModel(this);
-//    m_data.push_back(w1);
-//    Workflow w2;
-//    w2.deadline = "11-22-22";
-//    w2.title = "What is Lorem Ipsum?\n"
-//            "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-//    w2.progress = 66;
-//    w2.colaborants = new ColaborantsModel(this);
-//    m_data.push_back(w2);
-}
+    : QAbstractListModel(parent) { }
 
 int WorkflowsModel::rowCount(const QModelIndex &parent) const
 {
@@ -119,7 +104,7 @@ void WorkflowsModel::updateWorkflow(const Workflow &workflow) {
             m_data[index].progress = workflow.progress;
             m_data[index].deadline = workflow.deadline;
 
-            emit dataChanged(this->index(index, 0), this->index(index, 0));
+            emit dataChanged(this->index(index), this->index(index));
             break;
         }
     }

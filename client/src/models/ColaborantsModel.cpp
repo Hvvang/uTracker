@@ -68,10 +68,6 @@ QHash<int, QByteArray> ColaborantsModel::roleNames() const {
     return roles;
 }
 
-int ColaborantsModel::hidden() {
-    return qMax<int>(m_data.size() - 4, 0);
-}
-
 void ColaborantsModel::add(const Colaborant &contact) {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(contact);

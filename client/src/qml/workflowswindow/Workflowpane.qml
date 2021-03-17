@@ -92,6 +92,7 @@ Item {
                 spacing: -20
 
                 Repeater {
+                    id: colabRepeater
                     model: flowModel
 
                     RoundButton {
@@ -107,8 +108,8 @@ Item {
                 RoundButton {
                     width: 40
                     height: 40
-                    visible: flowColaborants.hidden()
-                    text: qsTr("+%1").arg(flowColaborants.hidden())
+                    visible: colabRepeater.count - 4 > 0
+                    text: qsTr("+%1").arg(colabRepeater.count - 4)
                     font.pointSize: 10
 
                     Material.background: Material.Grey
@@ -118,7 +119,7 @@ Item {
                 Rectangle {
                     id: tag
 
-                    visible: !flowColaborants.hidden()
+                    visible: !colabRepeater.count
                     width: txt.width + 10
                     height: txt.height + 10
                     Text {

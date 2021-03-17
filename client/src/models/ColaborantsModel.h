@@ -40,8 +40,6 @@ public:
 
      QHash<int, QByteArray> roleNames() const override;
 
-     Q_INVOKABLE int hidden();
-
      void add(const Colaborant &contact);
      void remove(const int &colabId);
 

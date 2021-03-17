@@ -228,17 +228,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="100"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="101"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="111"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="112"/>
         <source>+%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="127"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="129"/>
         <source>personal</source>
         <translation type="unfinished"></translation>
     </message>
