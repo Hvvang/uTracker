@@ -34,7 +34,7 @@ Item {
     property string m_title;
     property string m_deadline;
     property string m_footer;
-    property var m_colaborants: []
+
 
     height: layout.childrenRect.height + 40
     anchors.centerIn: parent
@@ -105,8 +105,9 @@ Item {
 
                 onTextChanged: {
                     var currentDate = new Date();
+                    var selectedDate = Date.fromLocaleString(Qt.locale(), m_deadline, "dd-MM-yyyy")
 
-                    deadlineError = currentDate.getTime() > datepicker.selectedDate.getTime()
+                    deadlineError = currentDate.getTime() > selectedDate.getTime()
                 }
 
                 Text {

@@ -210,12 +210,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="115"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="116"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="181"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="182"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>
