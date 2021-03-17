@@ -10,6 +10,7 @@ Runnable::Runnable(Connection *socket) {
     m_googleSignIn = std::make_shared<ToSignInWithGoogle>(socket);
     m_logOut = std::make_shared<ToLogOut>(socket);
     m_createWorkFlow = std::make_shared<ToCreatedWorkflow>(socket);
+    m_archiveWorkFlow = std::make_shared<ArchiveWorkflow>(socket);
     m_updateWorkFlow = std::make_shared<ToUpdateWorkflow>(socket);
     m_inviteToWorkFlow = std::make_shared<ToInvitedToWorkflow>(socket);
     m_removeFromWorkFlow = std::make_shared<ToRemoveFromWorkflow>(socket);
@@ -38,7 +39,7 @@ Runnable::Runnable(Connection *socket) {
 void Runnable::parseJSON(QJsonDocument itemDoc) {
     QJsonObject itemObject = itemDoc.object();
     QVector<std::shared_ptr<AbstractRequestHandler>> funcList;
-    funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow});
+    funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow, m_archiveWorkFlow});
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow,m_removeFromWorkFlow, m_getUsersFromWorkFlow, m_sendAllWorkFlows});
     funcList.append({m_sendSingleWorkFlow, m_sendStatistics, m_sendProfile, m_updateProfile, m_createList});
     funcList.append({m_renameList, m_getLists, m_removeList, m_createTask, m_getTasks, m_updateTaskTitleRequestHandler, m_updateTask});
@@ -50,6 +51,7 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::AUTO_OAUTH);
     types.append(RequestType::LOG_OUT);
     types.append(RequestType::CREATE_WORKFLOW);
+    types.append(RequestType::ARCHIVE_WORKFLOW);
     types.append(RequestType::UPDATE_WORKFLOW);
     types.append(RequestType::INVITE_TO_WORKFLOW);
     types.append(RequestType::REMOVE_FROM_WORKFLOW);
@@ -72,12 +74,6 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::GET_TASK_DATA);
     types.append(RequestType::GET_TASK_WORKERS);
     types.append(RequestType::NoteWorkStatus);
-    if (static_cast<int>(RequestType::SIGN_UP) == itemObject["type"].toInt()
-        || static_cast<int>(RequestType::SIGN_IN) == itemObject["type"].toInt()) {
-        m_mutex->lock();
-//        m_itr->find(m_ptr).value() = itemObject["email"].toString();
-        m_mutex->unlock();
-    }
     for (const auto &i : types)
         if (static_cast<int>(i) == itemObject["type"].toInt())
             emit funcList[types.indexOf(i)]->responseInited(itemObject);

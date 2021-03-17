@@ -238,7 +238,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="129"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="128"/>
         <source>personal</source>
         <translation type="unfinished"></translation>
     </message>

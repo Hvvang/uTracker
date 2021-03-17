@@ -79,11 +79,11 @@ bool ToUpdateWorkflow::isValid(QJsonObject itemObject) {
         return true;
     return false;
 }
-toArchieveWorkflow::toArchieveWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
+ArchiveWorkflow::ArchiveWorkflow(Connection *socket) : AbstractRequestHandler(socket){}
 
-bool toArchieveWorkflow::isValid(QJsonObject itemObject) {
+bool ArchiveWorkflow::isValid(QJsonObject itemObject) {
     if (itemObject.contains("token")
-     && itemObject.contains("userId"))
+     && itemObject.contains("workflowId"))
         return true;
     return false;
 }

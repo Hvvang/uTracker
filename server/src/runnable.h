@@ -30,6 +30,7 @@ private:
     std::shared_ptr<AbstractRequestHandler> m_googleSignIn;
     std::shared_ptr<AbstractRequestHandler> m_logOut;
     std::shared_ptr<AbstractRequestHandler> m_createWorkFlow;
+    std::shared_ptr<AbstractRequestHandler> m_archiveWorkFlow;
     std::shared_ptr<AbstractRequestHandler> m_updateWorkFlow;
     std::shared_ptr<AbstractRequestHandler> m_inviteToWorkFlow;
     std::shared_ptr<AbstractRequestHandler> m_removeFromWorkFlow;

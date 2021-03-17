@@ -192,7 +192,7 @@ Item {
         MenuItem {
             text: "\ue808  archive"
             font.family: "fontello"
-            onTriggered: client.archiveWorkflow(model.index)
+            onTriggered: client.archiveWorkflow(flowId)
             height: 30
             width: parent.width
         }

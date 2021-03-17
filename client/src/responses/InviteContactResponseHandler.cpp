@@ -19,9 +19,9 @@ void InviteContactResponseHandler::processResponse(const QByteArray &data) {
 
         auto workflowIndex = rootObject.value("workflowId").toInt();
         Colaborant c;
-        c.id = rootObject.value("contactId").toInt();
-        c.name = rootObject.value("first_name").toString();
-        c.surname = rootObject.value("last_name").toString();
+        c.id = rootObject.value("userId").toInt();
+        c.name = rootObject.value("name").toString();
+        c.surname = rootObject.value("surname").toString();
         c.icon = c.name.front();
         m_client->addColaborant(workflowIndex, c);
     }

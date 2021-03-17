@@ -28,13 +28,14 @@ void GetWorkflowColaborantsResponseHandler::processResponse(const QByteArray &da
 
         foreach(const QJsonValue &colaborant, colaborants) {
             QJsonObject obj = colaborant.toObject();
-
-            Colaborant c;
-            c.id = obj["userId"].toInt();
-            c.name = obj["name"].toString();
-            c.surname = obj["surname"].toString();
-            c.icon = c.name.front();
-            m_client->addColaborant(workflowId, c);
+            if (obj.value("userId") != m_client->profile().id) {
+                Colaborant c;
+                c.id = obj["userId"].toInt();
+                c.name = obj["name"].toString();
+                c.surname = obj["surname"].toString();
+                c.icon = c.name.front();
+                m_client->addColaborant(workflowId, c);
+            }
         }
     }
 }

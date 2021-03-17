@@ -38,7 +38,13 @@ void DataBase::create_tables() {
         "photo blob,"
         "google_token varchar,"
         "github_token varchar)");
-    query.exec("create table IF NOT EXISTS WorkFlows (id integer primary key AUTOINCREMENT, owner_id int, title varchar, deadline datetime)");
+    query.exec(
+        "create table IF NOT EXISTS WorkFlows ("
+        "id integer primary key AUTOINCREMENT,"
+        "owner_id int,"
+        "title varchar,"
+        "deadline datetime,"
+        "FOREIGN KEY(owner_id) REFERENCES UsersCredential(id) ON UPDATE CASCADE ON DELETE CASCADE)");
     // query.exec("create table IF NOT EXISTS KanbanPanels (id integer primary key AUTOINCREMENT, workflow_id integer, title varchar)");
     query.exec(
         "create table IF NOT EXISTS Tasks ("
@@ -52,28 +58,29 @@ void DataBase::create_tables() {
         "description varchar,"
         "tags varchar,"
         "files blob,"
-        "FOREIGN KEY(list_id) REFERENCES Lists(id),"
-        "FOREIGN KEY(creator_id) REFERENCES UsersCredential(id))");
+        "FOREIGN KEY(list_id) REFERENCES Lists(id) ON UPDATE CASCADE ON DELETE CASCADE,"
+        "FOREIGN KEY(creator_id) REFERENCES UsersCredential(id) ON UPDATE CASCADE ON DELETE CASCADE)");
     query.exec(
         "create table IF NOT EXISTS T_connector ("
         "id integer primary key AUTOINCREMENT,"
         "task_id int,"
         "worker_id int,"
-        "FOREIGN KEY(task_id) REFERENCES Tasks(id),"
-        "FOREIGN KEY(worker_id) REFERENCES UsersCredential(id))");
+        "FOREIGN KEY(task_id) REFERENCES Tasks(id) ON UPDATE CASCADE ON DELETE CASCADE,"
+        "FOREIGN KEY(worker_id) REFERENCES UsersCredential(id) ON UPDATE CASCADE ON DELETE CASCADE)");
     query.exec(
         "create table IF NOT EXISTS WF_connector ("
         "id integer primary key AUTOINCREMENT,"
         "workflow_id int,"
         "user_id int,"
-        "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id),"
-        "FOREIGN KEY(user_id) REFERENCES UsersCredential(id))");
+        "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id) ON UPDATE CASCADE ON DELETE CASCADE,"
+        "FOREIGN KEY(user_id) REFERENCES UsersCredential(id) ON UPDATE CASCADE ON DELETE CASCADE)");
     query.exec(
         "create table IF NOT EXISTS Lists ("
         "id integer primary key AUTOINCREMENT, "
         "title varchar, "
         "listIndex int, "
-        "workflow_id int)");
+        "workflow_id int,"
+        "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id) ON UPDATE CASCADE ON DELETE CASCADE)");
 }
 
 bool DataBase::isValidToken(const QString &token, int type) {
@@ -346,10 +353,14 @@ DataBase::inviteToWorkflow(const QString &email, int workflow_id) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::INVITE_TO_WORKFLOW);
     QSqlQuery query;
-    if (query.exec(QString("select id from UsersCredential where email = '%1';").arg(email)) && query.first()) {
+    if (query.exec(QString("select id, first_name, last_name from UsersCredential where email = '%1';").arg(email)) && query.first()) {
         const int &invitedUserId = query.value(0).toInt();
-        insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(invitedUserId));
+        map["workflowId"] = workflow_id;
+        map["userId"] = invitedUserId;
+        map["name"] = query.value(1).toString();
+        map["surname"] = query.value(2).toString();
 
+        insert("WF_connector", "workflow_id, user_id", QString::number(workflow_id) + ", " + QString::number(invitedUserId));
         if (query.exec("SELECT title, deadline FROM WorkFlows WHERE id = " + QString::number(workflow_id)) && query.first()) {
             QVariantMap map;
             map["type"] = static_cast<int>(RequestType::CREATE_WORKFLOW);
@@ -363,6 +374,7 @@ DataBase::inviteToWorkflow(const QString &email, int workflow_id) {
             QJsonDocument jsonDoc = QJsonDocument(jsonObject);
             m_server->sendTo(invitedUserId, jsonDoc.toJson(QJsonDocument::Compact));
         }
+
         map["message"] = "User successfully invited to Workflow";
     } else {
         map["error"] = 1;
@@ -430,13 +442,26 @@ QVariantMap DataBase::getWorkflow(int workflow_id) {
 QVariantMap DataBase::removeWorkflow(int workflow_id) {
     QMap<QString, QVariant> map;
     QSqlQuery query;
-    if (query.exec("DELETE from WF_connector where id = " + QString::number(workflow_id) + ";")) {
-        query.exec("DELETE from WorkFlows where id = " + QString::number(workflow_id) + ";");
-        query.exec("DELETE from Lists where id = " + QString::number(workflow_id) + ";");
-        map["message"] = "WorkFlow removed";
-    } else {
-        map["message"] = "WorkFlow wasn't removed";
-        map["error"] = 1;
+    QStringList transactions;
+
+    map["type"] = static_cast<int>(RequestType::ARCHIVE_WORKFLOW);
+    map["workflowId"] = workflow_id;
+    map["message"] = "WorkFlow removed";
+    if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = " + QString::number(workflow_id)) && query.first()) {
+        do {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            m_server->sendTo(query.value(0).toInt(), jsonDoc.toJson(QJsonDocument::Compact));
+        } while(query.next());
+    }
+    transactions << QString("DELETE FROM Tasks WHERE list_id IN "
+                            "(SELECT id FROM Lists WHERE workflow_id = %1);").arg(workflow_id);
+    transactions << QString("DELETE FROM T_connector WHERE workflow_id = %1;").arg(workflow_id);
+    transactions << QString("DELETE FROM Lists WHERE workflow_id = %1;").arg(workflow_id);
+    transactions << QString("DELETE FROM WF_connector WHERE workflow_id = %1;").arg(workflow_id);
+    transactions << QString("DELETE FROM WorkFlows WHERE id = %1;").arg(workflow_id);
+    foreach(const auto &transaction, transactions) {
+        query.exec(transaction);
     }
     return map;
 }
