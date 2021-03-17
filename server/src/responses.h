@@ -42,6 +42,8 @@ enum class RequestType {
     GET_TASK_DATA = 26,
     GET_TASK_WORKERS = 27,
     NoteWorkStatus = 28,
+    GET_TASK_WORKER = 29,
+    REMOVE_TASK_WORKER = 30,
 
 };
 

@@ -127,10 +127,12 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                         map.value("deadline").toString());
                 break;
             case RequestType::ARCHIVE_WORKFLOW:
-                result = removeWorkflow(map.value("workflowId").toInt());
+                result = removeWorkflow(m_connection->getUserId(),
+                        map.value("workflowId").toInt());
                 break;
             case RequestType::UPDATE_WORKFLOW:
-                result = updateWorkflow(map.value("workflowId").toInt(),
+                result = updateWorkflow(m_connection->getUserId(),
+                                        map.value("workflowId").toInt(),
                                         map.value("title").toString(),
                                         map.value("deadline").toString());
                 break;
@@ -161,22 +163,26 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                        map.value("surname").toString());
                 break;
             case RequestType::CREATE_LIST:
-                result = createList(map.value("title").toString(),
+                result = createList(m_connection->getUserId(),
+                                    map.value("title").toString(),
                                     map.value("workflowId").toInt(),
                                     map.value("listIndex").toInt());
                 break;
             case RequestType::RENAME_LIST:
-                result = renameList(map.value("title").toString(),
+                result = renameList(m_connection->getUserId(),
+                                    map.value("title").toString(),
                                     map.value("listId").toInt());
                 break;
             case RequestType::GET_LISTS:
                 result = getLists(map.value("workflowId").toInt());
                 break;
             case RequestType::REMOVE_LIST:
-                result = removeList(map.value("listId").toInt());
+                result = removeList(m_connection->getUserId(),
+                                    map.value("listId").toInt());
                 break;
             case RequestType::CREATE_TASK:
-                result = createTask(map.value("title").toString(),
+                result = createTask(m_connection->getUserId(),
+                                    map.value("title").toString(),
                                     map.value("listId").toInt(),
                                     map.value("taskIndex").toInt());
                 break;
@@ -184,11 +190,13 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 result = getTasks(map.value("listId").toInt());
                 break;
             case RequestType::UPDATE_TASK_TITLE:
-                result = renameTaskTitle(map.value("taskId").toInt(),
+                result = renameTaskTitle(m_connection->getUserId(),
+                                         map.value("taskId").toInt(),
                                          map.value("title").toString());
                 break;
             case RequestType::UPDATE_TASK:
-                result = updateTask(map.value("taskId").toInt(),
+                result = updateTask(m_connection->getUserId(),
+                                    map.value("taskId").toInt(),
                                     map.value("title").toString(),
                                     map.value("deadline_time").toString(),
                                     map.value("creation_time").toString(),
@@ -196,12 +204,14 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                                     map.value("description").toString());
                 break;
             case RequestType::MOVE_TASK:
-                result = moveTask(map.value("taskId").toInt(),
+                result = moveTask(m_connection->getUserId(),
+                                  map.value("taskId").toInt(),
                                   map.value("listId").toInt(),
                                   map.value("taskIndex").toInt());
                 break;
             case RequestType::REMOVE_TASK:
-                result = removeTask(map.value("taskId").toInt());
+                result = removeTask(m_connection->getUserId(),
+                                    map.value("taskId").toInt());
                 break;
             case RequestType::GET_TASK_DATA:
                 result = getTaskData(map.value("taskId").toInt());
@@ -213,6 +223,10 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
                 result = changeTaskWorkStatus(map.value("taskId").toInt(),
                                      map.value("userId").toInt(),
                                      map.value("status").toInt());
+                break;
+            case RequestType::GET_TASK_WORKER:
+                break;
+            case RequestType::REMOVE_TASK_WORKER:
                 break;
         }
     } else {
@@ -284,7 +298,7 @@ DataBase::createUser(const QString &login,
 }
 
 QVariantMap
-DataBase::createWorkflow(int userId, const QString &title, const QString &deadline) {
+DataBase::createWorkflow(const int &userId, const QString &title, const QString &deadline) {
     QSqlQuery query;
     auto res = query.exec(QString("INSERT INTO WorkFlows (owner_id, title, deadline) VALUES(%1, '%2', '%3');")
                               .arg(userId)
@@ -312,7 +326,7 @@ DataBase::createWorkflow(int userId, const QString &title, const QString &deadli
 }
 
 QVariantMap
-DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &deadline) {
+DataBase::updateWorkflow(const int &userId, int workflow_id, const QString &title, const QString &deadline) {
     QVariantMap map;
     QSqlQuery query;
 
@@ -339,10 +353,12 @@ DataBase::updateWorkflow(int workflow_id, const QString &title, const QString &d
     }
 
     if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = " + QString::number(workflow_id)) && query.first()) {
+        QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+        QJsonDocument jsonDoc = QJsonDocument(jsonObject);
         do {
-            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
-            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
-            m_server->sendTo(query.value(0).toInt(), jsonDoc.toJson(QJsonDocument::Compact));
+            const auto &id = query.value(0).toInt();
+            if (id != userId)
+                m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
         } while(query.next());
     }
     return map;
@@ -439,7 +455,7 @@ QVariantMap DataBase::getWorkflow(int workflow_id) {
     return map;
 }
 
-QVariantMap DataBase::removeWorkflow(int workflow_id) {
+QVariantMap DataBase::removeWorkflow(const int &userId, int workflow_id) {
     QMap<QString, QVariant> map;
     QSqlQuery query;
     QStringList transactions;
@@ -448,15 +464,20 @@ QVariantMap DataBase::removeWorkflow(int workflow_id) {
     map["workflowId"] = workflow_id;
     map["message"] = "WorkFlow removed";
     if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = " + QString::number(workflow_id)) && query.first()) {
+        QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+        QJsonDocument jsonDoc = QJsonDocument(jsonObject);
         do {
-            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
-            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
-            m_server->sendTo(query.value(0).toInt(), jsonDoc.toJson(QJsonDocument::Compact));
+            const auto &id = query.value(0).toInt();
+            if (id != userId)
+                m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
         } while(query.next());
     }
+    transactions << QString("DELETE FROM T_connector WHERE task_id = IN "
+                            "(SELECT id FROM Tasks WHERE list_id IN"
+                            "(SELECT id FROM Lists WHERE workflow_id = %1)"
+                            ");").arg(workflow_id);
     transactions << QString("DELETE FROM Tasks WHERE list_id IN "
                             "(SELECT id FROM Lists WHERE workflow_id = %1);").arg(workflow_id);
-    transactions << QString("DELETE FROM T_connector WHERE workflow_id = %1;").arg(workflow_id);
     transactions << QString("DELETE FROM Lists WHERE workflow_id = %1;").arg(workflow_id);
     transactions << QString("DELETE FROM WF_connector WHERE workflow_id = %1;").arg(workflow_id);
     transactions << QString("DELETE FROM WorkFlows WHERE id = %1;").arg(workflow_id);
@@ -467,14 +488,9 @@ QVariantMap DataBase::removeWorkflow(int workflow_id) {
 }
 
 QVariantMap DataBase::getProfile(int user_id) {
+    QVariantMap map;
     QSqlQuery query;
     query.exec("SELECT login, first_name, last_name FROM UsersCredential where id = \"" + QString::number(user_id) + "\";");
-    //    QSqlQuery query = select("usersCredential", "login, first_name, last_name", "id = " + QString::number(user_id) + ";");
-    // query.exec("select first_name, last_name from WorkFlows where id = " + QString::number(user_id) + ";");
-    // QMap<QString, QVariant> map;
-    // query.first();
-    // qDebug() << "login : " << query.value(0).toString();
-    QMap<QString, QVariant> map;
 
     if (query.first()) {
         map["type"] = static_cast<int>(RequestType::GET_PROFILE);
@@ -486,14 +502,6 @@ QVariantMap DataBase::getProfile(int user_id) {
         map["error"] = 1;
         map["message"] = "User doesn't exist in database";
     }
-    //    QString email
-    //    QString password
-    //    QString auth_token
-    //    QString first_name
-    //    QString last_name
-    //    byte photo
-    //    QString google_token
-    //    QString github_token varchar
     return map;
 }
 
@@ -511,7 +519,7 @@ QVariantMap DataBase::updateProfile(int user_id, const QString &name, const QStr
     return map;
 }
 
-QVariantMap DataBase::createList(const QString &title, const int &workflowId, const int &listIndex) {
+QVariantMap DataBase::createList(const int &userId, const QString &title, const int &workflowId, const int &listIndex) {
     QVariantMap map;
     QSqlQuery query;
 
@@ -525,6 +533,17 @@ QVariantMap DataBase::createList(const QString &title, const int &workflowId, co
         map["title"] = title;
         map["workflowId"] = workflowId;
         map["listIndex"] = listIndex;
+
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = " + QString::number(workflowId)) && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
+
     } else {
         map["message"] = "List wasn't created";
         map["error"] = 1;
@@ -532,19 +551,31 @@ QVariantMap DataBase::createList(const QString &title, const int &workflowId, co
     return map;
 }
 
-QVariantMap DataBase::renameList(const QString &title, int listId) {
+QVariantMap DataBase::renameList(const int &userId, const QString &title, int listId) {
     QVariantMap map;
     map["type"] = static_cast<int>(RequestType::RENAME_LIST);
     QSqlQuery query;
-    query.prepare("UPDATE Lists SET title = :title WHERE id = " + QString::number(listId) + ";");
-    query.bindValue(":title", title);
-    if (query.exec()) {
-        query.exec(QString("SELECT index, workflowId where listId = %1 ;").arg(listId));
-        map["message"] = "List renamed";
+
+    if (query.exec(QString("UPDATE Lists SET title = %1 WHERE id = %2;")
+                           .arg(title)
+                           .arg(listId))) {
+        query.exec(QString("SELECT listIndex, workflow_id FROM Lists where id = %1;").arg(listId));
+        query.first();
+        map["message"] = "List renamed.";
         map["listId"] = listId;
         map["title"] = title;
         map["listIndex"] = query.value(0).toInt();
         map["workflowId"] = query.value(1).toInt();
+
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = " + query.value(1).toString()) && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
     } else {
         map["message"] = "List wasn't renamed";
         map["error"] = 1;
@@ -552,17 +583,30 @@ QVariantMap DataBase::renameList(const QString &title, int listId) {
     return map;
 }
 
-QVariantMap DataBase::removeList(int listId) {
+QVariantMap DataBase::removeList(const int &userId, int listId) {
     QVariantMap map;
-    map["type"] = static_cast<int>(RequestType::REMOVE_LIST);
     QSqlQuery query;
-    if (query.exec("DELETE from Lists where id = " + QString::number(listId) + ";")) {
-        query.exec("DELETE from Tasks where list_id = " + QString::number(listId) + ";");
-        map["message"] = "List removed";
-        map["listId"] = listId;
-    } else {
-        map["message"] = "List wasn't removed";
-        map["error"] = 1;
+    QStringList transactions;
+    transactions << QString("DELETE FROM T_connector WHERE task_id = IN "
+                            "(SELECT id FROM Tasks WHERE list_id = %1);").arg(listId);
+    transactions << QString("DELETE FROM Tasks WHERE list_id = %1);").arg(listId);
+    transactions << QString("DELETE FROM Lists WHERE id = %1;").arg(listId);
+
+    map["type"] = static_cast<int>(RequestType::REMOVE_LIST);
+    map["listId"] = listId;
+    map["message"] = "List removed.";
+    if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                   "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(listId) + ");") && query.first()) {
+        QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+        QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+        do {
+            const auto &id = query.value(0).toInt();
+            if (id != userId)
+                m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+        } while(query.next());
+    }
+    foreach(const auto &transaction, transactions) {
+        query.exec(transaction);
     }
     return map;
 }
@@ -573,33 +617,26 @@ QVariantMap DataBase::getLists(int workflowId) {
     QVariantMap map;
 
     map["type"] = static_cast<int>(RequestType::GET_LISTS);
-    query.exec("select id, title, listIndex from Lists where workflow_id = " + QString::number(workflowId));
-    if (query.first()) {
-        QVariantMap panel;
-        panel["listId"] = query.value(0).toInt();
-        panel["title"] = query.value(1).toString();
-        panel["index"] = query.value(2).toInt();
-        panels.append(QJsonObject::fromVariantMap(panel));
+    if (query.exec("select id, title, listIndex from Lists where workflow_id = " + QString::number(workflowId))
+        && query.first()) {
+        do {
+            QVariantMap panel;
+            panel["listId"] = query.value(0).toInt();
+            panel["title"] = query.value(1).toString();
+            panel["index"] = query.value(2).toInt();
+            panels.append(QJsonObject::fromVariantMap(panel));
+        } while (query.next());
+        map["panels"] = panels;
+        map["workflowId"] = workflowId;
+        map["message"] = "Lists successfully have gotten";
     } else {
         map["error"] = 1;
         map["message"] = "Lists don't exist";
     }
-    while (query.next()) {
-        QVariantMap panel;
-        panel["listId"] = query.value(0).toInt();
-        panel["title"] = query.value(1).toString();
-        panel["index"] = query.value(2).toInt();
-        panels.append(QJsonObject::fromVariantMap(panel));
-    }
-    if (!map.contains("error")) {
-        map["panels"] = panels;
-        map["workflowId"] = workflowId;
-        map["message"] = "Lists successfully have gotten";
-    }
     return map;
 }
 
-QVariantMap DataBase::createTask(const QString &title, const int &listId, const int &taskIndex) {
+QVariantMap DataBase::createTask(const int &userId, const QString &title, const int &listId, const int &taskIndex) {
     QSqlQuery query;
     QVariantMap map;
 
@@ -619,6 +656,19 @@ QVariantMap DataBase::createTask(const QString &title, const int &listId, const 
         map["title"] = title;
         map["taskIndex"] = taskIndex;
         map["message"] = "Task successfully created";
+
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                       "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(listId) + ");")
+                       && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
+
     } else {
         map["message"] = "Task wasn't created";
         map["error"] = 1;
@@ -626,7 +676,7 @@ QVariantMap DataBase::createTask(const QString &title, const int &listId, const 
     return map;
 }
 
-QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
+QVariantMap DataBase::renameTaskTitle(const int &userId, const int &taskId, const QString &title) {
     QSqlQuery query;
     QVariantMap map;
 
@@ -634,7 +684,6 @@ QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
     if (query.exec("SELECT list_id, taskIndex FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
         int listId = query.value(0).toInt();
         int taskIndex = query.value(1).toInt();
-        qDebug() << listId << taskIndex << title;
         if (query.exec(QString("UPDATE Tasks SET title = '%1' WHERE id = %2;")
                                .arg(title)
                                .arg(taskId))) {
@@ -646,6 +695,17 @@ QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
 
             map["message"] = "Task title successfully edited.";
         }
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                       "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(listId) + ");")
+                       && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
     }
     else {
         map["error"] = static_cast<int>(Errors::TASK_RENAME_ERROR);
@@ -654,7 +714,7 @@ QVariantMap DataBase::renameTaskTitle(const int &taskId, const QString &title) {
     return map;
 }
 
-QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString &deadline,
+QVariantMap DataBase::updateTask(const int &userId, int taskId, const QString &title, const QString &deadline,
                                  const QString &creationTime, const QString &tags, const QString &description) {
     QSqlQuery query;
     QVariantMap map;
@@ -681,6 +741,17 @@ QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString
             map["taskIndex"] = query.value(1).toInt();
         }
         map["message"] = "Task successfully updated.";
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                       "(SELECT workflow_id FROM Lists WHERE id = " + map["listId"].toString() + ");")
+                       && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
     } else {
         map["message"] = "Task wasn't updated.";
         map["error"] = 1;
@@ -688,7 +759,7 @@ QVariantMap DataBase::updateTask(int taskId, const QString &title, const QString
     return map;
 }
 
-QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &taskIndex) {
+QVariantMap DataBase::moveTask(const int &userId, const int &taskId, const int &listId, const int &taskIndex) {
     QVariantMap map;
     QSqlQuery query;
 
@@ -722,6 +793,18 @@ QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &
         map["toListId"] = listId;
         map["toTaskIndex"] = taskIndex;
         map["message"] = "Task successfully moved.";
+
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                       "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(listId)  + ");")
+                       && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
     } else {
         map["message"] = "Task wasn't moved.";
         map["error"] = 1;
@@ -729,19 +812,29 @@ QVariantMap DataBase::moveTask(const int &taskId, const int &listId, const int &
     return map;
 }
 
-QVariantMap DataBase::removeTask(int taskId) {
+QVariantMap DataBase::removeTask(const int &userId, int taskId) {
     QVariantMap map;
     QSqlQuery query;
 
     map["type"] = static_cast<int>(RequestType::REMOVE_TASK);
-    query.exec("select list_id from Tasks where id = " + QString::number(taskId));
-
-    if (query.first()) {
+    if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
         map["listId"] = query.value(0).toInt();
-    }
-    if (query.exec("DELETE from Tasks where id = " + QString::number(taskId))) {
-        map["message"] = "Task successfully removed.";
         map["taskId"] = taskId;
+        query.exec("DELETE FROM T_connector WHERE task_id = " + QString::number(taskId));
+        query.exec("DELETE from Tasks where id = " + QString::number(taskId));
+        map["message"] = "Task successfully removed.";
+
+        if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                       "(SELECT workflow_id FROM Lists WHERE id = " + map["listId"].toString()  + ");")
+            && query.first()) {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+            QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+            do {
+                const auto &id = query.value(0).toInt();
+                if (id != userId)
+                    m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+            } while(query.next());
+        }
     } else {
         map["message"] = "Task wasn't removed.";
         map["error"] = 1;
@@ -786,21 +879,17 @@ QVariantMap DataBase::getTasks(int listId) {
 
     map["type"] = static_cast<int>(RequestType::GET_TASKS);
 
-    query.exec("select id from Tasks where list_id = " + QString::number(listId) + " order by taskIndex asc");
-
-    if (query.first()) {
-        tasks.append(QJsonObject::fromVariantMap(getTaskData(query.value(0).toInt())));
-    } else {
-        map["error"] = 1;
-        map["message"] = "Tasks don't exist";
-    }
-    while (query.next()) {
-        tasks.append(QJsonObject::fromVariantMap(getTaskData(query.value(0).toInt())));
-    }
-    if (!map.contains("error")) {
+    if (query.exec("select id from Tasks where list_id = " + QString::number(listId) + " order by taskIndex asc")
+        && query.first()) {
+        do {
+            tasks.append(QJsonObject::fromVariantMap(getTaskData(query.value(0).toInt())));
+        } while (query.next());
         map["tasks"] = tasks;
         map["listId"] = listId;
         map["message"] = "Tasks successfully have gotten";
+    } else {
+        map["error"] = 1;
+        map["message"] = "Tasks don't exist";
     }
     return map;
 }
@@ -873,7 +962,34 @@ QVariantMap DataBase::changeTaskWorkStatus(const int &taskId, const int &userId,
             map["status"] = status;
             map["taskId"] = taskId;
             map["userId"] = userId;
+            if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+                map["listId"] = query.value(0).toInt();
+            }
             map["message"] = "Note work status successfully.";
+
+            QVariantMap temp;
+            temp["type"] = static_cast<int>(RequestType::GET_TASK_WORKER);
+            temp["taskId"] = taskId;
+            temp["listId"] = map["listId"].toInt();
+            temp["userId"] = userId;
+            if (query.exec("SELECT first_name, last_name FROM UsersCredential WHERE id = " + QString::number(userId))
+                && query.first()) {
+                temp["name"] = query.value(0).toString();
+                temp["surname"] = query.value(1).toString();
+            }
+
+            if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                           "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(map["listId"].toInt())  + ");")
+                           && query.first()) {
+                QJsonObject jsonObject = QJsonObject::fromVariantMap(temp);
+                QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+                do {
+                    const auto &id = query.value(0).toInt();
+                    if (id != userId)
+                        m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+                } while(query.next());
+            }
+
         } else {
             map["error"] = 1;
             map["message"] = "An error occurred while noting work status.";
@@ -885,17 +1001,36 @@ QVariantMap DataBase::changeTaskWorkStatus(const int &taskId, const int &userId,
             map["status"] = status;
             map["taskId"] = taskId;
             map["userId"] = userId;
+
+            if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
+                map["listId"] = query.value(0).toInt();
+            }
             map["message"] = "Unnote work status successfully.";
+
+            QVariantMap temp;
+            temp["type"] = static_cast<int>(RequestType::REMOVE_TASK_WORKER);
+            temp["taskId"] = taskId;
+            temp["listId"] = map["listId"].toInt();
+            temp["userId"] = userId;
+
+            if (query.exec("SELECT user_id FROM WF_connector WHERE workflow_id = "
+                           "(SELECT workflow_id FROM Lists WHERE id = " + QString::number(map["listId"].toInt())  + ");")
+                           && query.first()) {
+                QJsonObject jsonObject = QJsonObject::fromVariantMap(temp);
+                QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+                do {
+                    const auto &id = query.value(0).toInt();
+                    if (id != userId)
+                        m_server->sendTo(id, jsonDoc.toJson(QJsonDocument::Compact));
+                } while(query.next());
+            }
+
         } else {
             map["error"] = 1;
             map["message"] = "An error occurred while unnoting work status.";
         }
     }
-    if (!map.contains("error")) {
-        if (query.exec("SELECT list_id FROM Tasks WHERE id = " + QString::number(taskId)) && query.first()) {
-            map["listId"] = query.value(0).toInt();
-        }
-    }
+
     return map;
 }
 

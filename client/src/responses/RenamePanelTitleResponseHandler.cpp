@@ -9,7 +9,8 @@
 
 RenamePanelTitleResponseHandler::RenamePanelTitleResponseHandler(QObject *parent)
         : AbstractResponseHandler(parent) {
-    connect(this, &AbstractResponseHandler::renamePanel, this,  &RenamePanelTitleResponseHandler::processResponse);
+    connect(this, &AbstractResponseHandler::renamePanel,
+            this,  &RenamePanelTitleResponseHandler::processResponse);
 }
 
 void RenamePanelTitleResponseHandler::processResponse(const QByteArray &data) {

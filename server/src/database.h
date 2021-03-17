@@ -20,15 +20,15 @@ class DataBase : public QObject {
     DataBase &operator=(const DataBase &cs) = delete;
     std::mutex g_i_mutex;
 
-public:
+private:
     bool insert(const QString &table, const QString &insert, const QString &values, int &lastInsert);
     bool insert(const QString &table, const QString &insert, const QString &values);
     bool update(const QString &table, const QString &update, const QString &where);
     QSqlQuery select(const QString &table, const QString &select, const QString &where);
     QVariantMap createUser(const QString &login, const QString &password, const QString &name, const QString &surname, const QString &email);
     QVariantMap containsUser(const QString &user, const QString &password);
-    QVariantMap createWorkflow(int owner_id, const QString &title, const QString &deadline);
-    QVariantMap updateWorkflow(int workflow_id, const QString &title, const QString &deadline);
+    QVariantMap createWorkflow(const int &userId, const QString &title, const QString &deadline);
+    QVariantMap updateWorkflow(const int &userId, int workflow_id, const QString &title, const QString &deadline);
     QVariantMap inviteToWorkflow(const QString &login, int workflow_id);
     QVariantMap removeFromWorkflow(int user_id, int workflowId);
 
@@ -37,19 +37,19 @@ public:
     QVariantMap getUsersFromWorkFlow(int workflow_id);
     QVariantMap getProfile(int user_id);
     QVariantMap updateProfile(int user_id, const QString &name, const QString &surname);
-    QVariantMap removeWorkflow(int workflow_id);
+    QVariantMap removeWorkflow(const int &userId, int workflow_id);
 
-    QVariantMap renameList(const QString &title, int listId);
-    QVariantMap createList(const QString& title, const int &workflowId, const int &listIndex);
-    QVariantMap removeList(int listId);
+    QVariantMap renameList(const int &userId, const QString &title, int listId);
+    QVariantMap createList(const int &userId, const QString& title, const int &workflowId, const int &listIndex);
+    QVariantMap removeList(const int &userId, int listId);
     QVariantMap getLists(int workflowId);
 
-    QVariantMap createTask(const QString &title, const int &listId, const int &taskIndex);
-    QVariantMap renameTaskTitle(const int &taskId, const QString &title);
-    QVariantMap updateTask(int taskId, const QString &title, const QString &deadline,
+    QVariantMap createTask(const int &userId, const QString &title, const int &listId, const int &taskIndex);
+    QVariantMap renameTaskTitle(const int &userId, const int &taskId, const QString &title);
+    QVariantMap updateTask(const int &userId, int taskId, const QString &title, const QString &deadline,
                            const QString &creationTime, const QString &tags, const QString &description);
-    QVariantMap moveTask(const int &taskId, const int &listId, const int &taskIndex);
-    QVariantMap removeTask(int taskId);
+    QVariantMap moveTask(const int &userId, const int &taskId, const int &listId, const int &taskIndex);
+    QVariantMap removeTask(const int &userId, int taskId);
     QVariantMap getTaskData(int taskId);
     QVariantMap getTasks(int listId);
     QVariantMap getTaskWorkers(const int &taskId);

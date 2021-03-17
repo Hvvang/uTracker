@@ -84,6 +84,8 @@ void Client::deInitResponseHandlers() {
     delete m_moveTaskResponseHandler;
     delete m_removeTaskResponseHandler;
     delete m_getWorkStatusResponseHandler;
+    delete m_getTaskWorkerResponseHandler;
+    delete m_removeTaskWorkerResponseHandler;
 
 }
 
@@ -108,6 +110,8 @@ void Client::initResponseHandlers() {
     m_moveTaskResponseHandler = new MoveTaskResponseHandler(this);
     m_removeTaskResponseHandler = new RemoveTaskResponseHandler(this);
     m_getWorkStatusResponseHandler = new GetWorkStatusResponseHandler(this);
+    m_getTaskWorkerResponseHandler = new GetTaskWorkerResponseHandler(this);
+    m_removeTaskWorkerResponseHandler = new RemoveTaskWorkerResponseHandler(this);
 
 }
 
@@ -590,6 +594,12 @@ void Client::addWorker(const int &panelId, const int &taskId, const Colaborant &
         m_kanban->at(panelId).model->updateView(taskId);
     }
 }
+void Client::removeWorker(const int &panelId, const int &taskId, const int &workerId) {
+    if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId)) {
+        m_kanban->at(panelId).model->at(taskId).workers->remove(workerId);
+        m_kanban->at(panelId).model->updateView(taskId);
+    }
+}
 
 void Client::renamePanel(const int &workflowId, const int &panelIndex, const QString &title) {
     if (m_kanban && m_kanban->getWorkflow() == workflowId) {
@@ -628,6 +638,8 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
     if (!description.isEmpty())
         m_task->pushBack(description);
 }
+
+
 
 
 

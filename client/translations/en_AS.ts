@@ -187,7 +187,7 @@
 <context>
     <name>Taskview</name>
     <message>
-        <location filename="../src/qml/workflowswindow/Taskview.qml" line="114"/>
+        <location filename="../src/qml/workflowswindow/Taskview.qml" line="109"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>

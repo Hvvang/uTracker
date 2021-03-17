@@ -45,6 +45,9 @@
 #include "MoveTaskResponseHandler.h"
 #include "RemoveTaskResponseHandler.h"
 #include "GetWorkStatusResponseHandler.h"
+#include "GetTaskWorkerResponseHandler.h"
+#include "RemoveTaskWorkerResponseHandler.h"
+
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
@@ -107,6 +110,8 @@ public:
         GET_TASK_DATA = 26,
         GET_TASK_WORKERS = 27,
         NOTE_WORK_STATUS = 28,
+        GET_TASK_WORKER = 29,
+        REMOVE_TASK_WORKER = 30,
 
     };
 
@@ -150,6 +155,8 @@ public:
     void deleteTask(const int &panelId, const int &taskId);
     void setTaskWorkStatus(const int &panelId, const int &taskId, const bool &status);
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
+    void removeWorker(const int &panelId, const int &taskId, const int &workerId);
+
     void reject();
 
     Q_INVOKABLE void googleAuthorize();
@@ -233,7 +240,8 @@ private:
     MoveTaskResponseHandler *m_moveTaskResponseHandler{nullptr};
     RemoveTaskResponseHandler *m_removeTaskResponseHandler{nullptr};
     GetWorkStatusResponseHandler *m_getWorkStatusResponseHandler{nullptr};
-
+    GetTaskWorkerResponseHandler *m_getTaskWorkerResponseHandler{nullptr};
+    RemoveTaskWorkerResponseHandler *m_removeTaskWorkerResponseHandler{nullptr};
 };
 
 #define m_client Client::singleton()

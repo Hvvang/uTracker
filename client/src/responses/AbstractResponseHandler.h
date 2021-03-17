@@ -38,6 +38,8 @@ enum class ResponseType {
 
     GET_TASKS_WORKERS = 27,
     GET_WORK_STATUS = 28,
+    GET_TASK_WORKER = 29,
+    REMOVE_TASK_WORKER = 30,
 
     ERROR = 250,
 };
@@ -81,6 +83,8 @@ signals:
     void moveTask(const QByteArray &);
     void removeTask(const QByteArray &);
     void getWorkStatus(const QByteArray &);
+    void getTaskWorker(const QByteArray &);
+    void removeTaskWorker(const QByteArray &);
 
 
 private slots:

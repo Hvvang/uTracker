@@ -48,7 +48,7 @@ set(HEADERS
         RemoveTaskResponseHandler.h
         GetWorkStatusResponseHandler.h
 
-        )
+        GetTaskWorkerResponseHandler.cpp GetTaskWorkerResponseHandler.h RemoveTaskWorkerResponseHandler.cpp RemoveTaskWorkerResponseHandler.h)
 
 add_library(ResponsesLib ${SOURCES} ${HEADERS})
 

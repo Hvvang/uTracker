@@ -22,6 +22,7 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
+//        implicitHeight: taskTxt.height + tags.height + workers.height
 
         TextField {
             id: taskTxt
@@ -82,42 +83,36 @@ Item {
             }
         }
 
-        Item {
-            id: workers
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            height: workersView.height
-            width: parent.width
+        ColumnLayout {
+            id: workersView
 
-            ColumnLayout {
-                id: workersView
+            Repeater {
+                id: colabsRepeater
+                model: WorkersModel
 
-                Repeater {
-                    id: colabsRepeater
-                    model: WorkersModel
+                Row {
+                    id: row
+                    spacing: 5
+                    Rectangle {
+                        color: Material.color(Material.Pink)
+                        width: 24
+                        height: 24
+                        radius: 50
 
-                    Row {
-                        id: row
-                        spacing: 5
-                        Rectangle {
-                            color: Material.color(Material.Pink)
-                            width: 24
-                            height: 24
-                            radius: 50
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: colaborantIcon
-                                color: "white"
-                            }
-                        }
                         Text {
-                            text: qsTr("%1 %2").arg(colaborantName).arg(colaborantSurname)
-                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.centerIn: parent
+                            text: colaborantIcon
+                            color: "white"
                         }
+                    }
+                    Text {
+                        text: qsTr("%1 %2").arg(colaborantName).arg(colaborantSurname)
+                        anchors.verticalCenter: parent.verticalCenter
                     }
                 }
             }
         }
+
     }
 
     RoundButton {
