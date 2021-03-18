@@ -192,6 +192,7 @@ void Client::saveToken(const QString &type, const QString &value) {
     }
 
     QJsonObject json = QJsonDocument().fromJson(file.readAll()).object();
+    json.remove(type);
     json[type] = value;
 
     QJsonDocument document;
@@ -207,7 +208,8 @@ QString Client::getToken(const QString &type) {
     }
 
     auto json = QJsonDocument().fromJson(file.readAll()).object();
-    return json.value(type).toString();
+
+    return json.contains(type) ? json.value(type).toString() : "";
 }
 
 void Client::googleAuthorize() {
