@@ -42,6 +42,11 @@ void Server::sendTo(const int &userId, const QByteArray &data) {
         }
     }
 }
+void Server::sendToAll(const QByteArray &data) {
+    foreach(const auto &connect, m_connections) {
+        connect->writeToSocket(data);
+    }
+}
 
 void Server::setNewTask(Connection *ptr) {
     Runnable *task = new Runnable(ptr);

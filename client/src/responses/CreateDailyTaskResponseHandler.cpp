@@ -23,7 +23,7 @@ void CreateDailyTaskResponseHandler::processResponse(const QByteArray &data) {
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject rootObject = itemDoc.object();
 
-        dailyTask t;
+        DailyTask t;
         t.id = rootObject["taskId"].toInt();
         t.title = rootObject["title"].toString();
         t.status = rootObject["status"].toBool();

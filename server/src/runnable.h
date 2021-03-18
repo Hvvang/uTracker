@@ -54,4 +54,10 @@ private:
     std::shared_ptr<AbstractRequestHandler> m_changeTaskWorkStatus;
     std::shared_ptr<AbstractRequestHandler> m_changeTaskDoneStatus;
     std::shared_ptr<AbstractRequestHandler> m_getTaskWorkers;
+
+    std::shared_ptr<AbstractRequestHandler> m_getDailyPlan;
+    std::shared_ptr<AbstractRequestHandler> m_createDailyTask;
+    std::shared_ptr<AbstractRequestHandler> m_removeDailyTask;
+    std::shared_ptr<AbstractRequestHandler> m_updateDailyTask;
+
 };

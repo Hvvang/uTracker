@@ -54,7 +54,7 @@
 #include "GetDailyPlanTasksResponseHandler.h"
 #include "RemoveDailyPlanTaskResponseHandler.h"
 #include "UpdateDailyPlanTaskResponseHandler.h"
-
+#include "ResetDailyPlanResponseHandler.h"
 
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
@@ -176,9 +176,11 @@ public:
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
     void removeWorker(const int &panelId, const int &taskId, const int &workerId);
 
-    void addDailyTask(const dailyTask &task);
+    void resetDailyPlan();
+    void addDailyTask(const DailyTask &task);
     void deleteDailyTask(const int &taskId);
     void updateDailyTask(const int &taskId, const QString &title, const bool &status);
+
 
     void reject();
 
@@ -276,6 +278,7 @@ private:
     GetDailyPlanTasksResponseHandler *m_getDailyPlanTasksResponseHandler{nullptr};
     RemoveDailyPlanTaskResponseHandler *m_removeDailyPlanTaskResponseHandler{nullptr};
     UpdateDailyPlanTaskResponseHandler *m_updateDailyPlanTaskResponseHandler{nullptr};
+    ResetDailyPlanResponseHandler *m_resetDailyPlanResponseHandler{nullptr};
 
 };
 

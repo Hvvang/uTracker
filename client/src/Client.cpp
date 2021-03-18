@@ -16,6 +16,7 @@ QQmlApplicationEngine* Client::m_qmlEngine = nullptr;
 
 Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
     : QObject(parent) {
+
     m_qmlEngine = engine;
     m_socket.connectToHost(host, port);
     connect(&m_socket, &QTcpSocket::connected, this, [=]{
@@ -90,7 +91,7 @@ void Client::deInitResponseHandlers() {
     delete m_getDailyPlanTasksResponseHandler;
     delete m_removeDailyPlanTaskResponseHandler;
     delete m_updateDailyPlanTaskResponseHandler;
-
+    delete m_resetDailyPlanResponseHandler;
 }
 
 void Client::initResponseHandlers() {
@@ -121,6 +122,7 @@ void Client::initResponseHandlers() {
     m_getDailyPlanTasksResponseHandler = new GetDailyPlanTasksResponseHandler(this);
     m_removeDailyPlanTaskResponseHandler = new RemoveDailyPlanTaskResponseHandler(this);
     m_updateDailyPlanTaskResponseHandler = new UpdateDailyPlanTaskResponseHandler(this);
+    m_resetDailyPlanResponseHandler = new ResetDailyPlanResponseHandler(this);
 }
 
 void Client::send(const QString &data) {
@@ -735,7 +737,7 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
         m_task->pushBack(description);
 }
 
-void Client::addDailyTask(const dailyTask &task) {
+void Client::addDailyTask(const DailyTask &task) {
     m_dailyPlan->push_back(task);
 }
 
@@ -746,6 +748,12 @@ void Client::deleteDailyTask(const int &taskId) {
 
 void Client::updateDailyTask(const int &taskId, const QString &title, const bool &status) {
     m_dailyPlan->update(taskId, title, status);
+}
+
+void Client::resetDailyPlan() {
+    if (m_dailyPlan) {
+        m_dailyPlan->reset();
+    }
 }
 
 

@@ -41,6 +41,30 @@
     </message>
 </context>
 <context>
+    <name>Dailyplaneview</name>
+    <message>
+        <location filename="../src/qml/dailyplanwindow/Dailyplaneview.qml" line="18"/>
+        <source>Plan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/dailyplanwindow/Dailyplaneview.qml" line="25"/>
+        <source>Create new task
+To Start manage your day.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/dailyplanwindow/Dailyplaneview.qml" line="69"/>
+        <source>✖️</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/dailyplanwindow/Dailyplaneview.qml" line="86"/>
+        <source>Create New Task</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Headerpanel</name>
     <message>
         <location filename="../src/qml/mainwindow/Headerpanel.qml" line="29"/>
@@ -157,7 +181,7 @@
     </message>
     <message>
         <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="149"/>
-        <source>x</source>
+        <source>✖️</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

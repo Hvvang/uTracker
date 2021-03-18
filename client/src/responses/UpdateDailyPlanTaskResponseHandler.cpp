@@ -22,7 +22,7 @@ void UpdateDailyPlanTaskResponseHandler::processResponse(const QByteArray &data)
         QJsonDocument itemDoc = QJsonDocument::fromJson(data);
         QJsonObject obj = itemDoc.object();
 
-        dailyTask t;
+        DailyTask t;
         t.id = obj["taskId"].toInt();
         t.title = obj["title"].toString();
         t.status = obj["status"].toBool();

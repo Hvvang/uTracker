@@ -29,6 +29,7 @@ set(SOURCES
         GetDailyPlanTasksResponseHandler.cpp
         RemoveDailyPlanTaskResponseHandler.cpp
         UpdateDailyPlanTaskResponseHandler.cpp
+        ResetDailyPlanResponseHandler.cpp
 
         )
 set(HEADERS
@@ -61,6 +62,7 @@ set(HEADERS
         GetDailyPlanTasksResponseHandler.h
         RemoveDailyPlanTaskResponseHandler.h
         UpdateDailyPlanTaskResponseHandler.h
+        ResetDailyPlanResponseHandler.h
 
         )
 

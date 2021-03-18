@@ -8,7 +8,7 @@ set(SOURCES
         CheckboxPropertyModel.cpp
         DailyPlanModel.cpp
 
-)
+        )
 
 set(HEADERS
         ColaborantsModel.h
@@ -19,7 +19,7 @@ set(HEADERS
         CheckboxPropertyModel.h
         DailyPlanModel.h
 
-)
+        )
 
 add_library(ModelsLib ${SOURCES} ${HEADERS})
 

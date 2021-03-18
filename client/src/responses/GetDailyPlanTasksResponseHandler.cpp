@@ -27,11 +27,12 @@ void GetDailyPlanTasksResponseHandler::processResponse(const QByteArray &data) {
         foreach(const QJsonValue &task, tasks) {
             QJsonObject obj = task.toObject();
 
-            dailyTask t;
+            DailyTask t;
             t.id = obj["taskId"].toInt();
             t.title = obj["title"].toString();
             t.status = obj["status"].toBool();
 
+            qDebug() << (obj["taskId"].toInt());
             m_client->addDailyTask(t);
         }
     }

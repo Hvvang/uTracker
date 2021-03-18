@@ -5,25 +5,7 @@
 
 KanbanModel::KanbanModel(const int &workflowId, QObject *parent)
     : QAbstractListModel(parent)
-    , m_workflowId(workflowId) {
-//    Kanban k1;
-//    k1.index = m_model.size();
-//    k1.title = "ToDo";
-//    k1.model = new TaskPanelModel(this);
-//    Kanban k2;
-//    k2.index = m_model.size();
-//    k2.title = "In Progress";
-//    k2.model = new TaskPanelModel(this);
-//    Kanban k3;
-//    k3.index = m_model.size();
-//    k3.title = "Done";
-//    k3.model = new TaskPanelModel(this);
-//
-//    m_model.append(k1);
-//    m_model.append(k2);
-//    m_model.append(k3);
-
-}
+    , m_workflowId(workflowId) {}
 
 int KanbanModel::rowCount(const QModelIndex &parent) const
 {

@@ -35,16 +35,24 @@ Runnable::Runnable(Connection *socket) {
     m_changeTaskDoneStatus = std::make_shared<ChangeTaskDoneStatus>(socket);
     m_getTaskWorkers = std::make_shared<GetTaskWorkers>(socket);
 
+    m_getDailyPlan = std::make_shared<GetDailyPlan>(socket);
+    m_createDailyTask = std::make_shared<CreateDailyTask>(socket);
+    m_removeDailyTask = std::make_shared<RemoveDailyTask>(socket);
+    m_updateDailyTask = std::make_shared<UpdateDailyTask>(socket);
+
 }
 
 void Runnable::parseJSON(QJsonDocument itemDoc) {
     QJsonObject itemObject = itemDoc.object();
     QVector<std::shared_ptr<AbstractRequestHandler>> funcList;
+
     funcList.append({m_signUp, m_signIn, m_autoSignIn, m_googleSignIn, m_logOut, m_createWorkFlow, m_archiveWorkFlow});
     funcList.append({m_updateWorkFlow, m_inviteToWorkFlow,m_removeFromWorkFlow, m_getUsersFromWorkFlow, m_sendAllWorkFlows});
     funcList.append({m_sendSingleWorkFlow, m_sendStatistics, m_sendProfile, m_updateProfile, m_createList});
     funcList.append({m_renameList, m_getLists, m_removeList, m_createTask, m_getTasks, m_updateTaskTitleRequestHandler, m_updateTask});
     funcList.append({m_moveTask, m_removeTask, m_sendTaskData, m_getTaskWorkers, m_changeTaskWorkStatus, m_changeTaskDoneStatus});
+    funcList.append({m_getDailyPlan, m_createDailyTask, m_removeDailyTask, m_updateDailyTask});
+
     QVector<RequestType> types;
     types.append(RequestType::SIGN_UP);
     types.append(RequestType::SIGN_IN);
@@ -76,6 +84,12 @@ void Runnable::parseJSON(QJsonDocument itemDoc) {
     types.append(RequestType::GET_TASK_WORKERS);
     types.append(RequestType::NoteWorkStatus);
     types.append(RequestType::NOTE_TASK_DONE_STATUS);
+
+    types.append(RequestType::GET_DAILY_PLAN);
+    types.append(RequestType::CREATE_DAILY_TASK);
+    types.append(RequestType::REMOVE_DAILY_TASK);
+    types.append(RequestType::UPDATE_DAILY_TASK);
+
     for (const auto &i : types)
         if (static_cast<int>(i) == itemObject["type"].toInt())
             emit funcList[types.indexOf(i)]->responseInited(itemObject);

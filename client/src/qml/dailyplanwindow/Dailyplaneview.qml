@@ -50,8 +50,10 @@ Item {
 
                         CheckBox {
                             id: statusBox
-                            checked: taskStatus
-                            onClicked: client.changeDailyTask(taskId, text, statusBox.checked);
+                            checked: dailyTaskStatus
+                            onClicked: {
+                                client.changeDailyTask(dailyTaskId, dailyTaskDescription, statusBox.checked);
+                            }
                         }
                         TextField {
                             font.strikeout: statusBox.checked
@@ -60,15 +62,15 @@ Item {
                             placeholderText: "Enter description.."
                             wrapMode: "WrapAnywhere"
                             selectByMouse: true
-                            text: taskDescription
-                            onEditingFinished: client.changeDailyTask(taskId, text, statusBox.checked);
+                            text: dailyTaskDescription
+                            onEditingFinished: client.changeDailyTask(dailyTaskId, text, statusBox.checked);
                         }
                         RoundButton {
                             text: qsTr("✖️");
                             font.pointSize: 16
 
                             Material.background: "transparent"
-                            onClicked: client.removeDailyTask(taskId)
+                            onClicked: client.removeDailyTask(dailyTaskId)
                         }
                     }
                 }

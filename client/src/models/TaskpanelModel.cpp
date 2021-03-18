@@ -58,7 +58,7 @@ bool TaskPanelModel::insertRows(int row, int count, const QModelIndex &parent)
 
 bool TaskPanelModel::removeRows(int row, int count, const QModelIndex &parent) {
     beginRemoveRows(parent, row, row + count - 1);
-    m_model.removeAt(row);
+    m_model.erase(m_model.begin() + row);
     endRemoveRows();
     return true;
 }
@@ -108,7 +108,7 @@ void TaskPanelModel::removeBlank() {
     for (int index = 0; index < m_model.size() && blank_index != -1; ++index) {
         if (m_model.at(index).blank) {
             beginRemoveRows(QModelIndex(), index, index);
-            m_model.removeAt(index);
+            m_model.erase(m_model.begin() + index);
             blank_index = -1;
             endRemoveRows();
         }

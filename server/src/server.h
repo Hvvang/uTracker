@@ -18,6 +18,7 @@ public:
     void startServer(quint16 port = 0);
 
     void sendTo(const int &userId, const QByteArray &data);
+    void sendToAll(const QByteArray &data);
 
     static Server* singleton();
 

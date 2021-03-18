@@ -104,6 +104,8 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit removeDailyPlanTask(data); break;
         case ResponseType::UPDATE_DAILY_TASK:
             emit updateDailyPlanTask(data); break;
+        case ResponseType::RESET_DAILY_PLAN:
+            emit resetDailyPlan(data); break;
         case ResponseType::ERROR:
             break;
         default:

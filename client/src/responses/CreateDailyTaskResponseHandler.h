@@ -2,8 +2,8 @@
 // Created by Artem Shemidko on 18.03.2021.
 //
 
-#ifndef CLIENT_CREATEDAILYTASKRESPONSEHANDLER_H
-#define CLIENT_CREATEDAILYTASKRESPONSEHANDLER_H
+#ifndef CLIENT_CREATEDailyTaskRESPONSEHANDLER_H
+#define CLIENT_CREATEDailyTaskRESPONSEHANDLER_H
 
 #include <AbstractResponseHandler.h>
 
@@ -15,4 +15,4 @@ public:
     void processResponse(const QByteArray &data) override;
 };
 
-#endif //CLIENT_CREATEDAILYTASKRESPONSEHANDLER_H
+#endif //CLIENT_CREATEDailyTaskRESPONSEHANDLER_H

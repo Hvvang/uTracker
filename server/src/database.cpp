@@ -5,6 +5,10 @@
 
 #include "server.h"
 #include "hash.h"
+#include <QCoreApplication>
+#include <QTime>
+#include <QTimer>
+
 
 DataBase *DataBase::m_pInstance = nullptr;
 DataBase *DataBase::getInstance() {
@@ -16,6 +20,25 @@ DataBase::DataBase() : m_db(QSqlDatabase::addDatabase("QSQLITE")) {
     m_db.setDatabaseName("myDb.db");
     m_db.open();
     create_tables();
+
+    auto then = QDateTime::currentDateTime();
+    auto setTime = QTime::fromString("00:00", "hh:mm");
+    if(then.time() > setTime){
+        then = then.addDays(1);
+    }
+    then.setTime(setTime);
+    auto diff = QDateTime::currentDateTime().msecsTo(then);
+
+    QTimer::singleShot(diff, [this]{
+        auto t = new QTimer(QCoreApplication::instance());
+        emit dayChanged();
+        connect(t, &QTimer::timeout, [this]{
+            emit dayChanged();
+        });
+        t->start(24 * 3600 * 1000);
+    });
+
+    connect(this, SIGNAL(dayChanged()), SLOT(resetDailyPlans()));
     connect(this, &DataBase::getData, this, &DataBase::sendData);
 }
 
@@ -81,6 +104,13 @@ void DataBase::create_tables() {
         "listIndex int, "
         "workflow_id int,"
         "FOREIGN KEY(workflow_id) REFERENCES WorkFlows(id) ON UPDATE CASCADE ON DELETE CASCADE)");
+    query.exec(
+        "create table IF NOT EXISTS DailyTasks ("
+        "id integer primary key AUTOINCREMENT,"
+        "user_id int,"
+        "status bool,"
+        "title varchar,"
+        "FOREIGN KEY(user_id) REFERENCES UsersCredential(id) ON UPDATE CASCADE ON DELETE CASCADE)");
 }
 
 bool DataBase::isValidToken(const QString &token, int type) {
@@ -232,6 +262,21 @@ void DataBase::sendData(Connection *m_connection, int type, const QVariantMap &m
             case RequestType::GET_TASK_WORKER:
                 break;
             case RequestType::REMOVE_TASK_WORKER:
+                break;
+
+            case RequestType::GET_DAILY_PLAN:
+                result = getDailyPlan(map.value("userId").toInt());
+                break;
+            case RequestType::CREATE_DAILY_TASK:
+                result = createDailyTask(m_connection->getUserId());
+                break;
+            case RequestType::REMOVE_DAILY_TASK:
+                result = removeDailyTask(map.value("taskId").toInt());
+                break;
+            case RequestType::UPDATE_DAILY_TASK:
+                result = updateDailyTask(map.value("taskId").toInt(),
+                                              map.value("title").toString(),
+                                              map.value("status").toInt());
                 break;
         }
     } else {
@@ -432,24 +477,20 @@ QVariantMap DataBase::removeFromWorkflow(int user_id, int workflow_id) {
 QVariantMap DataBase::getWorkflows(int user_id) {  // треба норм дописать мапу яку повертаю з ерорами
     QJsonArray workflows;
     QSqlQuery query;
-    query.exec(QString("select workflow_id from WF_connector where user_id = %1;").arg(user_id));
     QVariantMap map;
 
     map["type"] = static_cast<int>(RequestType::GET_ALL_WORKFLOWS);
-    if (query.first()) {
-        QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
-        workflows.append(jsonObject);
+    if (query.exec(QString("select workflow_id from WF_connector where user_id = %1;").arg(user_id))
+        && query.first()) {
+        do {
+            QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
+            workflows.append(jsonObject);
+        } while (query.next());
+        map["workflows"] = workflows;
+        map["message"] = "Workflows successfully have gotten";
     } else {
         map["error"] = 1;
         map["message"] = "Workflows don't exist";
-    }
-    while (query.next()) {
-        QJsonObject jsonObject = QJsonObject::fromVariantMap(getWorkflow(query.value(0).toInt()));
-        workflows.append(jsonObject);
-    }
-    if (!map.contains("error")) {
-        map["workflows"] = workflows;
-        map["message"] = "Workflows successfully have gotten";
     }
     return map;
 }
@@ -1180,6 +1221,99 @@ QVariantMap DataBase::changeTaskDoneStatus(const int &taskId, const int &userId,
     qDebug() << getTaskData(9);
     return map;
 }
+
+QVariantMap DataBase::getDailyPlan(const int &userId) {
+    QSqlQuery query;
+    QJsonArray tasks;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::GET_DAILY_PLAN);
+    if (query.exec("SELECT id, title, status FROM DailyTasks WHERE user_id = " + QString::number(userId) + " ORDER BY status;")
+        && query.first()) {
+        do {
+            QVariantMap task;
+            task["taskId"] = query.value(0).toInt();
+            task["title"] = query.value(1).toString();
+            task["status"] = query.value(2).toBool();
+            tasks.append(QJsonObject::fromVariantMap(task));
+        } while (query.next());
+        map["tasks"] = tasks;
+        map["message"] = "Daily plan successfully have gotten.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "Daily plan is empty.";
+    }
+    return map;
+}
+QVariantMap DataBase::createDailyTask(const int &userId) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::CREATE_DAILY_TASK);
+    if (query.exec(QString("INSERT INTO DailyTasks (title, status, user_id) VALUES('%1', %2, %3);")
+                    .arg("")
+                    .arg(false)
+                    .arg(userId))) {
+        map["taskId"] = query.lastInsertId().toInt();
+        map["title"] = "";
+        map["status"] = false;
+        map["message"] = "Daily task successfully have created.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "Daily task hasn't created.";
+    }
+    return map;
+}
+QVariantMap DataBase::removeDailyTask(const int &taskId) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::REMOVE_DAILY_TASK);
+    if (query.exec("DELETE FROM DailyTasks WHERE id = " + QString::number(taskId))) {
+        map["taskId"] = taskId;
+        map["message"] = "Daily task successfully have removed.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "Daily task hasn't removed.";
+    }
+    return map;
+}
+QVariantMap DataBase::updateDailyTask(const int &taskId, const QString &title, const bool &status) {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::UPDATE_DAILY_TASK);
+    if (query.exec(QString("UPDATE DailyTasks SET title = '%1', status = %2 WHERE id = %3;")
+                        .arg(title)
+                        .arg(status)
+                        .arg(taskId))) {
+        map["taskId"] = taskId;
+        map["title"] = title;
+        map["status"] = status;
+        map["message"] = "Daily task successfully have updated.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "Daily task hasn't updated.";
+    }
+    return map;
+}
+
+void DataBase::resetDailyPlans() {
+    QSqlQuery query;
+    QVariantMap map;
+
+    map["type"] = static_cast<int>(RequestType::RESET_DAILY_PLANS);
+    if (query.exec("DELETE FROM DailyTasks")) {
+        map["message"] = "Daily Plan has been reset.";
+    } else {
+        map["error"] = 1;
+        map["message"] = "Daily Plan hasn't been reset.";
+    }
+    QJsonObject jsonObject = QJsonObject::fromVariantMap(map);
+    QJsonDocument jsonDoc = QJsonDocument(jsonObject);
+    m_server->sendToAll(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
 
 bool DataBase::insert(const QString &table, const QString &insert, const QString &values) {
     QSqlQuery query;

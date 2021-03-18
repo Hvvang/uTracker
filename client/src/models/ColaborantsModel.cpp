@@ -53,7 +53,7 @@ bool ColaborantsModel::insertRows(int row, int count, const QModelIndex &parent)
 bool ColaborantsModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
-    m_data.removeAt(row);
+    m_data.erase(m_data.begin() + row);
     endRemoveRows();
     return true;
 }

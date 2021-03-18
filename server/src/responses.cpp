@@ -292,3 +292,25 @@ bool ChangeTaskDoneStatus::isValid(QJsonObject itemObject) {
         return true;
     return false;
 }
+
+bool GetDailyPlan::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("userId"))
+        return true;
+    return false;
+}
+bool CreateDailyTask::isValid(QJsonObject itemObject) {
+    Q_UNUSED(itemObject)
+    return true;
+}
+bool RemoveDailyTask::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId"))
+        return true;
+    return false;
+}
+bool UpdateDailyTask::isValid(QJsonObject itemObject) {
+    if (itemObject.contains("taskId")
+        && itemObject.contains("title")
+        && itemObject.contains("status"))
+        return true;
+    return false;
+}

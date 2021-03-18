@@ -56,6 +56,15 @@ private:
     QVariantMap changeTaskWorkStatus(const int &taskId, const int &userId, const bool &status);
     QVariantMap changeTaskDoneStatus(const int &taskId, const int &userId, const bool &status);
 
+
+    QVariantMap getDailyPlan(const int &userId);
+    QVariantMap createDailyTask(const int &userId);
+    QVariantMap removeDailyTask(const int &taskId);
+    QVariantMap updateDailyTask(const int &taskId, const QString &title, const bool &status);
+
+private slots:
+    void resetDailyPlans();
+
 public:
     static DataBase *getInstance();
     void create_tables();
@@ -65,5 +74,6 @@ public:
     void sendData(Connection *m_connection, int type, const QMap<QString, QVariant> &map);
 
 signals:
+    void dayChanged();
     void getData(Connection *m_connection, int type, const QMap<QString, QVariant> &map);
 };

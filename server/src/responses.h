@@ -42,9 +42,15 @@ enum class RequestType {
     GET_TASK_DATA = 26,
     GET_TASK_WORKERS = 27,
     NoteWorkStatus = 28,
-    GET_TASK_WORKER = 29,
-    REMOVE_TASK_WORKER = 30,
+    GET_TASK_WORKER [[maybe_unused]] = 29,
+    REMOVE_TASK_WORKER [[maybe_unused]] = 30,
     NOTE_TASK_DONE_STATUS = 31,
+
+    GET_DAILY_PLAN = 40,
+    CREATE_DAILY_TASK = 41,
+    REMOVE_DAILY_TASK = 42,
+    UPDATE_DAILY_TASK = 43,
+    RESET_DAILY_PLANS [[maybe_unused]] = 44,
 
 };
 
@@ -287,5 +293,34 @@ class ChangeTaskDoneStatus : public AbstractRequestHandler  {
 Q_OBJECT
 public:
     ChangeTaskDoneStatus(Connection *socket);
+    bool isValid(QJsonObject itemObject);
+};
+
+
+class GetDailyPlan : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    GetDailyPlan(Connection *socket) : AbstractRequestHandler(socket){};
+    bool isValid(QJsonObject itemObject);
+};
+
+class CreateDailyTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    CreateDailyTask(Connection *socket) : AbstractRequestHandler(socket){};
+    bool isValid(QJsonObject itemObject);
+};
+
+class RemoveDailyTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    RemoveDailyTask(Connection *socket) : AbstractRequestHandler(socket){};
+    bool isValid(QJsonObject itemObject);
+};
+
+class UpdateDailyTask : public AbstractRequestHandler  {
+Q_OBJECT
+public:
+    UpdateDailyTask(Connection *socket) : AbstractRequestHandler(socket){};
     bool isValid(QJsonObject itemObject);
 };
