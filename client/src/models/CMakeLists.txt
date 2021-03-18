@@ -6,7 +6,10 @@ set(SOURCES
         WorkflowsModel.cpp
         TaskDescriptionModel.cpp
         CheckboxPropertyModel.cpp
-        )
+        DailyPlanModel.cpp
+
+)
+
 set(HEADERS
         ColaborantsModel.h
         KanbanModel.h
@@ -14,7 +17,9 @@ set(HEADERS
         WorkflowsModel.h
         TaskDescriptionModel.h
         CheckboxPropertyModel.h
-        )
+        DailyPlanModel.h
+
+)
 
 add_library(ModelsLib ${SOURCES} ${HEADERS})
 

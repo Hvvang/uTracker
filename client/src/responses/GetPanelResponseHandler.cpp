@@ -14,7 +14,6 @@ GetPanelResponseHandler::GetPanelResponseHandler(QObject *parent)
 }
 
 void GetPanelResponseHandler::processResponse(const QByteArray &data) {
-    qDebug() << "error_type equal " << static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
 
         qWarning() << "An error occurred: " << handleMessage(data);

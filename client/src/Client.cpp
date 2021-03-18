@@ -86,6 +86,10 @@ void Client::deInitResponseHandlers() {
     delete m_getTaskWorkerResponseHandler;
     delete m_removeTaskWorkerResponseHandler;
     delete m_getTaskDoneStatusResponseHandler;
+    delete m_createDailyTaskResponseHandler;
+    delete m_getDailyPlanTasksResponseHandler;
+    delete m_removeDailyPlanTaskResponseHandler;
+    delete m_updateDailyPlanTaskResponseHandler;
 
 }
 
@@ -113,7 +117,10 @@ void Client::initResponseHandlers() {
     m_getTaskWorkerResponseHandler = new GetTaskWorkerResponseHandler(this);
     m_removeTaskWorkerResponseHandler = new RemoveTaskWorkerResponseHandler(this);
     m_getTaskDoneStatusResponseHandler = new GetTaskDoneStatusResponseHandler(this);
-
+    m_createDailyTaskResponseHandler = new CreateDailyTaskResponseHandler(this);
+    m_getDailyPlanTasksResponseHandler = new GetDailyPlanTasksResponseHandler(this);
+    m_removeDailyPlanTaskResponseHandler = new RemoveDailyPlanTaskResponseHandler(this);
+    m_updateDailyPlanTaskResponseHandler = new UpdateDailyPlanTaskResponseHandler(this);
 }
 
 void Client::send(const QString &data) {
@@ -360,7 +367,23 @@ void Client::getWorkflows() {
         initWorkflowsModel();
         emit request(document.toJson(QJsonDocument::Compact));
     }
-    emit switchMenu("qrc:/qml/workflowswindow/Workflowsview.qml");
+    emit switchMenu(UI_WorkflowsPanel);
+}
+
+void Client::getDailyPlan() {
+    if (!m_dailyPlan) {
+        QJsonObject json;
+
+        json["type"] = ENUM_TO_INT(Client::RequestType::GET_DAILY_PLAN);
+        json["token"] = m_accessesToken;
+        json["userId"] = m_id;
+
+        QJsonDocument document;
+        document.setObject(json);
+        initDailyPlanModel();
+        emit request(document.toJson(QJsonDocument::Compact));
+    }
+    emit switchMenu(UI_DailyPlanPanel);
 }
 
 void Client::editWorkflow(int id, const QString &title, const QString &date) {
@@ -507,6 +530,49 @@ void Client::noteTaskDoneStatus(const int &taskId, const bool &status) {
     emit request(document.toJson(QJsonDocument::Compact));
 }
 
+void Client::createDailyTask() {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::ADD_DAILY_TASK);
+    json["token"] = m_accessesToken;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::removeDailyTask(const int &taskId) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::REMOVE_DAILY_TASK);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::changeDailyTask(const int &taskId, const QString &title, const bool &status) {
+    QJsonObject json;
+
+    json["type"] = ENUM_TO_INT(Client::RequestType::UPDATE_DAILY_TASK);
+    json["token"] = m_accessesToken;
+    json["taskId"] = taskId;
+    json["title"] = title;
+    json["status"] = status;
+
+    QJsonDocument document;
+    document.setObject(json);
+    emit request(document.toJson(QJsonDocument::Compact));
+}
+
+void Client::renamePanel(const int &workflowId, const int &panelIndex, const QString &title) {
+    if (m_kanban && m_kanban->getWorkflow() == workflowId) {
+        m_kanban->rename(panelIndex, title);
+    }
+}
+
 void Client::logout() {
     QJsonObject json;
 
@@ -545,12 +611,27 @@ void Client::reject() {
         delete m_kanban;
         m_kanban = nullptr;
     }
+    if (m_task) {
+        delete m_task;
+        m_task = nullptr;
+    }
+    if (m_dailyPlan) {
+        delete m_dailyPlan;
+        m_dailyPlan = nullptr;
+    }
 }
 
 void Client::initWorkflowsModel() {
     if (!m_workflows) {
         m_workflows = new WorkflowsModel(this);
         m_engine->rootContext()->setContextProperty("WorkflowsModel", m_workflows);
+    }
+}
+
+void Client::initDailyPlanModel() {
+    if (!m_dailyPlan) {
+        m_dailyPlan = new DailyPlanModel(this);
+        m_engine->rootContext()->setContextProperty("DailyPlanModel", m_dailyPlan);
     }
 }
 
@@ -622,12 +703,6 @@ void Client::removeWorker(const int &panelId, const int &taskId, const int &work
     }
 }
 
-void Client::renamePanel(const int &workflowId, const int &panelIndex, const QString &title) {
-    if (m_kanban && m_kanban->getWorkflow() == workflowId) {
-        m_kanban->rename(panelIndex, title);
-    }
-}
-
 void Client::renameTask(const int &taskId, const int &panelId, const QString &title) {
     if (m_kanban && m_kanban->contains(panelId) && m_kanban->at(panelId).model->contains(taskId))
         m_kanban->at(panelId).model->rename(taskId, title);
@@ -658,6 +733,19 @@ void Client::populateTaskModel(const int &taskId, const QString &title, const QS
         m_task->pushBack("Tags", tags, 3);
     if (!description.isEmpty())
         m_task->pushBack(description);
+}
+
+void Client::addDailyTask(const dailyTask &task) {
+    m_dailyPlan->push_back(task);
+}
+
+void Client::deleteDailyTask(const int &taskId) {
+    m_dailyPlan->remove(taskId);
+}
+
+
+void Client::updateDailyTask(const int &taskId, const QString &title, const bool &status) {
+    m_dailyPlan->update(taskId, title, status);
 }
 
 

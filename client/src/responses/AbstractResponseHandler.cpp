@@ -94,13 +94,22 @@ void AbstractResponseHandler::mediator(const QByteArray &data) {
             emit getTaskWorker(data); break;
         case ResponseType::REMOVE_TASK_WORKER:
             emit removeTaskWorker(data); break;
+        case ResponseType::REMOVE_PANEL:
+            break;
+        case ResponseType::GET_DAILY_PLAN:
+            emit getDailyPlan(data); break;
+        case ResponseType::ADD_DAILY_TASK:
+            emit getDailyPlanTask(data); break;
+        case ResponseType::REMOVE_DAILY_TASK:
+            emit removeDailyPlanTask(data); break;
+        case ResponseType::UPDATE_DAILY_TASK:
+            emit updateDailyPlanTask(data); break;
         case ResponseType::ERROR:
             break;
         default:
             qDebug() << "Emit some error in response!";
 
 
-        case ResponseType::REMOVE_PANEL:
-            break;
+
     }
 }

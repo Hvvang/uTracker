@@ -22,6 +22,7 @@
 #include "WorkflowsModel.h"
 #include "KanbanModel.h"
 #include "TaskDescriptionModel.h"
+#include "DailyPlanModel.h"
 
 
 // RESPONSE HANDLERS
@@ -49,11 +50,20 @@
 #include "RemoveTaskWorkerResponseHandler.h"
 #include "GetTaskDoneStatusResponseHandler.h"
 
+#include "CreateDailyTaskResponseHandler.h"
+#include "GetDailyPlanTasksResponseHandler.h"
+#include "RemoveDailyPlanTaskResponseHandler.h"
+#include "UpdateDailyPlanTaskResponseHandler.h"
+
+
 
 #define AUTH_CONFIGURE_FILE QCoreApplication::applicationDirPath() + "/.auth_config"
 
 #define UI_AuthWindow "qrc:/qml/authwindow/Authorization.qml"
 #define UI_MainWindow "qrc:/qml/mainwindow/Mainwindowview.qml"
+#define UI_WorkflowsPanel "qrc:/qml/workflowswindow/Workflowsview.qml"
+#define UI_DailyPlanPanel "qrc:/qml/dailyplanwindow/Dailyplaneview.qml"
+#define UI_StatisticPanel "qrc:/qml/statisticwindow/Statisticview.qml"
 
 #define ENUM_TO_INT(var) static_cast<int>(var)
 
@@ -115,6 +125,11 @@ public:
         REMOVE_TASK_WORKER = 30,
         NOTE_TASK_DONE_STATUS = 31,
 
+        GET_DAILY_PLAN = 40,
+        ADD_DAILY_TASK = 41,
+        REMOVE_DAILY_TASK = 42,
+        UPDATE_DAILY_TASK = 43,
+
     };
 
     Client(QQmlApplicationEngine *engine = nullptr, const QHostAddress &host = QHostAddress::LocalHost,
@@ -129,6 +144,7 @@ public:
     static QQmlApplicationEngine* engineSingleton();
 
     void initWorkflowsModel();
+    void initDailyPlanModel();
     void getProfileData();
 
     void setProfile(const QString &login, const QString &name, const QString &surname);
@@ -160,12 +176,17 @@ public:
     void addWorker(const int &panelId, const int &taskId, const Colaborant &worker);
     void removeWorker(const int &panelId, const int &taskId, const int &workerId);
 
+    void addDailyTask(const dailyTask &task);
+    void deleteDailyTask(const int &taskId);
+    void updateDailyTask(const int &taskId, const QString &title, const bool &status);
+
     void reject();
 
     Q_INVOKABLE void googleAuthorize();
     Q_INVOKABLE void authorize(const QString &email, const QString &password);
     Q_INVOKABLE void registrate(const QString &email, const QString &password, const QString &name, const QString &surname);
     Q_INVOKABLE void getWorkflows();
+    Q_INVOKABLE void getDailyPlan();
     Q_INVOKABLE void openWorkflow(int wokflowId);
     Q_INVOKABLE void createWorkflow(const QString &title, const QString &date);
     Q_INVOKABLE void archiveWorkflow(int index);
@@ -181,6 +202,9 @@ public:
     Q_INVOKABLE void removeTask(const int &taskId);
     Q_INVOKABLE void noteTaskWorkStatus(const int &taskId, const bool &status);
     Q_INVOKABLE void noteTaskDoneStatus(const int &taskId, const bool &status);
+    Q_INVOKABLE void createDailyTask();
+    Q_INVOKABLE void removeDailyTask(const int &taskId);
+    Q_INVOKABLE void changeDailyTask(const int &taskId, const QString &title, const bool &status);
     Q_INVOKABLE void logout();
 
 
@@ -221,6 +245,7 @@ private:
     qint64 m_id;
 
     WorkflowsModel *m_workflows{nullptr};
+    DailyPlanModel *m_dailyPlan{nullptr};
     KanbanModel *m_kanban{nullptr};
     TaskDescriptionModel *m_task{nullptr};
 
@@ -247,6 +272,10 @@ private:
     GetTaskWorkerResponseHandler *m_getTaskWorkerResponseHandler{nullptr};
     RemoveTaskWorkerResponseHandler *m_removeTaskWorkerResponseHandler{nullptr};
     GetTaskDoneStatusResponseHandler *m_getTaskDoneStatusResponseHandler{nullptr};
+    CreateDailyTaskResponseHandler *m_createDailyTaskResponseHandler{nullptr};
+    GetDailyPlanTasksResponseHandler *m_getDailyPlanTasksResponseHandler{nullptr};
+    RemoveDailyPlanTaskResponseHandler *m_removeDailyPlanTaskResponseHandler{nullptr};
+    UpdateDailyPlanTaskResponseHandler *m_updateDailyPlanTaskResponseHandler{nullptr};
 
 };
 

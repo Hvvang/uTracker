@@ -22,7 +22,6 @@ QStringList GetPanelTasksResponseHandler::tagsFromJsonArray(const QJsonArray &js
 }
 
 void GetPanelTasksResponseHandler::processResponse(const QByteArray &data) {
-    qDebug() << "error_type equal " << static_cast<int>(error(data));
     if (error(data) == AbstractResponseHandler::ResponseErrorType::NotValid) {
 
         qWarning() << "An error occurred: " << handleMessage(data);

@@ -146,9 +146,9 @@ Dialog {
                                                 z: 5
                                                 width: 28
                                                 height: 28
-                                                text: qsTr("x")
-                                                anchors.verticalCenter: parent.verticalCenter
+                                                text: qsTr("✖️")
 
+                                                anchors.verticalCenter: parent.verticalCenter
                                                 anchors.left: name.right
                                                 Material.background: "transparent"
 

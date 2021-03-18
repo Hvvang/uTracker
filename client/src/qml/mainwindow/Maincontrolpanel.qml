@@ -70,6 +70,7 @@ Item {
                             if (index == 0) {
                                 client.getWorkflows();
                             } else if (index == 1) {
+                                print("asdf");
                                 client.getDailyPlan();
                             }
                         }

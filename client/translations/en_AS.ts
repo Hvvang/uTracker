@@ -41,14 +41,6 @@
     </message>
 </context>
 <context>
-    <name>Dailyplaneview</name>
-    <message>
-        <location filename="../src/qml/dailyplanwindow/Dailyplaneview.qml" line="12"/>
-        <source>daily plane</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Headerpanel</name>
     <message>
         <location filename="../src/qml/mainwindow/Headerpanel.qml" line="29"/>

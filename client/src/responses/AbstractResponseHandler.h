@@ -42,6 +42,11 @@ enum class ResponseType {
     REMOVE_TASK_WORKER = 30,
     GET_TASK_DONE_STATUS = 31,
 
+    GET_DAILY_PLAN = 40,
+    ADD_DAILY_TASK = 41,
+    REMOVE_DAILY_TASK = 42,
+    UPDATE_DAILY_TASK = 43,
+
     ERROR = 250,
 };
 
@@ -87,6 +92,11 @@ signals:
     void getTaskWorker(const QByteArray &);
     void removeTaskWorker(const QByteArray &);
     void getTaskDoneStatus(const QByteArray &);
+
+    void getDailyPlan(const QByteArray &);
+    void getDailyPlanTask(const QByteArray &);
+    void removeDailyPlanTask(const QByteArray &);
+    void updateDailyPlanTask(const QByteArray &);
 
 
 private slots:

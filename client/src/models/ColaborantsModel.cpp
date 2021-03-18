@@ -21,7 +21,6 @@ QVariant ColaborantsModel::data(const QModelIndex &index, int role) const
         case IconRole: return m_data[index.row()].icon;
         case NameRole: return m_data[index.row()].name;
         case SurnameRole: return m_data[index.row()].surname;
-
     }
     return QVariant();
 }

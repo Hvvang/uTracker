@@ -13,7 +13,6 @@ public:
     explicit CreateWorkflowResponseHandler(QObject *parent = nullptr);
 
     void processResponse(const QByteArray &data) override;
-
 };
 
 #endif //UTRACKER_CREATEWORKFLOWRESPONSEHANDLER_H
