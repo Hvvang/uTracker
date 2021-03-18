@@ -226,12 +226,12 @@ To Start manage your day.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="116"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="117"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="182"/>
+        <location filename="../src/qml/workflowswindow/WorkflowDialog.qml" line="183"/>
         <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>

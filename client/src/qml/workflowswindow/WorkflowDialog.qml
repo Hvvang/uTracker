@@ -105,8 +105,9 @@ Item {
 
                 onTextChanged: {
                     var currentDate = new Date();
-                    var selectedDate = Date.fromLocaleString(Qt.locale(), m_deadline, "dd-MM-yyyy")
+                    var selectedDate = Date.fromLocaleString(Qt.locale(), text, "dd-MM-yyyy")
 
+                    print(currentDate, selectedDate)
                     deadlineError = currentDate.getTime() > selectedDate.getTime()
                 }
 

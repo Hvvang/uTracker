@@ -46,3 +46,4 @@ build
 
 # System cache
 .DS_Store
+.auth_config
