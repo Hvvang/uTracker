@@ -1,11 +1,11 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QFontDatabase>
 #include <QQmlContext>
 
 #include "Client.h"
-#include "src/models/KanbanModel.h"
 
+#include "StatisticModel.h"
 
 void init_fontBase() {
     QFontDatabase fontDatabase;
@@ -17,7 +17,7 @@ void init_fontBase() {
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
     init_fontBase();
@@ -31,9 +31,6 @@ int main(int argc, char *argv[])
 
     Client client(&engine);
     engine.rootContext()->setContextProperty("client", &client);
-
-//    KanbanModel *m_kanban = new KanbanModel(1);
-//    engine.rootContext()->setContextProperty("KanbanModel", m_kanban);
 
     engine.load(url);
     return app.exec();

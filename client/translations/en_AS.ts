@@ -72,22 +72,22 @@ To Start manage your day.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="64"/>
+        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="65"/>
         <source>Route %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="77"/>
+        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="78"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="98"/>
+        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="99"/>
         <source>Help </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="107"/>
+        <location filename="../src/qml/mainwindow/Headerpanel.qml" line="108"/>
         <source>Upgrade</source>
         <translation type="unfinished"></translation>
     </message>
@@ -165,14 +165,6 @@ To Start manage your day.</source>
     </message>
 </context>
 <context>
-    <name>Statisticview</name>
-    <message>
-        <location filename="../src/qml/statisticwindow/Statisticview.qml" line="12"/>
-        <source>Statistic</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>TaskDiscriptionView</name>
     <message>
         <location filename="../src/qml/workflowswindow/TaskDiscriptionView.qml" line="92"/>
@@ -244,22 +236,22 @@ To Start manage your day.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="41"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="55"/>
         <source></source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="103"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="117"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="114"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="128"/>
         <source>+%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="130"/>
+        <location filename="../src/qml/workflowswindow/Workflowpane.qml" line="144"/>
         <source>personal</source>
         <translation type="unfinished"></translation>
     </message>

@@ -15,7 +15,8 @@ Client* Client::m_instance = nullptr;
 QQmlApplicationEngine* Client::m_qmlEngine = nullptr;
 
 Client::Client(QQmlApplicationEngine *engine, const QHostAddress &host, const quint16 port, QObject *parent)
-    : QObject(parent) {
+    : QObject(parent)
+    , m_id(0) {
 
     m_qmlEngine = engine;
     m_socket.connectToHost(host, port);
@@ -251,7 +252,7 @@ void Client::registrate(const QString &email, const QString &password,
                     const QString &name, const QString &surname) {
     QJsonObject json;
 
-    json["type"] = ENUM_TO_INT(Client::RequestType::SIGN_UP);;
+    json["type"] = ENUM_TO_INT(Client::RequestType::SIGN_UP);
     json["email"] = email;
     json["password"] = password;
     json["name"] = name;
@@ -274,7 +275,7 @@ void Client::openWorkflow(int workflowId) {
         document.setObject(json);
         emit request(document.toJson(QJsonDocument::Compact));
     }
-    emit switchMenu("qrc:/qml/workflowswindow/Kanbanview.qml");
+    emit switchMenu(UI_KanbanPanel);
 }
 
 void Client::getPanelTasks(int panelId) {
@@ -389,6 +390,25 @@ void Client::getDailyPlan() {
     }
     emit switchMenu(UI_DailyPlanPanel);
 }
+
+void Client::getStatistic() {
+    if (!m_statistic) {
+        QJsonObject json;
+
+        json["type"] = ENUM_TO_INT(Client::RequestType::GET_DAILY_PLAN);
+        json["token"] = m_accessesToken;
+        json["userId"] = m_id;
+
+        QJsonDocument document;
+        document.setObject(json);
+        m_statistic = new StatisticModel(this);
+        m_qmlEngine->rootContext()->setContextProperty("StatisticModel", m_statistic);
+//        emit request(document.toJson(QJsonDocument::Compact));
+    }
+    emit switchMenu(UI_StatisticPanel);
+}
+
+
 
 void Client::editWorkflow(int id, const QString &title, const QString &date) {
     QJsonObject json;

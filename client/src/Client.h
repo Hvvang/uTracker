@@ -23,6 +23,7 @@
 #include "KanbanModel.h"
 #include "TaskDescriptionModel.h"
 #include "DailyPlanModel.h"
+#include "StatisticModel.h"
 
 
 // RESPONSE HANDLERS
@@ -62,6 +63,7 @@
 #define UI_AuthWindow "qrc:/qml/authwindow/Authorization.qml"
 #define UI_MainWindow "qrc:/qml/mainwindow/Mainwindowview.qml"
 #define UI_WorkflowsPanel "qrc:/qml/workflowswindow/Workflowsview.qml"
+#define UI_KanbanPanel "qrc:/qml/workflowswindow/Kanbanview.qml"
 #define UI_DailyPlanPanel "qrc:/qml/dailyplanwindow/Dailyplaneview.qml"
 #define UI_StatisticPanel "qrc:/qml/statisticwindow/Statisticview.qml"
 
@@ -189,6 +191,7 @@ public:
     Q_INVOKABLE void registrate(const QString &email, const QString &password, const QString &name, const QString &surname);
     Q_INVOKABLE void getWorkflows();
     Q_INVOKABLE void getDailyPlan();
+    Q_INVOKABLE void getStatistic();
     Q_INVOKABLE void openWorkflow(int wokflowId);
     Q_INVOKABLE void createWorkflow(const QString &title, const QString &date);
     Q_INVOKABLE void archiveWorkflow(int index);
@@ -250,6 +253,7 @@ private:
     DailyPlanModel *m_dailyPlan{nullptr};
     KanbanModel *m_kanban{nullptr};
     TaskDescriptionModel *m_task{nullptr};
+    StatisticModel *m_statistic{nullptr};
 
     AuthorisationResponseHandler *m_authHandler{nullptr};
     ProfileDataResponseHandler *m_profileHandler{nullptr};

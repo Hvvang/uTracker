@@ -22,7 +22,7 @@ Item {
         RowLayout {
             id: logoWrapper
             Layout.leftMargin: 20
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
             Label {
                 id: logoLbl
@@ -42,6 +42,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.fillHeight: true
             Layout.fillWidth: true
+            visible: false
 
             RowLayout {
                 id: routeRow

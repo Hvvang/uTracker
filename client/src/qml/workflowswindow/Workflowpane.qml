@@ -33,6 +33,20 @@ Item {
                 font.family: "fontello"
                 verticalAlignment: Text.AlignVCenter
                 anchors.verticalCenter: parent.verticalCenter
+                color: {
+                    var currentTime = new Date();
+                    var deadline = Date.fromLocaleString(Qt.locale(), flowDeadline, "dd-MM-yyyy")
+//                    print(currentTime.getTime(),  deadline.getTime(), currentTime.getTime() > deadline.getTime())
+                    print("diff: ", currentTime.getTime() -  deadline.getTime())
+                    if (currentTime.getTime() > deadline.getTime()) {
+                        return "red"
+                    } else if (deadline.getTime() - currentTime.getTime() < 24263727 * 7) {
+                        return "orange"
+                    } else {
+                      return "black";
+                    }
+                }
+
                 font.pixelSize: 17
             }
 

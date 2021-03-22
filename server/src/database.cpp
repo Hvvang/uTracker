@@ -76,7 +76,7 @@ void DataBase::create_tables() {
         "title varchar,"
         "creation_time datetime,"
         "deadline_time datetime,"
-        "done bool"
+        "done bool,"
         "creator_id int,"
         "description varchar,"
         "tags varchar,"

@@ -7,6 +7,7 @@ set(SOURCES
         TaskDescriptionModel.cpp
         CheckboxPropertyModel.cpp
         DailyPlanModel.cpp
+        StatisticModel.cpp
 
         )
 
@@ -18,6 +19,7 @@ set(HEADERS
         TaskDescriptionModel.h
         CheckboxPropertyModel.h
         DailyPlanModel.h
+        StatisticModel.h
 
         )
 

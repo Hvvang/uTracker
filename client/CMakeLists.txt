@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-find_package(Qt5 COMPONENTS Core Quick NetworkAuth LinguistTools REQUIRED)
+find_package(Qt5 COMPONENTS Core Quick Widgets NetworkAuth LinguistTools REQUIRED)
 
 set(TS_FILES
     translations/en_AS.ts)
@@ -35,6 +35,6 @@ add_executable(utracker
 target_compile_definitions(utracker
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(utracker
-  PRIVATE Qt5::Core Qt5::Quick Qt5::NetworkAuth source ResponsesLib ModelsLib)
+  PRIVATE Qt5::Core Qt5::Quick Qt5::Widgets Qt5::NetworkAuth source ResponsesLib ModelsLib)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

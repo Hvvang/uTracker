@@ -71,7 +71,10 @@ Item {
                                 client.getWorkflows();
                             } else if (index == 1) {
                                 client.getDailyPlan();
+                            } else if (index == 4) {
+                                client.getStatistic();
                             }
+
                         }
                     }
                 }
