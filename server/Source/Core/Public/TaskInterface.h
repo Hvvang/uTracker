@@ -6,12 +6,12 @@
 #define SERVER_TASK_H
 
 template<class ContextT>
-class Task {
+class BaseTask {
 public:
-    Task(const ContextT &InContext)
+    BaseTask(const ContextT &InContext)
         : Context(&InContext) {}
 
-    virtual ~Task() = 0;
+    virtual ~BaseTask() = 0;
 
     virtual void DoWork() = 0;
     virtual void DoTask() = 0;

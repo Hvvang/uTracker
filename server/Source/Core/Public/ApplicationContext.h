@@ -5,9 +5,11 @@
 #ifndef SERVER_APPLICATIONCONTEXT_H
 #define SERVER_APPLICATIONCONTEXT_H
 
+#include <QObject>
 #include <QString>
 
-class ApplicationContext {
+class ApplicationContext : public QObject {
+Q_OBJECT
 public:
 
     typedef void (*StartFallbackPtr)();

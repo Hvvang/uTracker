@@ -1,6 +1,7 @@
 //#include "server.h"
 //#include "database.h"
 
+#include <Core.h>
 #include "Application.h"
 #include "CryptoSSL.h"
 #include "Server.h"
@@ -9,7 +10,7 @@ void Init()
 {
     // Initialize required systems
     Crypto::Initialize(ApplicationContext::ConfigLocation, SSLFile);
-    Server::Initialize();
+    Server::Initialize(CommandPrompt::GetValue("-port").toInt());
 
 }
 

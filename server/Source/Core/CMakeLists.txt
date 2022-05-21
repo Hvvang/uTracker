@@ -22,6 +22,7 @@ add_library(${ModuleName} STATIC
         ${SourceFiles}
         ${HeaderFiles}
 )
+target_compile_definitions(${ModuleName} PRIVATE DefaultPort=8080)
 target_compile_definitions(${ModuleName} PRIVATE DbFile="${ProjectName}Db")
 
 target_compile_features(${ModuleName} PUBLIC cxx_std_20)

@@ -7,20 +7,14 @@
 #include "CryptoSSL.h"
 #include "Server.h"
 
-Server::Server(quint16 port, QObject *parent)
+Server::Server(const quint16 port, QObject *parent)
     : QTcpServer(parent)
     , SSLSocket(this)
 {
-    Start(port);
+    Start(port ? port : DefaultPort);
     InitializeSSLSocket();
 }
 
-Server::Server(QObject *parent)
-    : QTcpServer(parent)
-    , SSLSocket(this)
-{
-    InitializeSSLSocket();
-}
 
 Server::~Server() {
     // Maybe will be needed for closing thread pool
@@ -55,16 +49,8 @@ void Server::InitializeSSLSocket() {
     connect(&SSLSocket, SIGNAL(readyRead()), this, SLOT(printData()) );
 }
 
-Server &Server::Initialize(QObject *parent) {
-    static Server Instance(parent);
-
-    static bool bInitialized = false;
-    if (!bInitialized) {
-        const quint16 Port = CommandPrompt::GetValue("-port").toInt();
-        Instance.Start(Port ? Port : 8080);
-        bInitialized = true;
-    }
-
+Server &Server::Initialize(const quint16 port, QObject *parent) {
+    static Server Instance(port, parent);
     return Instance;
 }
 

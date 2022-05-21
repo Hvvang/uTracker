@@ -11,13 +11,12 @@
 class Server : public QTcpServer {
     Q_OBJECT
 public:
-    Server(quint16 port, QObject *parent = nullptr);
-    Server(QObject *parent = nullptr);
+    Server(const quint16 port, QObject *parent = nullptr);
     ~Server() override;
 
     void Start(quint16 port = 0);
 
-    static Server &Initialize(QObject *parent = nullptr);
+    static Server &Initialize(const quint16 , QObject *parent = nullptr);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
