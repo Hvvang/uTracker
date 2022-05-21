@@ -1,18 +1,28 @@
-#include "server.h"
-#include "database.h"
-#include <QCoreApplication>
+//#include "server.h"
+//#include "database.h"
+
+#include "Application.h"
+#include "CryptoSSL.h"
+#include "Server.h"
+
+void Init()
+{
+    // Initialize required systems
+    Crypto::Initialize(ApplicationContext::ConfigLocation, SSLFile);
+    Server::Initialize();
+
+}
+
+void Deinit()
+{
+
+}
 
 int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    DataBase::getInstance();
+    Application App(argc, argv);
 
-    if (argc != 2) {
-        qDebug() << "usage ./uTracker_server [port]";
-        return 1;
-    }
+    App.Context().OnApplicationStart = &Init;
+    App.Context().OnApplicationExit = &Deinit;
 
-    Server server;
-    server.startServer(QString(argv[1]).toInt());
-
-    return a.exec();
+    return App.Run();
 }

@@ -15,8 +15,27 @@ add_compile_options(
     -Wpedantic
 )
 
-file(GLOB SRC *.cpp)
-file(GLOB HDR *.h)
+set(SRC
+      connection.cpp
+        database.cpp
+        hash.cpp
+        OAuth.cpp
+        responses.cpp
+        runnable.cpp
+        server.cpp
+)
+
+set(HDR
+        connection.h
+        database.h
+        hash.h
+        OAuth.h
+        responses.h
+        runnable.h
+        server.h
+        )
+
+add_subdirectory(Core)
 
 add_library(${NAME} ${SRC} ${HDR})
 
