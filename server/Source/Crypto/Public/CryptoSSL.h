@@ -12,6 +12,7 @@ public:
 
     static QSslKey SSLKey;
     static QSslCertificate SSLCert;
+    static QSslCertificate SSLCACert;
 
-    static void Initialize(const QString &, const QString &);
+    static void Initialize(const QString &);
 };

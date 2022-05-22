@@ -4,10 +4,12 @@ set(ModuleName Crypto)
 
 set(SourceFiles
         Private/CryptoSSL.cpp
+        Private/SSLSocket.cpp
 )
 
 set(HeaderFiles
         Public/CryptoSSL.h
+        Public/SSLSocket.h
 )
 
 
@@ -17,6 +19,11 @@ add_library(${ModuleName} STATIC
         )
 
 target_compile_features(${ModuleName} PUBLIC cxx_std_20)
+
+# SSL Defines
+target_compile_definitions(${ModuleName} PRIVATE SSLPrivateKey="client_local")
+target_compile_definitions(${ModuleName} PRIVATE SSLCertificate="client_local")
+target_compile_definitions(${ModuleName} PRIVATE SSLCACertificate="server_ca")
 
 target_include_directories(${ModuleName}
         PUBLIC
